@@ -1,0 +1,4 @@
+backend/objectbox/
+backend/objectboxlib/
+backend/backend
+.DS_Store
