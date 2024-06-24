@@ -80,7 +80,14 @@ func findRoute(products set[int]) []point {
 		delete(products, productSquare.productID)
 		path = append(path, newPathSegment...)
 	}
+
 	newPathSegment, _ := findRouteToOne(pos, func(s square) bool {
+		return s.kind == checkoutSquare
+	})
+	path = append(path, newPathSegment...)
+	pos = newPathSegment[len(newPathSegment)-1]
+
+	newPathSegment, _ = findRouteToOne(pos, func(s square) bool {
 		return s.kind == endSquare
 	})
 	path = append(path, newPathSegment...)
