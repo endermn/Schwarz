@@ -1,11 +1,13 @@
-import "./App.css";
-import { Button } from "./components/ui/button";
+import { Outlet } from "react-router-dom";
+import { NavBar } from "./components/NavBar";
+import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
 	return (
-		<>
-			<Button>Hello</Button>
-		</>
+		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+			<NavBar />
+			<Outlet />
+		</ThemeProvider>
 	);
 }
 
