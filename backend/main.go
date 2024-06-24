@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -32,14 +31,17 @@ type userCredentials struct {
 	Password string `json:"password"`
 }
 
-type storeParams struct {
-	SessionID []byte `json:"sessionId"`
-	Name      string `json:"name"`
-	Address   string `json:"address"`
+type routeFindingParams struct {
+	Products []int `json:"products"`
 }
 
-type storeCreated struct {
-	ID uint64 `json:"id"`
+type point struct {
+	x int
+	y int
+}
+
+type routeFound struct {
+	Points []point `json:"points"`
 }
 
 func newJSONDecoder(r io.Reader) *json.Decoder {
@@ -126,9 +128,6 @@ func main() {
 		}
 	}
 
-	storeBox := BoxForstore(box)
-	// storeBox.RemoveAll()
-
 	server := &http.Server{
 		Addr: ":12345",
 	}
@@ -196,79 +195,15 @@ func main() {
 		})
 	})
 
-	http.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
-		var params storeParams
+	http.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
+		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		user := checkSesssion(w, r)
-		if user == nil {
-			return
-		}
-
-		store := &store{Name: params.Name, Address: params.Address}
-		id, err := storeBox.Insert(store)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		json.NewEncoder(w).Encode(storeCreated{ID: id})
-	})
-
-	http.HandleFunc("PUT /stores/{store}", func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.ParseUint(r.PathValue("store"), 10, 64)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		var params storeParams
-		err = newJSONDecoder(r.Body).Decode(&params)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		user := checkSesssion(w, r)
-		if user == nil {
-			return
-		}
-
-		store, err := storeBox.Get(id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if store == nil {
-			http.Error(w, "There is no store with the given ID", http.StatusBadRequest)
-			return
-		}
-
-		if params.Name != "" {
-			store.Name = params.Name
-		}
-		if params.Address != "" {
-			store.Address = params.Address
-		}
-
-		err = storeBox.Update(store)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	})
-
-	http.HandleFunc("GET /stores", func(w http.ResponseWriter, r *http.Request) {
-		stores, err := storeBox.GetAll()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		json.NewEncoder(w).Encode(stores)
+		json.NewEncoder(w).Encode(routeFound{})
 	})
 
 	terminationChan := make(chan os.Signal, 1)
@@ -278,7 +213,7 @@ func main() {
 		server.Shutdown(context.Background())
 	}()
 
-	log.Println("Starting...")
+	log.Println("Server started")
 	err = server.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
