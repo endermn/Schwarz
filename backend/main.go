@@ -36,12 +36,12 @@ type routeFindingParams struct {
 }
 
 type point struct {
-	x int
-	y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 type routeFound struct {
-	Points []point `json:"points"`
+	Path []point `json:"path"`
 }
 
 func newJSONDecoder(r io.Reader) *json.Decoder {
@@ -51,7 +51,6 @@ func newJSONDecoder(r io.Reader) *json.Decoder {
 }
 
 type session struct {
-	// id sessionID
 	user *user
 }
 
@@ -203,7 +202,13 @@ func main() {
 			return
 		}
 
-		json.NewEncoder(w).Encode(routeFound{})
+		products := set[int]{}
+		for _, productID := range params.Products {
+			products[productID] = struct{}{}
+		}
+		path := findRoute(products)
+
+		json.NewEncoder(w).Encode(routeFound{path})
 	})
 
 	terminationChan := make(chan os.Signal, 1)
