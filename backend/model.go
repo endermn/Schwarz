@@ -9,6 +9,13 @@ type user struct {
 	// isAdmin  bool
 }
 
+type product struct {
+	id       uint64 `json:"id`
+	name     string `json:"name"`
+	price    int    `json:"price"`
+	category string `jsoon:"category"`
+}
+
 type store struct {
 	ID      uint64 `json:"id"`
 	Name    string `json:"name"`
