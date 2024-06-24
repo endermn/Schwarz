@@ -8,9 +8,3 @@ type user struct {
 	password string // TODO: maybe hash it?
 	// isAdmin  bool
 }
-
-type store struct {
-	ID      uint64 `json:"id"`
-	Name    string `json:"name"`
-	Address string `json:"address"`
-}
