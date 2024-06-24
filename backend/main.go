@@ -278,7 +278,7 @@ func main() {
 		server.Shutdown(context.Background())
 	}()
 
-	log.Println("Starting...")
+	log.Println("Server started")
 	err = server.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
