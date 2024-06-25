@@ -19,27 +19,11 @@ export const MyComponent = () => (
 );
 
 // src/Grid.js
-const pointsa = [
-	{ x: 1, y: 2 },
-	{ x: 3, y: 4 },
-	{ x: 5, y: 1 },
-	{ x: 7, y: 6 },
-	{ x: 2, y: 24 },
-];
-
 interface PointI {
 	x: number;
 	y: number;
 }
 
-const kindColors = {
-	0: "bg-transparent",
-	1: "bg-red-500",
-	2: "bg-slate-500",
-	3: "bg-blue-500",
-	4: "bg-yellow-500",
-	// Add more colors if needed
-};
 interface DataI {
 	kind: number;
 	productId: number;
@@ -47,47 +31,56 @@ interface DataI {
 }
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const gridColumns = 24;
-	const gridRows = 42;
-	const squareSize = 20; // Adjust square size as needed
+	const numRows = gridData.length;
+	const numCols = gridData[0].length;
 
 	return (
-		<>
-			<div className="relative flex justify-center ">
-				<div
-					className="relative m-auto"
-					style={{
-						width: `${gridColumns * squareSize}px`,
-						height: `${gridRows * squareSize}px`,
-						display: "grid",
-						gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-						gridTemplateRows: `repeat(${gridRows}, 1fr)`,
-					}}
-				>
-					{gridData.map((row, y) =>
-						row.map((item, x) => (
-							<motion.div
-								key={`${x}-${y}`}
-								className={`absolute w-5 h-5  ${
-									(kindColors as any)[item.kind]
-								}`}
-								initial={{ opacity: 0, scale: 0 }}
-								animate={{ opacity: 1, scale: 1 }}
-								transition={{
-									duration: 0.5,
-									delay: (x + y * gridColumns) * 0.004,
-								}}
-								style={{
-									left: `${x * squareSize}px`,
-									top: `${y * squareSize}px`,
-								}}
-							/>
-						))
-					)}
+		<div className="flex flex-col items-center justify-center h-screen">
+			{gridData.map((row, rowIndex) => (
+				<div key={rowIndex} className="flex">
+					{row.map((cell, colIndex) => (
+						<motion.div
+							key={colIndex}
+							className={`w-4 h-4 m-1 shadow-md ${getColorFromKind(cell.kind)}`}
+							initial={{ scale: 0 }}
+							animate={{ scale: 1 }}
+							transition={{
+								duration: 0.2,
+								delay:
+									rowIndex * 0.08 + colIndex * 0.08 * (cell.kind !== 0 ? 0 : 1),
+							}}
+							whileTap={
+								cell.kind === 3
+									? {
+											scale: 4,
+											transition: { duration: 0.2 },
+									  }
+									: null
+							}
+							onTap
+						/>
+					))}
 				</div>
-			</div>
-		</>
+			))}
+		</div>
 	);
+};
+
+const getColorFromKind = (kind: number) => {
+	switch (kind) {
+		case 0:
+			return "dark:bg-white dark:opacity-30 bg-transparent";
+		case 1:
+			return `bg-blue-500`;
+		case 2:
+			return "bg-green-500";
+		case 3:
+			return "bg-yellow-500";
+		case 4:
+			return "bg-purple-500";
+		default:
+			return "bg-gray-300";
+	}
 };
 
 export function Map() {
