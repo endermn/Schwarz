@@ -405,15 +405,15 @@ for y in range(HEIGHT):
 		g = grid[y][x]
 		match g["kind"]:
 			case "empty":
-				e = "{kind: emptySquare}"
+				e = "{Kind: emptySquare}"
 			case "end":
-				e = "{kind: endSquare}"
+				e = "{Kind: endSquare}"
 			case "wall":
-				e = "{kind: wallSquare}"
+				e = "{Kind: wallSquare}"
 			case "product":
-				e = f"{{kind: productSquare, productID: {g["productID"]}}}"
+				e = f"{{Kind: productSquare, ProductID: {g["productID"]}}}"
 			case "checkout":
-				e = f"{{kind: checkoutSquare, checkoutName: \"{g["name"]}\"}}"
+				e = f"{{Kind: checkoutSquare, CheckoutName: \"{g["name"]}\"}}"
 		elems.append(e.ljust(43))
 	print(f"\t{{{", ".join(elems)}}},")
 print("}")
