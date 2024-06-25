@@ -1,10 +1,9 @@
 import { useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { HandIcon, PlusIcon } from "lucide-react";
 
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
+// eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/store-layout");
 	const dataMap = await resMap.json();
@@ -51,18 +50,40 @@ interface PathI {
 
 const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 	const [selectedProductId, setSelectedProductId] = useState(0);
+	const [cellSize, setCellSize] = useState(20);
+	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
 	console.log(selectedProductId);
 	const handleTap = (productId: number) => {
 		setSelectedProductId(productId);
 	};
 
+	useEffect(() => {
+		const updateCellSize = () => {
+			let { clientWidth } = mapContainerRef.current!; // Use getBoundingClientRect for precise width
+			if (clientWidth < 600) {
+				clientWidth *= 0.3;
+			} else {
+				clientWidth *= 0.5;
+			}
+			const cols = gridData[0]?.length || 1;
+			const cellWidth = Math.floor(clientWidth / cols); // Round cellWidth to an integer
+			setCellSize(cellWidth);
+		};
+
+		updateCellSize();
+		window.addEventListener("resize", updateCellSize);
+		return () => window.removeEventListener("resize", updateCellSize);
+	}, [gridData]);
+
+	useEffect(() => console.log(cellSize), [cellSize]);
+
 	const grid = gridData.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex">
 			{row.map((cell, colIndex) => (
 				<motion.div
 					key={colIndex}
-					className={`w-4 h-4 m-1 shadow-md round-[${Math.floor(
+					className={` m-1 shadow-md round-[${Math.floor(
 						Math.random() * 20
 					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
 					initial={{ scale: 0 }}
@@ -77,15 +98,31 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 					onHoverStart={() => {
 						if (cell.kind === 3) handleTap(cell.productId);
 					}}
+					style={{ width: cellSize, height: cellSize }}
 				/>
 			))}
 		</div>
 	));
 
 	return (
-		<div className="flex flex-col items-center justify-center h-screen">
-			{grid}
-			<h1>{selectedProductId}</h1>
+		<div className="flex justify-center items-center h-full">
+			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
+				<div className="col-span-1 flex md:flex-col justify-center items-center">
+					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+						<HandIcon />
+					</div>
+					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+						<PlusIcon />
+					</div>
+				</div>
+				<div
+					className="col-span-3 flex flex-col items-center justify-center"
+					ref={mapContainerRef}
+				>
+					{grid}
+					<h1>{selectedProductId}</h1>
+				</div>
+			</div>
 		</div>
 	);
 };
@@ -100,7 +137,7 @@ const getColorFromKind = (kind: number, x: number, y: number, path: PathI) => {
 			case 2:
 				return `bg-gradient-to-r from-bg-green-500 to-red-300`;
 			case 3:
-				return `bg-gradient-to-r from-yellow-700 to-red-300`;
+				return `bg-gradient-to-r from-yellow-500 to-red-900`;
 			case 4:
 				return `bg-gradient-to-r from-purple-500 to-red-300`;
 			default:
@@ -133,9 +170,8 @@ export function Map() {
 
 	return (
 		<>
-			<h1>Map</h1>
 			<Grid gridData={dataMap} path={dataPath} />
-			<canvas id="map"></canvas>
+			<canvas id="map" className="hidden"></canvas>
 		</>
 	);
 }
