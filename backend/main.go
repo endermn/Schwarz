@@ -105,6 +105,10 @@ func authenticate(userBox *userBox, w http.ResponseWriter, username string, pass
 	return user
 }
 
+func enableCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func main() {
 	box, err := objectbox.NewBuilder().Model(ObjectBoxModel()).Build()
 	if err != nil {
@@ -137,6 +141,8 @@ func main() {
 	}
 
 	http.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
+
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -169,6 +175,8 @@ func main() {
 	})
 
 	http.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
+
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -201,6 +209,8 @@ func main() {
 	})
 
 	http.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
+
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -218,10 +228,14 @@ func main() {
 	})
 
 	http.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
+
 		json.NewEncoder(w).Encode(grid)
 	})
 
 	http.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
+
 		products, err := productBox.GetAll()
 		if err != nil {
 			log.Println("Failed to get products:", err)
