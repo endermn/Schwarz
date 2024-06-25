@@ -1,5 +1,7 @@
 import { useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { profile } from "console";
 
 export async function loader() {
 	const res = await fetch("http://localhost:12345/store-layout");
@@ -31,8 +33,12 @@ interface DataI {
 }
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const numRows = gridData.length;
-	const numCols = gridData[0].length;
+	const [selectedProductId, setSelectedProductId] = useState(0);
+
+	console.log(selectedProductId);
+	const handleTap = (productId: number) => {
+		setSelectedProductId(productId);
+	};
 
 	return (
 		<div className="flex flex-col items-center justify-center h-screen">
@@ -41,27 +47,26 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					{row.map((cell, colIndex) => (
 						<motion.div
 							key={colIndex}
-							className={`w-4 h-4 m-1 shadow-md ${getColorFromKind(cell.kind)}`}
+							className={`w-4 h-4 m-1 shadow-md round-[${Math.floor(
+								Math.random() * 20
+							)}]  ${getColorFromKind(cell.kind)}`}
 							initial={{ scale: 0 }}
-							animate={{ scale: 1 }}
+							animate={{
+								scale: 1,
+							}}
 							transition={{
 								duration: 0.2,
 								delay:
-									rowIndex * 0.08 + colIndex * 0.08 * (cell.kind !== 0 ? 0 : 1),
+									rowIndex * 0.04 + colIndex * 0.04 * (cell.kind !== 0 ? 0 : 1),
 							}}
-							whileTap={
-								cell.kind === 3
-									? {
-											scale: 4,
-											transition: { duration: 0.2 },
-									  }
-									: null
-							}
-							onTap
+							onHoverStart={() => {
+								if (cell.kind === 3) handleTap(cell.productId);
+							}}
 						/>
 					))}
 				</div>
 			))}
+			<h1>{selectedProductId}</h1>
 		</div>
 	);
 };
