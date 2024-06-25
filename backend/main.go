@@ -138,7 +138,7 @@ func main() {
 		Handler: handler,
 	}
 
-	http.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -170,7 +170,7 @@ func main() {
 		log.Println("Created user", id, params.Username, params.Password)
 	})
 
-	http.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -202,7 +202,7 @@ func main() {
 		})
 	})
 
-	http.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -219,11 +219,11 @@ func main() {
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
 
-	http.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(grid)
 	})
 
-	http.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
 		products, err := productBox.GetAll()
 		if err != nil {
 			log.Println("Failed to get products:", err)
