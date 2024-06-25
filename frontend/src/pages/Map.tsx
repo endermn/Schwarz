@@ -33,7 +33,7 @@ interface PointI {
 }
 
 const kindColors = {
-	0: "bg-green-300",
+	0: "bg-transparent",
 	1: "bg-red-500",
 	2: "bg-slate-500",
 	3: "bg-blue-500",
@@ -52,37 +52,41 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const squareSize = 20; // Adjust square size as needed
 
 	return (
-		<div className="relative flex justify-center bg-gray-100 ">
-			<div
-				className="relative  bg-white border m-auto"
-				style={{
-					width: `${gridColumns * squareSize}px`,
-					height: `${gridRows * squareSize}px`,
-					display: "grid",
-					gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-					gridTemplateRows: `repeat(${gridRows}, 1fr)`,
-				}}
-			>
-				{gridData.map((row, y) =>
-					row.map((item, x) => (
-						<motion.div
-							key={`${x}-${y}`}
-							className={`absolute w-5 h-5  ${(kindColors as any)[item.kind]}`}
-							initial={{ opacity: 0, scale: 0 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{
-								duration: 0.5,
-								delay: (x + y * gridColumns) * 0.00001,
-							}}
-							style={{
-								left: `${x * squareSize}px`,
-								top: `${y * squareSize}px`,
-							}}
-						/>
-					))
-				)}
+		<>
+			<div className="relative flex justify-center ">
+				<div
+					className="relative m-auto"
+					style={{
+						width: `${gridColumns * squareSize}px`,
+						height: `${gridRows * squareSize}px`,
+						display: "grid",
+						gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+						gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+					}}
+				>
+					{gridData.map((row, y) =>
+						row.map((item, x) => (
+							<motion.div
+								key={`${x}-${y}`}
+								className={`absolute w-5 h-5  ${
+									(kindColors as any)[item.kind]
+								}`}
+								initial={{ opacity: 0, scale: 0 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{
+									duration: 0.5,
+									delay: (x + y * gridColumns) * 0.004,
+								}}
+								style={{
+									left: `${x * squareSize}px`,
+									top: `${y * squareSize}px`,
+								}}
+							/>
+						))
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
