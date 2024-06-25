@@ -224,7 +224,7 @@ func main() {
 		for _, productID := range params.Products {
 			products[productID] = struct{}{}
 		}
-		path := findRoute(products)
+		path := solve(products)
 
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
