@@ -20,7 +20,7 @@ type square struct {
 	CheckoutName string     `json:"checkoutName"`
 }
 
-var eggs = []int{204} // TODO: add others
+var eggs = []int{170, 130, 240, 119, 239} // TODO: add others
 
 func (s square) isEgg() bool {
 	return s.Kind == productSquare && slices.Contains(eggs, s.ProductID)

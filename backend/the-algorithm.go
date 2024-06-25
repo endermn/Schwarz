@@ -1,6 +1,7 @@
 package main
 
 import (
+	"maps"
 	"math"
 	"slices"
 )
@@ -206,24 +207,26 @@ func solve(products set[int]) []point {
 
 // 	return grid
 
-// func theAlgorithm(products set[int]) {
-// 	golden_products = {"P170", "P130", "P240", "P119", "P239"}
+func theAlgorithm(products set[int]) []point {
+	// data_dict = open_csv("placement.csv")
 
-// 	data_dict = open_csv("placement.csv")
+	bestPath := []point{}
+	// best_egg := -1
+	for _, egg := range eggs {
+		new_required := maps.Clone(products)
+		new_required.insert(egg)
+		// grid = generate_grid(data_dict, new_required)
+		path := solve(new_required)
+		if len(path) < len(bestPath) || len(bestPath) == 0 {
+			bestPath = path
+			// best_egg = egg
+		}
+	}
 
-// 	best_path = []
-// 	best_golden = ""
-// 	for golden in golden_products:
-// 		new_required = products.copy();
-// 		new_required.add(golden)
-// 		grid = generate_grid(data_dict, new_required)
-// 		path = solve(grid)
-// 		if len(path) < len(best_path) or len(best_path) == 0:
-// 			best_path = path
-// 			best_golden = golden
+	return bestPath
 
-// 	products.add(best_golden)
+	// products.add(best_egg)
 
-// 	final_grid = generate_grid(data_dict, products)
-// 	print(final_grid, best_path)
-// }
+	// final_grid = generate_grid(data_dict, products)
+	// print(final_grid, best_path)
+}

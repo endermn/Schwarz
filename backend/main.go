@@ -214,7 +214,8 @@ func main() {
 		for _, productID := range params.Products {
 			products[productID] = struct{}{}
 		}
-		path := solve(products)
+		path := theAlgorithm(products)
+		log.Println("length:", len(path))
 
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
