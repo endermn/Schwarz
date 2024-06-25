@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom';
-import { NavBar } from './components/NavBar';
-import { ThemeProvider } from './components/theme-provider';
-import { Footer } from './components/Footer';
+import { Outlet } from "react-router-dom";
+import { NavBar } from "./components/NavBar";
+import { ThemeProvider } from "./components/theme-provider";
+import { Footer } from "./components/Footer";
 
 function App() {
 	return (
