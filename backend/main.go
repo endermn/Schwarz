@@ -105,12 +105,6 @@ func authenticate(userBox *userBox, w http.ResponseWriter, username string, pass
 	return user
 }
 
-func enableCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-}
-
 func main() {
 	box, err := objectbox.NewBuilder().Model(ObjectBoxModel()).Build()
 	if err != nil {
@@ -137,14 +131,14 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
+	mux := http.NewServeMux()
+	handler := enableCORS(mux)
 	server := &http.Server{
-		Addr: ":12345",
+		Addr:    ":12345",
+		Handler: handler,
 	}
 
-	http.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-
+	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -176,9 +170,7 @@ func main() {
 		log.Println("Created user", id, params.Username, params.Password)
 	})
 
-	http.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-
+	mux.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -210,9 +202,7 @@ func main() {
 		})
 	})
 
-	http.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-
+	mux.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -224,20 +214,17 @@ func main() {
 		for _, productID := range params.Products {
 			products[productID] = struct{}{}
 		}
-		path := findRoute(products)
+		path := theAlgorithm(products)
+		log.Println("length:", len(path))
 
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
 
-	http.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-
+	mux.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(grid)
 	})
 
-	http.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-
+	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
 		products, err := productBox.GetAll()
 		if err != nil {
 			log.Println("Failed to get products:", err)

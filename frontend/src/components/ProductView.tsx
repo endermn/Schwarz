@@ -1,6 +1,6 @@
 export function ProductView({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="h-screen items-center justify-items-center grid grid-cols-1 md:grid-cols-4 sm:grid-cols-4 gap-0">
+		<div className="m-4 gap-8 justify-items-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 ">
 			{children}
 		</div>
 	);
