@@ -33,7 +33,7 @@ interface PointI {
 }
 
 const kindColors = {
-	0: "bg-white",
+	0: "bg-green-300",
 	1: "bg-red-500",
 	2: "bg-slate-500",
 	3: "bg-blue-500",
@@ -52,12 +52,12 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const squareSize = 20; // Adjust square size as needed
 
 	return (
-		<div className="flex  bg-gray-100">
+		<div className="relative flex justify-center bg-gray-100 ">
 			<div
-				className="relative bg-white border border-gray-300 m-auto"
+				className="relative  bg-white border m-auto"
 				style={{
-					// width: `${gridColumns * squareSize}px`,
-					// height: `${gridRows * squareSize}px`,
+					width: `${gridColumns * squareSize}px`,
+					height: `${gridRows * squareSize}px`,
 					display: "grid",
 					gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
 					gridTemplateRows: `repeat(${gridRows}, 1fr)`,
@@ -72,7 +72,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{
 								duration: 0.5,
-								delay: (x + y * gridColumns) * 0.02,
+								delay: (x + y * gridColumns) * 0.00001,
 							}}
 							style={{
 								left: `${x * squareSize}px`,
