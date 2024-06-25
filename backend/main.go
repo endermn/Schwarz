@@ -112,6 +112,7 @@ func main() {
 	defer box.Close()
 
 	userBox := BoxForuser(box)
+	productBox := BoxForproduct(box)
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "create-admin" && len(os.Args) == 4 {
@@ -120,6 +121,9 @@ func main() {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
+			return
+		} else if os.Args[1] == "update-products" && len(os.Args) == 3 {
+			readCSV(os.Args[2], productBox)
 			return
 		} else {
 			fmt.Println("usage:", os.Args[0], "[create-admin <username> <password>]")

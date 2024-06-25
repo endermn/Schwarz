@@ -25,9 +25,32 @@
           "type": 9
         }
       ]
+    },
+    {
+      "id": "2:2607280839378962321",
+      "lastPropertyId": "3:2139640855357654740",
+      "name": "product",
+      "properties": [
+        {
+          "id": "1:183305226255033463",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8800111022977610992",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:2139640855357654740",
+          "name": "category",
+          "type": 9
+        }
+      ]
     }
   ],
-  "lastEntityId": "1:6958858412309504779",
+  "lastEntityId": "2:2607280839378962321",
   "lastIndexId": "",
   "lastRelationId": "",
   "modelVersion": 5,

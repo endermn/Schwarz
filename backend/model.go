@@ -8,3 +8,9 @@ type user struct {
 	password string // TODO: maybe hash it?
 	// isAdmin  bool
 }
+
+type product struct {
+	id       uint64
+	category string
+	name     string
+}
