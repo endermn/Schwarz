@@ -15,15 +15,15 @@ const (
 )
 
 type square struct {
-	kind         squareKind
-	productID    int
-	checkoutName string
+	Kind         squareKind `json:"kind"`
+	ProductID    int        `json:"productId"`
+	CheckoutName string     `json:"checkoutName"`
 }
 
 var eggs = []int{204} // TODO: add others
 
 func (s square) isEgg() bool {
-	return s.kind == productSquare && slices.Contains(eggs, s.productID)
+	return s.Kind == productSquare && slices.Contains(eggs, s.ProductID)
 }
 
 func findRouteToOne(start point, isAcceptable func(square) bool) ([]point, square) {
@@ -54,7 +54,7 @@ func findRouteToOne(start point, isAcceptable func(square) bool) ([]point, squar
 			}
 			slices.Reverse(path)
 			return path, square
-		} else if pos == start || square.kind == emptySquare || square.isEgg() {
+		} else if pos == start || square.Kind == emptySquare || square.isEgg() {
 			adjacentOffsets := []point{
 				{-1, -1}, {0, -1}, {1, -1},
 				{-1, 0}, {1, 0},
@@ -74,21 +74,21 @@ func findRoute(products set[int]) []point {
 	path := []point{}
 	for len(products) > 0 {
 		newPathSegment, productSquare := findRouteToOne(pos, func(s square) bool {
-			return s.kind == productSquare && products.contains(s.productID)
+			return s.Kind == productSquare && products.contains(s.ProductID)
 		})
 		pos = newPathSegment[len(newPathSegment)-1]
-		delete(products, productSquare.productID)
+		delete(products, productSquare.ProductID)
 		path = append(path, newPathSegment...)
 	}
 
 	newPathSegment, _ := findRouteToOne(pos, func(s square) bool {
-		return s.kind == checkoutSquare
+		return s.Kind == checkoutSquare
 	})
 	path = append(path, newPathSegment...)
 	pos = newPathSegment[len(newPathSegment)-1]
 
 	newPathSegment, _ = findRouteToOne(pos, func(s square) bool {
-		return s.kind == endSquare
+		return s.Kind == endSquare
 	})
 	path = append(path, newPathSegment...)
 	return path

@@ -211,6 +211,10 @@ func main() {
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
 
+	http.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(grid)
+	})
+
 	terminationChan := make(chan os.Signal, 1)
 	signal.Notify(terminationChan, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
