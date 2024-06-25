@@ -363,9 +363,10 @@ var productBinding = product_EntityInfo{
 
 // product_ contains type-based Property helpers to facilitate some common operations such as Queries.
 var product_ = struct {
-	id       *objectbox.PropertyUint64
-	name     *objectbox.PropertyString
-	category *objectbox.PropertyString
+	id        *objectbox.PropertyUint64
+	Name      *objectbox.PropertyString
+	Category  *objectbox.PropertyString
+	ProductID *objectbox.PropertyInt
 }{
 	id: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -373,15 +374,21 @@ var product_ = struct {
 			Entity: &productBinding.Entity,
 		},
 	},
-	name: &objectbox.PropertyString{
+	Name: &objectbox.PropertyString{
 		BaseProperty: &objectbox.BaseProperty{
 			Id:     2,
 			Entity: &productBinding.Entity,
 		},
 	},
-	category: &objectbox.PropertyString{
+	Category: &objectbox.PropertyString{
 		BaseProperty: &objectbox.BaseProperty{
 			Id:     3,
+			Entity: &productBinding.Entity,
+		},
+	},
+	ProductID: &objectbox.PropertyInt{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     4,
 			Entity: &productBinding.Entity,
 		},
 	},
@@ -397,9 +404,10 @@ func (product_EntityInfo) AddToModel(model *objectbox.Model) {
 	model.Entity("product", 2, 2607280839378962321)
 	model.Property("id", 6, 1, 183305226255033463)
 	model.PropertyFlags(1)
-	model.Property("name", 9, 2, 8800111022977610992)
-	model.Property("category", 9, 3, 2139640855357654740)
-	model.EntityLastPropertyId(3, 2139640855357654740)
+	model.Property("Name", 9, 2, 8800111022977610992)
+	model.Property("Category", 9, 3, 2139640855357654740)
+	model.Property("ProductID", 6, 4, 8431320848264253749)
+	model.EntityLastPropertyId(4, 8431320848264253749)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -421,14 +429,15 @@ func (product_EntityInfo) PutRelated(ob *objectbox.ObjectBox, object interface{}
 // Flatten is called by ObjectBox to transform an object to a FlatBuffer
 func (product_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id uint64) error {
 	obj := object.(*product)
-	var offsetname = fbutils.CreateStringOffset(fbb, obj.name)
-	var offsetcategory = fbutils.CreateStringOffset(fbb, obj.category)
+	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
+	var offsetCategory = fbutils.CreateStringOffset(fbb, obj.Category)
 
 	// build the FlatBuffers object
-	fbb.StartObject(3)
+	fbb.StartObject(4)
 	fbutils.SetUint64Slot(fbb, 0, id)
-	fbutils.SetUOffsetTSlot(fbb, 1, offsetname)
-	fbutils.SetUOffsetTSlot(fbb, 2, offsetcategory)
+	fbutils.SetInt64Slot(fbb, 3, int64(obj.ProductID))
+	fbutils.SetUOffsetTSlot(fbb, 2, offsetCategory)
+	fbutils.SetUOffsetTSlot(fbb, 1, offsetName)
 	return nil
 }
 
@@ -446,9 +455,10 @@ func (product_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface
 	var propid = table.GetUint64Slot(4, 0)
 
 	return &product{
-		id:       propid,
-		name:     fbutils.GetStringSlot(table, 6),
-		category: fbutils.GetStringSlot(table, 8),
+		id:        propid,
+		ProductID: fbutils.GetIntSlot(table, 10),
+		Category:  fbutils.GetStringSlot(table, 8),
+		Name:      fbutils.GetStringSlot(table, 6),
 	}, nil
 }
 

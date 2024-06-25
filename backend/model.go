@@ -10,7 +10,8 @@ type user struct {
 }
 
 type product struct {
-	id       uint64
-	category string
-	name     string
+	id        uint64
+	ProductID int    `json:"id"`
+	Category  string `json:"category"`
+	Name      string `json:"name"`
 }

@@ -222,6 +222,16 @@ func main() {
 		json.NewEncoder(w).Encode(grid)
 	})
 
+	http.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
+		products, err := productBox.GetAll()
+		if err != nil {
+			log.Println("Failed to get products:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(products)
+	})
+
 	terminationChan := make(chan os.Signal, 1)
 	signal.Notify(terminationChan, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
