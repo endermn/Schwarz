@@ -124,9 +124,8 @@ func main() {
 				os.Exit(1)
 			}
 			return
-		} else if os.Args[1] == "update-products" && len(os.Args) == 3 {
-			readCSV(os.Args[2], productBox)
-			return
+		} else if len(os.Args) == 2 {
+			readCSV(os.Args[1], productBox)
 		} else {
 			fmt.Println("usage:", os.Args[0], "[create-admin <username> <password>]")
 			os.Exit(1)
