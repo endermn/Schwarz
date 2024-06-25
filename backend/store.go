@@ -7,11 +7,11 @@ import (
 type squareKind uint8
 
 const (
-	emptySquare squareKind = iota
-	endSquare
-	wallSquare
-	productSquare
-	checkoutSquare
+	emptySquare    squareKind = 0
+	endSquare      squareKind = 1
+	wallSquare     squareKind = 2
+	productSquare  squareKind = 3
+	checkoutSquare squareKind = 4
 )
 
 type square struct {
