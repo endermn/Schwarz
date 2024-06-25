@@ -30,6 +30,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
+import { useUser } from "@/lib/UserContext";
 const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Sign In",
@@ -49,6 +50,10 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function NavBar() {
+	const {
+		user: { isAuthenticated },
+	} = useUser();
+
 	return (
 		<div className="flex justify-between m-3">
 			<ModeToggle />
@@ -107,7 +112,18 @@ export function NavBar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-			<UserNav />
+			{isAuthenticated ? (
+				<UserNav />
+			) : (
+				<div>
+					<a href="/signin">
+						<Button>Sign in</Button>
+					</a>
+					<a className="ml-5" href="/products">
+						<Button>Sign up</Button>
+					</a>
+				</div>
+			)}
 		</div>
 	);
 }

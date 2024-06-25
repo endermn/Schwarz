@@ -1,6 +1,9 @@
+import ExampleComponent from "@/components/Example";
+
 export function Home() {
 	return (
 		<div>
+			<ExampleComponent />
 			<div className="py-32 sm:py-48 md:py-56 max-w-2xl mx-auto">
 				<div className="hidden sm:mb-8 sm:flex sm:justify-center">
 					<div className="ring-1 ring-offset-1 shadow-sm leading-6 py-1 px-3 rounded-full">
