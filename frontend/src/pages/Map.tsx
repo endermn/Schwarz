@@ -2,6 +2,9 @@ import { useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/store-layout");
 	const dataMap = await resMap.json();
