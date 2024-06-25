@@ -32,56 +32,68 @@ interface PointI {
 	y: number;
 }
 
-const points = [
-	{ x: 1, y: 2 },
-	{ x: 23, y: 41 },
-	{ x: 12, y: 22 },
-	{ x: 7, y: 6 },
-];
+const kindColors = {
+	0: "bg-white",
+	1: "bg-red-500",
+	2: "bg-slate-500",
+	3: "bg-blue-500",
+	4: "bg-yellow-500",
+	// Add more colors if needed
+};
+interface DataI {
+	kind: number;
+	productId: number;
+	checkoutName: string;
+}
 
-const Grid = () => {
+const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const gridColumns = 24;
 	const gridRows = 42;
 	const squareSize = 20; // Adjust square size as needed
 
 	return (
-		<div className="flex justify-center items-center h-screen bg-gray-100">
+		<div className="flex  bg-gray-100">
 			<div
-				className="relative bg-white border border-gray-300"
+				className="relative bg-white border border-gray-300 m-auto"
 				style={{
-					width: `${gridColumns * squareSize}px`,
-					height: `${gridRows * squareSize}px`,
+					// width: `${gridColumns * squareSize}px`,
+					// height: `${gridRows * squareSize}px`,
 					display: "grid",
 					gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
 					gridTemplateRows: `repeat(${gridRows}, 1fr)`,
 				}}
 			>
-				{points.map((point, index) => (
-					<motion.div
-						key={index}
-						className="absolute w-5 h-5 bg-red-500"
-						initial={{ opacity: 0, scale: 0 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.5, delay: index * 0.2 }}
-						style={{
-							left: `${point.x * squareSize}px`,
-							top: `${point.y * squareSize}px`,
-						}}
-					/>
-				))}
+				{gridData.map((row, y) =>
+					row.map((item, x) => (
+						<motion.div
+							key={`${x}-${y}`}
+							className={`absolute w-5 h-5  ${(kindColors as any)[item.kind]}`}
+							initial={{ opacity: 0, scale: 0 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{
+								duration: 0.5,
+								delay: (x + y * gridColumns) * 0.02,
+							}}
+							style={{
+								left: `${x * squareSize}px`,
+								top: `${y * squareSize}px`,
+							}}
+						/>
+					))
+				)}
 			</div>
 		</div>
 	);
 };
 
 export function Map() {
-	const { data } = useLoaderData() as any;
+	const { data } = useLoaderData() as { data: DataI[][] };
 	console.log(data);
 
 	return (
 		<>
 			<h1>Map</h1>
-			<Grid />
+			<Grid gridData={data} />
 			<canvas id="map"></canvas>
 		</>
 	);
