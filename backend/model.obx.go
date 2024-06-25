@@ -24,9 +24,9 @@ var userBinding = user_EntityInfo{
 
 // user_ contains type-based Property helpers to facilitate some common operations such as Queries.
 var user_ = struct {
-	id       *objectbox.PropertyUint64
-	username *objectbox.PropertyString
-	password *objectbox.PropertyString
+	id           *objectbox.PropertyUint64
+	username     *objectbox.PropertyString
+	passwordHash *objectbox.PropertyByteVector
 }{
 	id: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -40,9 +40,9 @@ var user_ = struct {
 			Entity: &userBinding.Entity,
 		},
 	},
-	password: &objectbox.PropertyString{
+	passwordHash: &objectbox.PropertyByteVector{
 		BaseProperty: &objectbox.BaseProperty{
-			Id:     3,
+			Id:     4,
 			Entity: &userBinding.Entity,
 		},
 	},
@@ -59,8 +59,8 @@ func (user_EntityInfo) AddToModel(model *objectbox.Model) {
 	model.Property("id", 6, 1, 7360534067739249943)
 	model.PropertyFlags(1)
 	model.Property("username", 9, 2, 4972088276926741672)
-	model.Property("password", 9, 3, 2172259230575741729)
-	model.EntityLastPropertyId(3, 2172259230575741729)
+	model.Property("passwordHash", 23, 4, 2627145197994975238)
+	model.EntityLastPropertyId(4, 2627145197994975238)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -83,13 +83,13 @@ func (user_EntityInfo) PutRelated(ob *objectbox.ObjectBox, object interface{}, i
 func (user_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id uint64) error {
 	obj := object.(*user)
 	var offsetusername = fbutils.CreateStringOffset(fbb, obj.username)
-	var offsetpassword = fbutils.CreateStringOffset(fbb, obj.password)
+	var offsetpasswordHash = fbutils.CreateByteVectorOffset(fbb, obj.passwordHash)
 
 	// build the FlatBuffers object
-	fbb.StartObject(3)
+	fbb.StartObject(4)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetUOffsetTSlot(fbb, 1, offsetusername)
-	fbutils.SetUOffsetTSlot(fbb, 2, offsetpassword)
+	fbutils.SetUOffsetTSlot(fbb, 3, offsetpasswordHash)
 	return nil
 }
 
@@ -107,9 +107,9 @@ func (user_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface{},
 	var propid = table.GetUint64Slot(4, 0)
 
 	return &user{
-		id:       propid,
-		username: fbutils.GetStringSlot(table, 6),
-		password: fbutils.GetStringSlot(table, 8),
+		id:           propid,
+		username:     fbutils.GetStringSlot(table, 6),
+		passwordHash: fbutils.GetByteVectorSlot(table, 10),
 	}, nil
 }
 

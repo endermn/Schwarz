@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -97,7 +98,7 @@ func authenticate(userBox *userBox, w http.ResponseWriter, username string, pass
 	}
 	user := users[0]
 
-	if user.password != password {
+	if [sha512.Size]byte(user.passwordHash) != sha512.Sum512([]byte(password)) {
 		http.Error(w, "Invalid name or password", http.StatusBadRequest)
 		return nil
 	}
@@ -115,7 +116,8 @@ func main() {
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "create-admin" && len(os.Args) == 4 {
-			_, err = userBox.Put(&user{username: os.Args[2], password: os.Args[3]})
+			passwordHash := sha512.Sum512([]byte(os.Args[3]))
+			_, err = userBox.Put(&user{username: os.Args[2], passwordHash: passwordHash[:]})
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
@@ -153,7 +155,8 @@ func main() {
 			return
 		}
 
-		user := &user{username: params.Username, password: params.Password}
+		passwordHash := sha512.Sum512([]byte(params.Password))
+		user := &user{username: params.Username, passwordHash: passwordHash[:]}
 		id, err := userBox.Insert(user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
