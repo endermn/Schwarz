@@ -8,6 +8,7 @@ import { Home } from "./pages/Home.tsx";
 import { SignIn } from "./pages/SignIn.tsx";
 import { Products } from "./pages/Products.tsx";
 import { Map, loader as mapLoader } from "./pages/Map.tsx";
+import { MapEditor } from "./pages/MapEditor.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
 					{ path: "signin/", element: <SignIn /> },
 					{ path: "products/", element: <Products /> },
 					{ path: "map/", loader: mapLoader, element: <Map /> },
+					{ path: "map/editor", loader: mapLoader, element: <MapEditor /> },
 				],
 			},
 		],
@@ -31,5 +33,5 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<RouterProvider router={router} />
-	</React.StrictMode>,
+	</React.StrictMode>
 );
