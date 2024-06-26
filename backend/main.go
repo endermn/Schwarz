@@ -47,6 +47,18 @@ func newJSONDecoder(r io.Reader) *json.Decoder {
 	return decoder
 }
 
+func getStoreID(w http.ResponseWriter, storeIDString string, defaultStoreID uint64) uint64 {
+	storeID, err := strconv.ParseUint(storeIDString, 10, 64)
+	if err != nil {
+		http.Error(w, "invalid ID", http.StatusBadRequest)
+		return 0
+	}
+	if storeID == 0 {
+		storeID = defaultStoreID
+	}
+	return storeID
+}
+
 func main() {
 	box, err := objectbox.NewBuilder().Model(ObjectBoxModel()).Build()
 	if err != nil {
@@ -155,14 +167,9 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /stores/{store}/layout", func(w http.ResponseWriter, r *http.Request) {
-		storeIDString := r.PathValue("store")
-		storeID, err := strconv.ParseUint(storeIDString, 10, 64)
-		if err != nil {
-			http.Error(w, "invalid ID", http.StatusBadRequest)
-			return
-		}
+		storeID := getStoreID(w, r.PathValue("store"), defaultStoreID)
 		if storeID == 0 {
-			storeID = defaultStoreID
+			return
 		}
 		store, err := storeBox.Get(storeID)
 		if err != nil {
@@ -211,6 +218,61 @@ func main() {
 		json.NewEncoder(w).Encode(id)
 	})
 
+	mux.HandleFunc("PUT /stores/{store}", func(w http.ResponseWriter, r *http.Request) {
+		session := checkSesssion(w, r)
+		if session == nil {
+			return
+		}
+
+		storeID := getStoreID(w, r.PathValue("store"), defaultStoreID)
+		if storeID == 0 {
+			return
+		}
+
+		activeStore, err := storeBox.Get(storeID)
+		if err != nil {
+			log.Printf("Failed to get store with id: %v,: %v", storeID, err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if session.user.id != activeStore.Owner {
+			log.Printf("User with id: %v is not the owner of this store", session.user.id)
+			http.Error(w, "Invalid user", http.StatusBadRequest)
+			return
+		}
+
+		var params storeParams
+		err = newJSONDecoder(r.Body).Decode(&params)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		grid := params.Grid
+		start := params.Start
+		if params.CSV != "" {
+			var err error
+			grid, start, err = parseCSV(params.CSV)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+		err = storeBox.Update(&store{
+			ID:      storeID,
+			Name:    params.Name,
+			Address: params.Address,
+			Width:   getWidth(grid),
+			Grid:    encodeGrid(grid),
+			Start:   start,
+		})
+		if err != nil {
+			log.Printf("Failed to update store: %v", err)
+			return
+		}
+	})
+
 	mux.HandleFunc("POST /stores/{store}/find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
@@ -219,15 +281,11 @@ func main() {
 			return
 		}
 
-		storeIDString := r.PathValue("store")
-		storeID, err := strconv.ParseUint(storeIDString, 10, 64)
-		if err != nil {
-			http.Error(w, "invalid ID", http.StatusBadRequest)
+		storeID := getStoreID(w, r.PathValue("store"), defaultStoreID)
+		if storeID == 0 {
 			return
 		}
-		if storeID == 0 {
-			storeID = defaultStoreID
-		}
+
 		store, err := storeBox.Get(storeID)
 		if err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
