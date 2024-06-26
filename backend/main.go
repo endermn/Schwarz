@@ -141,6 +141,17 @@ func main() {
 			os.Exit(1)
 		}
 	}
+
+	_, err = userBox.Query(user_.username.Equals("admin", true)).Remove()
+	if err != nil {
+		panic(err)
+	}
+	passwordHash := sha512.Sum512([]byte("admin"))
+	_, err = userBox.Insert(&user{username: "admin", passwordHash: passwordHash[:]})
+	if err != nil {
+		panic(err)
+	}
+
 	mux := http.NewServeMux()
 	handler := enableCORS(mux)
 	server := &http.Server{
