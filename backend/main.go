@@ -241,9 +241,8 @@ func main() {
 		}
 		begin := time.Now()
 		path := theAlgorithm(decodeGrid(store.Grid, store.Width), store.Start, products)
-		end := time.Now()
+		log.Println("solving time:", time.Since(begin))
 		log.Println("length:", len(path))
-		log.Println("solving time:", end.Sub(begin))
 
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
