@@ -93,7 +93,6 @@ func create_distance_and_path_matrix(points []point) ([][]float64, [gridHeight][
 
 func tsp_with_one_checkout_greedy(dist_matrix [][]float64, path_matrix [gridHeight][gridWidth][]point, items []point, checkouts []point, entrance point, exit point) []point {
 	n_items := len(items)
-	// n_checkouts := len(checkouts)
 	entrance_idx := 0
 	exit_idx := len(items) + len(checkouts) + 1
 
@@ -166,50 +165,7 @@ func solve(products set[int]) []point {
 	return path
 }
 
-// def open_csv(filename):
-// 	data_dict = {}
-// 	with open(filename, 'r') as file:
-// 		csv_reader = csv.reader(file)
-
-// 		next(csv_reader)
-
-// 		# Iterate over each row in the CSV file
-// 		for row in csv_reader:
-// 			if "B" in row[0]:
-// 				# Blokadite nqmat unikalno ime - BL,2,3 BL,3,4, za tova te sa s pulno
-// 				# ime za da e unikalen klucha
-// 				data_dict[row[0] + row[1] + row[2]] = (int(row[1]), int(row[2]))
-// 			else:
-// 				data_dict[row[0]] = (int(row[1]), int(row[2]))
-
-// 	return data_dict
-
-// def generate_grid(data_dict, required_products):
-// 	grid = [[0 for _ in range(41)] for _ in range(41)]
-
-// 	for entry in data_dict:
-// 		x, y = data_dict[entry][0], data_dict[entry][1]
-
-// 		if entry in required_products:
-// 			grid[x][y] = 6  // Required products
-// 		elif "P" in entry:
-// 			grid[x][y] = 2  // Non-required products
-// 		elif "CA" in entry or "S" in entry:
-// 			grid[x][y] = 5
-// 		elif "B" in entry:  // Blockade
-// 			grid[x][y] = 1
-// 		elif "EN" in entry: // Entrance
-// 			grid[x][y] = 3
-// 		elif "EX" in entry: // Exit
-// 			grid[x][y] = 4
-// 		else:
-// 			grid[x][y] = 0  // Empty
-
-// 	return grid
-
 func theAlgorithm(products set[int]) []point {
-	// data_dict = open_csv("placement.csv")
-
 	bestPath := []point{}
 	// best_egg := -1
 	for _, egg := range eggs {
@@ -224,9 +180,4 @@ func theAlgorithm(products set[int]) []point {
 	}
 
 	return bestPath
-
-	// products.add(best_egg)
-
-	// final_grid = generate_grid(data_dict, products)
-	// print(final_grid, best_path)
 }
