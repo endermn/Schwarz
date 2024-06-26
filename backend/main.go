@@ -23,11 +23,13 @@ type routeFindingParams struct {
 }
 
 type storeParams struct {
-	Name    string     `json:"name"`
-	Address string     `json:"address"`
-	CSV     string     `json:"csv"`
-	Grid    [][]square `json:"grid"`
-	Start   point      `json:"start"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+
+	// either CSV or Grid and Start
+	CSV   string     `json:"csv"`
+	Grid  [][]square `json:"grid"`
+	Start point      `json:"start"`
 }
 
 type point struct {
@@ -66,7 +68,7 @@ func main() {
 			}
 			return
 		} else if len(os.Args) == 2 {
-			readCSV(os.Args[1], productBox)
+			readProductsFromCSV(os.Args[1], productBox)
 		} else {
 			fmt.Println("usage:", os.Args[0], "[create-admin <username> <password>]")
 			os.Exit(1)

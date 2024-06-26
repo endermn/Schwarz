@@ -137,7 +137,6 @@ func handleAuth(mux *http.ServeMux, userBox *userBox) {
 			Value:    encodedSessionID,
 			Path:     "/",
 			Expires:  time.Now().Add(sessionDuration),
-			Secure:   true,
 			SameSite: http.SameSiteLaxMode,
 		})
 	})

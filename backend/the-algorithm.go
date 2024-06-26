@@ -72,12 +72,12 @@ func reconstructPath(prev [][]point, start point, end point) []point {
 	return path
 }
 
-func create_distance_and_path_matrix(grid [][]square, points []point) ([][]float64, [][][]point) {
+func createDistanceAndPathMatrix(grid [][]square, points []point) (distMatrix [][]float64, pathMatrix [][][]point) {
 	width := getWidth(grid)
 	height := len(grid)
 
-	distMatrix := makeGrid[float64](len(points), len(points))
-	pathMatrix := makeGrid[[]point](width, height)
+	distMatrix = makeGrid[float64](len(points), len(points))
+	pathMatrix = makeGrid[[]point](width, height)
 
 	for i, p := range points {
 		pset := set[point]{}
@@ -93,7 +93,7 @@ func create_distance_and_path_matrix(grid [][]square, points []point) ([][]float
 		}
 	}
 
-	return distMatrix, pathMatrix
+	return
 }
 
 func tsp_with_one_checkout_greedy(dist_matrix [][]float64, path_matrix [][][]point, items []point, checkouts []point, entrance point, exit point) []point {
@@ -165,7 +165,7 @@ func tsp_with_one_checkout_greedy(dist_matrix [][]float64, path_matrix [][][]poi
 func solve(grid [][]square, start point, products set[int]) []point {
 	items, checkouts, end := extractPoints(grid, products)
 	points := slices.Concat([]point{start}, items, checkouts, []point{end})
-	dist_matrix, path_matrix := create_distance_and_path_matrix(grid, points)
+	dist_matrix, path_matrix := createDistanceAndPathMatrix(grid, points)
 	path := tsp_with_one_checkout_greedy(dist_matrix, path_matrix, items, checkouts, start, end)
 	return path
 }
