@@ -147,7 +147,7 @@ func main() {
 	}
 
 	mux.HandleFunc("GET /categories", func(w http.ResponseWriter, r *http.Request) {
-		var categories set[string]
+		categories := set[string]{}
 		products, err := productBox.GetAll()
 		if err != nil {
 			log.Printf("Failed to get products: %v", err)
@@ -157,7 +157,7 @@ func main() {
 			categories.insert(product.Category)
 		}
 
-		json.NewEncoder(w).Encode(categories)
+		json.NewEncoder(w).Encode(categories.toArray())
 	})
 
 	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
