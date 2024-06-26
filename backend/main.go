@@ -114,6 +114,7 @@ func main() {
 
 	userBox := BoxForuser(box)
 	productBox := BoxForproduct(box)
+	storeBox := BoxForstore(box)
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "create-admin" && len(os.Args) == 4 {
