@@ -224,6 +224,16 @@ func main() {
 		json.NewEncoder(w).Encode(routeFound{path})
 	})
 
+	mux.HandleFunc("GET /stores", func(w http.ResponseWriter, r *http.Request) {
+		stores, err := storeBox.GetAll()
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			log.Printf("Failed to get stores: %v", err)
+			return
+		}
+		json.NewEncoder(w).Encode(stores)
+	})
+
 	mux.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(grid)
 	})
