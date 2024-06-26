@@ -84,7 +84,7 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 				<motion.div
 					key={colIndex}
 					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
-						Math.random() * 20,
+						Math.random() * 20
 					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
 					initial={{ scale: 0 }}
 					animate={{
