@@ -44,6 +44,39 @@ interface PathI {
 	path: PointI[];
 }
 
+interface DataI {
+	kind: number;
+	productId: number;
+	checkoutName: string;
+}
+
+function rotate90(grid: DataI[][]): DataI[][] {
+	// Step 1: Transpose the matrix (swap rows and columns)
+	const transposedGrid = transpose(grid);
+
+	// Step 2: Reverse each row of the transposed matrix
+	const rotatedGrid = transposedGrid.map((row) => row.reverse());
+
+	return rotatedGrid;
+}
+
+function transpose(matrix: DataI[][]): DataI[][] {
+	// Create a new matrix where rows become columns (transpose operation)
+	const rows = matrix.length;
+	const cols = matrix[0].length;
+	const transposedMatrix: DataI[][] = [];
+
+	for (let j = 0; j < cols; j++) {
+		const newRow: DataI[] = [];
+		for (let i = 0; i < rows; i++) {
+			newRow.push(matrix[i][j]);
+		}
+		transposedMatrix.push(newRow);
+	}
+
+	return transposedMatrix;
+}
+
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const [selectedProductId, setSelectedProductId] = useState(0);
 	const [cellSize, setCellSize] = useState(20);
@@ -60,7 +93,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		const updateCellSize = () => {
 			let { clientWidth } = mapContainerRef.current!; // Use getBoundingClientRect for precise width
 			if (clientWidth < 600) {
-				clientWidth *= 1.2;
+				clientWidth *= 0.8;
 			} else {
 				clientWidth *= 0.5;
 			}
@@ -136,7 +169,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					</fetcher.Form>
 				</div>
 				<div
-					className="col-span-3 flex flex-col items-center justify-center md:rotate-0 rotate-90"
+					className="col-span-3 flex flex-col items-center justify-center p-10"
 					ref={mapContainerRef}
 				>
 					{grid}
