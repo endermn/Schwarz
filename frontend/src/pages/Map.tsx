@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { HandIcon, PlusIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
 
@@ -44,18 +44,13 @@ interface PathI {
 	path: PointI[];
 }
 
-const Grid = ({
-	gridData,
-	path,
-}: {
-	gridData: DataI[][];
-	path: PathI | null;
-}) => {
+const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const [selectedProductId, setSelectedProductId] = useState(0);
 	const [cellSize, setCellSize] = useState(20);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
 	const user = getUser();
+	const controls = useAnimationControls();
 
 	const handleTap = (productId: number) => {
 		setSelectedProductId(productId);
@@ -79,6 +74,13 @@ const Grid = ({
 		return () => window.removeEventListener("resize", updateCellSize);
 	}, [gridData]);
 
+	const fetcher = useFetcher();
+	const data = user.cart.length === 0 ? null : fetcher.data?.dataPath; // path repaint is on button submit... which becomes diabled when there are rzero elements
+
+	useEffect(() => {
+		controls.start({ scale: 1 });
+	}, []);
+
 	const grid = gridData.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex">
 			{row.map((cell, colIndex) => (
@@ -86,15 +88,13 @@ const Grid = ({
 					key={colIndex}
 					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
 						Math.random() * 20
-					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
+					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, data)}`}
 					initial={{ scale: 0 }}
-					animate={{
-						scale: 1,
-					}}
+					animate={controls}
 					transition={{
 						duration: 0.2,
 						delay:
-							rowIndex * 0.04 + colIndex * 0.04 * (cell.kind !== 0 ? 0 : 1),
+							rowIndex * 0.02 + colIndex * 0.02 * (cell.kind !== 0 ? 0 : 1),
 					}}
 					onHoverStart={() => {
 						if (cell.kind === 3) handleTap(cell.productId);
@@ -104,10 +104,6 @@ const Grid = ({
 			))}
 		</div>
 	));
-
-	const fetcher = useFetcher();
-	const data = fetcher.data?.dataPath;
-	console.log("DATA 123", data);
 
 	return (
 		<div className="flex justify-center items-center h-full">
@@ -196,7 +192,7 @@ export function Map() {
 
 	return (
 		<>
-			<Grid gridData={dataMap} path={null} />
+			<Grid gridData={dataMap} />
 			<canvas id="map" className="hidden"></canvas>
 		</>
 	);
