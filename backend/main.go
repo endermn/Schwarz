@@ -23,11 +23,13 @@ type routeFindingParams struct {
 }
 
 type storeParams struct {
-	Name    string     `json:"name"`
-	Address string     `json:"address"`
-	CSV     string     `json:"csv"`
-	Grid    [][]square `json:"grid"`
-	Start   point      `json:"start"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+
+	// either CSV or Grid and Start
+	CSV   string     `json:"csv"`
+	Grid  [][]square `json:"grid"`
+	Start point      `json:"start"`
 }
 
 type point struct {
