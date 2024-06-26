@@ -4,29 +4,44 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
+import { ProductI } from "@/lib/types";
 
-interface ProductI {
-	id: number;
-	name: string;
-	category: string;
-}
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export async function loader() {
 	const resProducts = await fetch("http://localhost:12345/products");
 	const products = await resProducts.json();
+
+	const resCategories = await fetch("http://localhost:12345/categories");
+	const categories = await resCategories.json();
 	console.log(products);
 
-	return { products };
+	return { products, categories };
 }
 
 export function Products() {
-	const { products } = useLoaderData() as { products: ProductI[] };
-	const [search, setSearch] = useState("");
+	const { products, categories } = useLoaderData() as {
+		products: ProductI[];
+		categories: string[];
+	};
 
-	const filteredProducts = products.filter((p) =>
-		p.name.toLocaleLowerCase().startsWith(search),
+	const [search, setSearch] = useState("");
+	const [category, setCategory] = useState("");
+
+	const filteredProducts = products.filter(
+		(p) =>
+			(p.category === category || category === "") &&
+			p.name
+				.toLocaleLowerCase()
+				.split(" ")
+				.some((word) => word.startsWith(search))
 	);
-	console.log(search);
 
 	return (
 		<>
@@ -35,16 +50,34 @@ export function Products() {
 					Нашите продукти
 				</h1>
 				<div className="max-w-96">
-					<Label htmlFor="name">Всичко от кето имаш нужда</Label>
-					<Input
-						type="text"
-						placeholder="Плодове"
-						id="name"
-						value={search}
-						onChange={(e) => {
-							setSearch(e.target.value.toLowerCase());
-						}}
-					/>
+					<Label htmlFor="name">Fresh and sweet, everything you need</Label>
+					<div className="flex gap-2">
+						<Input
+							type="text"
+							placeholder="Плодове"
+							id="name"
+							value={search}
+							onChange={(e) => {
+								setSearch(e.target.value.toLowerCase());
+							}}
+						/>
+
+						<Select
+							onValueChange={(value: any) => {
+								setCategory(value);
+								setSearch("");
+							}}
+						>
+							<SelectTrigger className="w-64">
+								<SelectValue placeholder="Categories" />
+							</SelectTrigger>
+							<SelectContent>
+								{categories.map((c) => (
+									<SelectItem value={c}>{c}</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 			</div>
 			<ProductView>
