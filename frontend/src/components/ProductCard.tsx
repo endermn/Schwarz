@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
+import { getUser } from "@/App";
 
 type Product = {
 	id: number;
@@ -16,7 +17,11 @@ type Product = {
 };
 
 export function ProductCard(props: Product) {
-	const { name, category } = props;
+	const { name, category, id } = props;
+	const user = getUser();
+
+	const inCart = user.cart.find((p) => p.id === id);
+
 	return (
 		<Card className="w-full flex flex-col justify-evenly items-center">
 			<CardHeader>
@@ -26,7 +31,26 @@ export function ProductCard(props: Product) {
 				<CardDescription>{category}</CardDescription>
 			</CardContent>
 			<CardFooter>
-				<Button variant="default">Add to cart</Button>
+				{inCart ? (
+					<Button
+						onClick={() => {
+							user.removeFromCart(id);
+						}}
+						variant="destructive"
+					>
+						Remove from cart
+					</Button>
+				) : (
+					<Button
+						onClick={() => {
+							console.log("test");
+							user.addToCart({ category, id, name });
+						}}
+						variant="default"
+					>
+						Add to cart
+					</Button>
+				)}
 			</CardFooter>
 		</Card>
 	);
