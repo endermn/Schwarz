@@ -30,7 +30,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
-import { useUser } from "@/lib/UserContext";
 const components: { title: string; href: string; description: string }[] = [
 	// {
 	// 	title: "Sign In",
@@ -45,14 +44,11 @@ const components: { title: string; href: string; description: string }[] = [
 	{
 		title: "Продукти",
 		href: "/products",
+		description: "",
 	},
 ];
 
 export function NavBar() {
-	const {
-		user: { isAuthenticated },
-	} = useUser();
-
 	return (
 		<div className="flex justify-between m-3">
 			<ModeToggle />
@@ -111,18 +107,15 @@ export function NavBar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-			{isAuthenticated ? (
-				<UserNav />
-			) : (
-				<div>
-					<a href="/signin">
-						<Button>Влез</Button>
-					</a>
-					{/* <a className="ml-5" href="/signup"> */}
-					{/* 	<Button>Sign up</Button> */}
-					{/* </a> */}
-				</div>
-			)}
+			<UserNav />
+			<div>
+				<a href="/signin">
+					<Button>Влез</Button>
+				</a>
+				{/* <a className="ml-5" href="/signup"> */}
+				{/* 	<Button>Sign up</Button> */}
+				{/* </a> */}
+			</div>
 		</div>
 	);
 }
@@ -138,7 +131,7 @@ const ListItem = React.forwardRef<
 					ref={ref}
 					className={cn(
 						"block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-						className,
+						className
 					)}
 					{...props}
 				>
