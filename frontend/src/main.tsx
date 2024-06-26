@@ -7,7 +7,7 @@ import ErrorPage from "./pages/Error.tsx";
 import { Home } from "./pages/Home.tsx";
 import { SignIn } from "./pages/SignIn.tsx";
 import { SignUp } from "./pages/SignUp.tsx";
-import { Products } from "./pages/Products.tsx";
+import { Products, loader as productsLoader } from "./pages/Products.tsx";
 import { Map, loader as mapLoader } from "./pages/Map.tsx";
 import { MapEditor } from "./pages/MapEditor.tsx";
 
@@ -22,8 +22,7 @@ const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <Home /> },
 					{ path: "signin/", element: <SignIn /> },
-					{ path: "signup/", element: <SignUp /> },
-					{ path: "products/", element: <Products /> },
+					{ path: "products/", loader: productsLoader, element: <Products /> },
 					{ path: "map/", loader: mapLoader, element: <Map /> },
 					{ path: "map/editor", loader: mapLoader, element: <MapEditor /> },
 				],
@@ -35,5 +34,5 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<RouterProvider router={router} />
-	</React.StrictMode>,
+	</React.StrictMode>
 );
