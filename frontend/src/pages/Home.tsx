@@ -2,14 +2,6 @@ export function Home() {
 	return (
 		<div>
 			<div className="py-32 sm:py-48 md:py-56 max-w-2xl mx-auto">
-				{/* <div className="hidden sm:mb-8 sm:flex sm:justify-center"> */}
-				{/* <div className="ring-1 ring-offset-1 shadow-sm leading-6 py-1 px-3 rounded-full"> */}
-				{/* 	Announcing our next round of funding.{" "} */}
-				{/* 	<a href="#" className="font-semibold"> */}
-				{/* 		Read more */}
-				{/* 	</a> */}
-				{/* </div> */}
-				{/* </div> */}
 				<div className="text-center">
 					<h1 className="font-extrabold sm:text-6xl">Пазарувай лесно</h1>
 					<p className="leading-8 text-xl mt-6 text-current/50">
