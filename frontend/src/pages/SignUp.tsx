@@ -9,47 +9,49 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function SignIn() {
+export function SignUp() {
 	return (
-		<form action="">
+		<form action="/users" method="post">
 			<Card className="m-auto max-w-sm">
 				<CardHeader>
-					<CardTitle className="text-2xl">Login</CardTitle>
+					<CardTitle className="text-xl">Sign Up</CardTitle>
 					<CardDescription>
-						Enter your email below to login to your account
+						Enter your information to create an account
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4">
+						<div className="grid grid-cols-2 gap-4">
+							<div className="grid gap-2">
+								<Label htmlFor="first-name">First name</Label>
+								<Input id="first-name" placeholder="Petar" required />
+							</div>
+							<div className="grid gap-2">
+								<Label htmlFor="last-name">Last name</Label>
+								<Input id="last-name" placeholder="Petrov" required />
+							</div>
+						</div>
 						<div className="grid gap-2">
 							<Label htmlFor="email">Email</Label>
 							<Input
 								id="email"
 								type="email"
-								placeholder="m@example.com"
+								placeholder="email@example.com"
 								required
 							/>
 						</div>
 						<div className="grid gap-2">
-							<div className="flex items-center">
-								<Label htmlFor="password">Password</Label>
-								<a href="#" className="ml-auto inline-block text-sm underline">
-									Forgot your password?
-								</a>
-							</div>
-							<Input id="password" type="password" required />
+							<Label htmlFor="password">Password</Label>
+							<Input id="password" type="password" />
 						</div>
 						<Button type="submit" className="w-full">
-							Login
-						</Button>
-						<Button variant="outline" className="w-full">
-							Login with Google
+							Create an account
 						</Button>
 					</div>
 					<div className="mt-4 text-center text-sm">
-						Don&apos;t have an account?{" "}
-						<a href="/signup" className="underline">
-							Sign up
+						Already have an account?{" "}
+						<a href="signin" className="underline">
+							Sign in
 						</a>
 					</div>
 				</CardContent>
