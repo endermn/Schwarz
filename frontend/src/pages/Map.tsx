@@ -62,7 +62,7 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 		const updateCellSize = () => {
 			let { clientWidth } = mapContainerRef.current!; // Use getBoundingClientRect for precise width
 			if (clientWidth < 600) {
-				clientWidth *= 0.3;
+				clientWidth *= 1.2;
 			} else {
 				clientWidth *= 0.5;
 			}
@@ -83,7 +83,7 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 			{row.map((cell, colIndex) => (
 				<motion.div
 					key={colIndex}
-					className={` m-1 shadow-md round-[${Math.floor(
+					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
 						Math.random() * 20
 					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
 					initial={{ scale: 0 }}
@@ -105,13 +105,13 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 	));
 
 	return (
-		<div className="flex justify-center items-center h-full">
+		<div className="flex justify-center items-center h-full rotate-90 md:rotate-0">
 			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
 				<div className="col-span-1 flex md:flex-col justify-center items-center">
-					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+					<div className="bg-slate-700 justify-center items-center rounded-lg cursor-pointer size-10 m-2 hidden md:flex">
 						<HandIcon />
 					</div>
-					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+					<div className="bg-slate-700 hidden md:flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
 						<PlusIcon />
 					</div>
 				</div>
@@ -120,7 +120,7 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 					ref={mapContainerRef}
 				>
 					{grid}
-					<h1>{selectedProductId}</h1>
+					<h1 className="hidden md:hidden">{selectedProductId}</h1>
 				</div>
 			</div>
 		</div>
