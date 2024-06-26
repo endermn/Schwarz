@@ -4,90 +4,108 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:6958858412309504779",
-      "lastPropertyId": "4:2627145197994975238",
+      "id": "1:2723288463117073965",
+      "lastPropertyId": "3:1231099847571825165",
       "name": "user",
       "properties": [
         {
-          "id": "1:7360534067739249943",
+          "id": "1:8209159007819727508",
           "name": "id",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:4972088276926741672",
+          "id": "2:8481836100675543267",
           "name": "username",
           "type": 9
         },
         {
-          "id": "4:2627145197994975238",
+          "id": "3:1231099847571825165",
           "name": "passwordHash",
           "type": 23
         }
       ]
     },
     {
-      "id": "2:2607280839378962321",
-      "lastPropertyId": "4:8431320848264253749",
+      "id": "2:758365456359428036",
+      "lastPropertyId": "4:1335036859670648677",
       "name": "product",
       "properties": [
         {
-          "id": "1:183305226255033463",
+          "id": "1:205342181156815257",
           "name": "id",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:8800111022977610992",
-          "name": "Name",
-          "type": 9
+          "id": "2:2837665624995909300",
+          "name": "ProductID",
+          "type": 6
         },
         {
-          "id": "3:2139640855357654740",
+          "id": "3:5517858282805562198",
           "name": "Category",
           "type": 9
         },
         {
-          "id": "4:8431320848264253749",
-          "name": "ProductID",
-          "type": 6
+          "id": "4:1335036859670648677",
+          "name": "Name",
+          "type": 9
         }
       ]
     },
     {
-      "id": "3:5163714544596411561",
-      "lastPropertyId": "3:4068089464479254277",
+      "id": "3:951846619275233843",
+      "lastPropertyId": "7:8094724709565254531",
       "name": "store",
       "properties": [
         {
-          "id": "1:7653259777755128627",
+          "id": "1:10942356598834046",
           "name": "ID",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:4379718477179833862",
+          "id": "2:3751809351370030338",
           "name": "Name",
           "type": 9
         },
         {
-          "id": "3:4068089464479254277",
+          "id": "3:2998089498150673737",
           "name": "Address",
           "type": 9
+        },
+        {
+          "id": "4:8570255972576011839",
+          "name": "Grid",
+          "type": 23
+        },
+        {
+          "id": "5:4492379083027535731",
+          "name": "Width",
+          "type": 6
+        },
+        {
+          "id": "6:4655222207200051383",
+          "name": "Start_X",
+          "type": 6
+        },
+        {
+          "id": "7:8094724709565254531",
+          "name": "Start_Y",
+          "type": 6
         }
       ]
     }
   ],
-  "lastEntityId": "3:5163714544596411561",
+  "lastEntityId": "3:951846619275233843",
   "lastIndexId": "",
   "lastRelationId": "",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [
-    2172259230575741729
-  ],
+  "retiredPropertyUids": [],
   "retiredRelationUids": [],
   "version": 1
 }

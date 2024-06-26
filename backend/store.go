@@ -1,30 +1,178 @@
 package main
 
 import (
-	"slices"
+	"encoding/csv"
+	"strconv"
+	"strings"
 )
 
 type squareKind uint8
 
 const (
-	emptySquare    squareKind = 0
-	endSquare      squareKind = 1
-	wallSquare     squareKind = 2
-	productSquare  squareKind = 3
-	checkoutSquare squareKind = 4
+	emptySquare         squareKind = 0
+	endSquare           squareKind = 1
+	wallSquare          squareKind = 2
+	productSquare       squareKind = 3
+	humanCheckoutSquare squareKind = 4
+	selfCheckoutSquare  squareKind = 5
 )
 
+func (k squareKind) isCheckout() bool {
+	return k == humanCheckoutSquare || k == selfCheckoutSquare
+}
+
+// blob encoding:
+// 0000000000000000 empty
+// 0001000000000000 end
+// 0010000000000000 wall
+// 0011pppppppppppp product p=productID
+// 0100nnnnnnnnnnnn human checkout k=kind n=number
+// 0101nnnnnnnnnnnn self checkout k=kind n=number
+
 type square struct {
-	Kind         squareKind `json:"kind"`
-	ProductID    int        `json:"productId"`
-	CheckoutName string     `json:"checkoutName"`
+	Kind           squareKind `json:"kind"`
+	ProductID      int        `json:"productId"`
+	CheckoutNumber int        `json:"checkoutNumber"`
+}
+
+func makeGrid[x any](width int, height int) [][]x {
+	grid := make([][]x, height)
+	for y := range grid {
+		grid[y] = make([]x, width)
+	}
+	return grid
+}
+
+func getWidth[x any](grid [][]x) int {
+	if len(grid) == 0 {
+		return 0
+	}
+	return len(grid[0])
+}
+
+func encodeGrid(grid [][]square) []byte {
+	height := len(grid)
+	width := getWidth(grid)
+	bytes := make([]byte, height*width*2)
+	for y, row := range grid {
+		for x, sq := range row {
+			word := uint16(sq.Kind) << 12
+			if sq.Kind == productSquare {
+				word |= uint16(sq.ProductID)
+			}
+			if sq.Kind.isCheckout() {
+				word |= uint16(sq.CheckoutNumber)
+			}
+			bytes[(y*width+x)*2] = byte(word)
+			bytes[(y*width+x)*2+1] = byte(word >> 8)
+		}
+	}
+	return bytes
+}
+
+func decodeGrid(bytes []byte, width int) [][]square {
+	height := len(bytes) / 2 / width
+	grid := make([][]square, height)
+	for y, _ := range grid {
+		grid[y] = make([]square, width)
+		for x := range width {
+			word := uint16(bytes[(y*width+x)*2]) | uint16(bytes[(y*width+x)*2+1])<<8
+			number := int(word & 0xfff)
+			grid[y][x] = square{Kind: squareKind(word >> 12), ProductID: number, CheckoutNumber: number}
+		}
+	}
+	return grid
+}
+
+func parseCSV(input string) (grid [][]square, start point, err error) {
+	reader := csv.NewReader(strings.NewReader(input))
+	records, err := reader.ReadAll()
+	if err != nil {
+		return
+	}
+
+	minX := int(^uint(0) >> 1)
+	maxX := 0
+	minY := int(^uint(0) >> 1)
+	maxY := 0
+	for _, record := range records {
+		var x, y int
+		x, err = strconv.Atoi(record[1])
+		if err != nil {
+			return
+		}
+		if x < minX {
+			minX = x
+		}
+		if x > maxX {
+			maxX = x
+		}
+
+		y, err = strconv.Atoi(record[2])
+		if err != nil {
+			return
+		}
+		if y < minY {
+			minY = y
+		}
+		if y > maxY {
+			maxY = y
+		}
+	}
+
+	width := maxX - minX + 1
+	height := maxY - minY + 1
+	grid = make([][]square, height)
+	for y := range height {
+		grid[y] = make([]square, width)
+	}
+
+	for _, record := range records {
+		name := record[0]
+
+		x, _ := strconv.Atoi(record[1])
+		x -= minX
+		y, _ := strconv.Atoi(record[2])
+		y -= minY
+
+		if name == "BL" {
+			grid[y][x].Kind = wallSquare
+		} else if name[0] == 'P' {
+			var num int
+			num, err = strconv.Atoi(record[0][1:])
+			if err != nil {
+				return
+			}
+			grid[y][x] = square{Kind: productSquare, ProductID: num}
+		} else if name[0] == 'C' && name[1] == 'A' {
+			var num int
+			num, err = strconv.Atoi(record[0][2:])
+			if err != nil {
+				return
+			}
+			grid[y][x] = square{Kind: selfCheckoutSquare, CheckoutNumber: num}
+		} else if name[0] == 'S' {
+			var num int
+			num, err = strconv.Atoi(record[0][1:])
+			if err != nil {
+				return
+			}
+			grid[y][x] = square{Kind: humanCheckoutSquare, CheckoutNumber: num}
+		} else if name == "EX" {
+			grid[y][x].Kind = endSquare
+		} else if name == "EN" {
+			start = point{x, y}
+		}
+	}
+
+	return
 }
 
 var eggs = []int{170, 130, 240, 119, 239} // TODO: add others
 
-func (s square) isEgg() bool {
-	return s.Kind == productSquare && slices.Contains(eggs, s.ProductID)
-}
+// func (s square) isEgg() bool {
+// 	return s.Kind == productSquare && slices.Contains(eggs, s.ProductID)
+// }
 
 // func findRouteToOne(start point, isAcceptable func(square) bool) ([]point, square) {
 // 	var explored [gridHeight][gridWidth]bool

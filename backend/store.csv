@@ -1,12 +1,4 @@
-#!/usr/bin/env python3
-
-import sys
-
-
-WIDTH = 41
-HEIGHT = 24
-
-CSV = """CA1,3,20
+CA1,3,20
 CA2,3,18
 CA3,5,18
 CA4,5,20
@@ -355,65 +347,3 @@ BL,9,11
 BL,10,11
 BL,11,11
 BL,11,10
-"""
-
-grid = [[{"kind": "empty"} for x in range(WIDTH)] for y in range(HEIGHT)]
-
-start = None
-end = None
-
-for line in CSV.splitlines():
-	values = line.split(",")
-	name = values[0]
-	x = int(values[1])
-	y = int(values[2])
-	
-	if name == "BL":
-		grid[y][x]["kind"] = "wall"
-	elif name == "EN":
-		assert start is None
-		start = f"point{{{x}, {y}}}"
-	elif name == "EX":
-		assert end is None
-		end = f"point{{{x}, {y}}}"
-		grid[y][x]["kind"] = "end"
-	elif name.startswith("P"):
-		grid[y][x]["kind"] = "product"
-		grid[y][x]["productID"] = name[1:]
-	elif name.startswith("S") or name.startswith("CA"):
-		grid[y][x]["kind"] = "checkout"
-		grid[y][x]["name"] = name
-	else:
-		print(f"unrecognized line: {line}", file=sys.stderr)
-		exit(1)
-
-assert start is not None
-assert end is not None
-
-print("package main")
-print()
-print(f"const gridWidth = {WIDTH}")
-print(f"const gridHeight = {HEIGHT}")
-print()
-print(f"var start = {start}")
-print(f"var end = {end}")
-print()
-print(f"var grid = [{HEIGHT}][{WIDTH}]square{{")
-for y in range(HEIGHT):
-	elems = []
-	for x in range(WIDTH):
-		g = grid[y][x]
-		match g["kind"]:
-			case "empty":
-				e = "{Kind: emptySquare}"
-			case "end":
-				e = "{Kind: endSquare}"
-			case "wall":
-				e = "{Kind: wallSquare}"
-			case "product":
-				e = f"{{Kind: productSquare, ProductID: {g["productID"]}}}"
-			case "checkout":
-				e = f"{{Kind: checkoutSquare, CheckoutName: \"{g["name"]}\"}}"
-		elems.append(e.ljust(43))
-	print(f"\t{{{", ".join(elems)}}},")
-print("}")

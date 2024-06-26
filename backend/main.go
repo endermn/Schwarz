@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -37,10 +38,11 @@ type routeFindingParams struct {
 }
 
 type storeParams struct {
-	Name    string `json:"name"`
-	Address string `json:"address"`
-	CSV     string `json:"csv"`
-	Grid    [][]square
+	Name    string     `json:"name"`
+	Address string     `json:"address"`
+	CSV     string     `json:"csv"`
+	Grid    [][]square `json:"grid"`
+	Start   point      `json:"start"`
 }
 
 type point struct {
@@ -223,11 +225,24 @@ func main() {
 			SameSite: http.SameSiteLaxMode,
 		})
 	})
-	mux.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /stores/{store}/find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		storeIDString := r.PathValue("store")
+		storeID, err := strconv.ParseUint(storeIDString, 10, 64)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
+		store, err := storeBox.Get(storeID)
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			log.Printf("Failed to get store: %v", err)
 			return
 		}
 
@@ -236,7 +251,7 @@ func main() {
 			products[productID] = struct{}{}
 		}
 		begin := time.Now()
-		path := theAlgorithm(products)
+		path := theAlgorithm(decodeGrid(store.Grid, store.Width), store.Start, products)
 		end := time.Now()
 		log.Println("length:", len(path))
 		log.Println("solving time:", end.Sub(begin))
@@ -251,12 +266,26 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		grid := params.Grid
+		start := params.Start
+		if params.CSV != "" {
+			var err error
+			grid, start, err = parseCSV(params.CSV)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
 		id, err := storeBox.Insert(&store{
 			Name:    params.Name,
 			Address: params.Address,
+			Width:   getWidth(grid),
+			Grid:    encodeGrid(grid),
+			Start:   start,
 		})
 		if err != nil {
-			log.Printf("Did not manage to insert store into database: %v", err)
+			log.Printf("Failed to insert store into database: %v", err)
 			return
 		}
 		json.NewEncoder(w).Encode(id)
@@ -272,8 +301,20 @@ func main() {
 		json.NewEncoder(w).Encode(stores)
 	})
 
-	mux.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(grid)
+	mux.HandleFunc("GET /stores/{store}/layout", func(w http.ResponseWriter, r *http.Request) {
+		storeIDString := r.PathValue("store")
+		storeID, err := strconv.ParseUint(storeIDString, 10, 64)
+		if err != nil {
+			http.Error(w, "invalid ID", http.StatusBadRequest)
+			return
+		}
+		store, err := storeBox.Get(storeID)
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			log.Printf("Failed to get store: %v", err)
+			return
+		}
+		json.NewEncoder(w).Encode(decodeGrid(store.Grid, store.Width))
 	})
 
 	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {

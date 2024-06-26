@@ -19,7 +19,7 @@ var userBinding = user_EntityInfo{
 	Entity: objectbox.Entity{
 		Id: 1,
 	},
-	Uid: 6958858412309504779,
+	Uid: 2723288463117073965,
 }
 
 // user_ contains type-based Property helpers to facilitate some common operations such as Queries.
@@ -42,7 +42,7 @@ var user_ = struct {
 	},
 	passwordHash: &objectbox.PropertyByteVector{
 		BaseProperty: &objectbox.BaseProperty{
-			Id:     4,
+			Id:     3,
 			Entity: &userBinding.Entity,
 		},
 	},
@@ -55,12 +55,12 @@ func (user_EntityInfo) GeneratorVersion() int {
 
 // AddToModel is called by ObjectBox during model build
 func (user_EntityInfo) AddToModel(model *objectbox.Model) {
-	model.Entity("user", 1, 6958858412309504779)
-	model.Property("id", 6, 1, 7360534067739249943)
+	model.Entity("user", 1, 2723288463117073965)
+	model.Property("id", 6, 1, 8209159007819727508)
 	model.PropertyFlags(1)
-	model.Property("username", 9, 2, 4972088276926741672)
-	model.Property("passwordHash", 23, 4, 2627145197994975238)
-	model.EntityLastPropertyId(4, 2627145197994975238)
+	model.Property("username", 9, 2, 8481836100675543267)
+	model.Property("passwordHash", 23, 3, 1231099847571825165)
+	model.EntityLastPropertyId(3, 1231099847571825165)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -86,10 +86,10 @@ func (user_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id 
 	var offsetpasswordHash = fbutils.CreateByteVectorOffset(fbb, obj.passwordHash)
 
 	// build the FlatBuffers object
-	fbb.StartObject(4)
+	fbb.StartObject(3)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetUOffsetTSlot(fbb, 1, offsetusername)
-	fbutils.SetUOffsetTSlot(fbb, 3, offsetpasswordHash)
+	fbutils.SetUOffsetTSlot(fbb, 2, offsetpasswordHash)
 	return nil
 }
 
@@ -109,7 +109,7 @@ func (user_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface{},
 	return &user{
 		id:           propid,
 		username:     fbutils.GetStringSlot(table, 6),
-		passwordHash: fbutils.GetByteVectorSlot(table, 10),
+		passwordHash: fbutils.GetByteVectorSlot(table, 8),
 	}, nil
 }
 
@@ -358,15 +358,15 @@ var productBinding = product_EntityInfo{
 	Entity: objectbox.Entity{
 		Id: 2,
 	},
-	Uid: 2607280839378962321,
+	Uid: 758365456359428036,
 }
 
 // product_ contains type-based Property helpers to facilitate some common operations such as Queries.
 var product_ = struct {
 	id        *objectbox.PropertyUint64
-	Name      *objectbox.PropertyString
-	Category  *objectbox.PropertyString
 	ProductID *objectbox.PropertyInt
+	Category  *objectbox.PropertyString
+	Name      *objectbox.PropertyString
 }{
 	id: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -374,7 +374,7 @@ var product_ = struct {
 			Entity: &productBinding.Entity,
 		},
 	},
-	Name: &objectbox.PropertyString{
+	ProductID: &objectbox.PropertyInt{
 		BaseProperty: &objectbox.BaseProperty{
 			Id:     2,
 			Entity: &productBinding.Entity,
@@ -386,7 +386,7 @@ var product_ = struct {
 			Entity: &productBinding.Entity,
 		},
 	},
-	ProductID: &objectbox.PropertyInt{
+	Name: &objectbox.PropertyString{
 		BaseProperty: &objectbox.BaseProperty{
 			Id:     4,
 			Entity: &productBinding.Entity,
@@ -401,13 +401,13 @@ func (product_EntityInfo) GeneratorVersion() int {
 
 // AddToModel is called by ObjectBox during model build
 func (product_EntityInfo) AddToModel(model *objectbox.Model) {
-	model.Entity("product", 2, 2607280839378962321)
-	model.Property("id", 6, 1, 183305226255033463)
+	model.Entity("product", 2, 758365456359428036)
+	model.Property("id", 6, 1, 205342181156815257)
 	model.PropertyFlags(1)
-	model.Property("Name", 9, 2, 8800111022977610992)
-	model.Property("Category", 9, 3, 2139640855357654740)
-	model.Property("ProductID", 6, 4, 8431320848264253749)
-	model.EntityLastPropertyId(4, 8431320848264253749)
+	model.Property("ProductID", 6, 2, 2837665624995909300)
+	model.Property("Category", 9, 3, 5517858282805562198)
+	model.Property("Name", 9, 4, 1335036859670648677)
+	model.EntityLastPropertyId(4, 1335036859670648677)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -429,15 +429,15 @@ func (product_EntityInfo) PutRelated(ob *objectbox.ObjectBox, object interface{}
 // Flatten is called by ObjectBox to transform an object to a FlatBuffer
 func (product_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id uint64) error {
 	obj := object.(*product)
-	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
 	var offsetCategory = fbutils.CreateStringOffset(fbb, obj.Category)
+	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
 
 	// build the FlatBuffers object
 	fbb.StartObject(4)
 	fbutils.SetUint64Slot(fbb, 0, id)
-	fbutils.SetInt64Slot(fbb, 3, int64(obj.ProductID))
+	fbutils.SetInt64Slot(fbb, 1, int64(obj.ProductID))
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetCategory)
-	fbutils.SetUOffsetTSlot(fbb, 1, offsetName)
+	fbutils.SetUOffsetTSlot(fbb, 3, offsetName)
 	return nil
 }
 
@@ -456,9 +456,9 @@ func (product_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface
 
 	return &product{
 		id:        propid,
-		ProductID: fbutils.GetIntSlot(table, 10),
+		ProductID: fbutils.GetIntSlot(table, 6),
 		Category:  fbutils.GetStringSlot(table, 8),
-		Name:      fbutils.GetStringSlot(table, 6),
+		Name:      fbutils.GetStringSlot(table, 10),
 	}, nil
 }
 
@@ -707,7 +707,7 @@ var storeBinding = store_EntityInfo{
 	Entity: objectbox.Entity{
 		Id: 3,
 	},
-	Uid: 5163714544596411561,
+	Uid: 951846619275233843,
 }
 
 // store_ contains type-based Property helpers to facilitate some common operations such as Queries.
@@ -715,6 +715,10 @@ var store_ = struct {
 	ID      *objectbox.PropertyUint64
 	Name    *objectbox.PropertyString
 	Address *objectbox.PropertyString
+	Grid    *objectbox.PropertyByteVector
+	Width   *objectbox.PropertyInt
+	Start_X *objectbox.PropertyInt
+	Start_Y *objectbox.PropertyInt
 }{
 	ID: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -734,6 +738,30 @@ var store_ = struct {
 			Entity: &storeBinding.Entity,
 		},
 	},
+	Grid: &objectbox.PropertyByteVector{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     4,
+			Entity: &storeBinding.Entity,
+		},
+	},
+	Width: &objectbox.PropertyInt{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     5,
+			Entity: &storeBinding.Entity,
+		},
+	},
+	Start_X: &objectbox.PropertyInt{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     6,
+			Entity: &storeBinding.Entity,
+		},
+	},
+	Start_Y: &objectbox.PropertyInt{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     7,
+			Entity: &storeBinding.Entity,
+		},
+	},
 }
 
 // GeneratorVersion is called by ObjectBox to verify the compatibility of the generator used to generate this code
@@ -743,12 +771,16 @@ func (store_EntityInfo) GeneratorVersion() int {
 
 // AddToModel is called by ObjectBox during model build
 func (store_EntityInfo) AddToModel(model *objectbox.Model) {
-	model.Entity("store", 3, 5163714544596411561)
-	model.Property("ID", 6, 1, 7653259777755128627)
+	model.Entity("store", 3, 951846619275233843)
+	model.Property("ID", 6, 1, 10942356598834046)
 	model.PropertyFlags(1)
-	model.Property("Name", 9, 2, 4379718477179833862)
-	model.Property("Address", 9, 3, 4068089464479254277)
-	model.EntityLastPropertyId(3, 4068089464479254277)
+	model.Property("Name", 9, 2, 3751809351370030338)
+	model.Property("Address", 9, 3, 2998089498150673737)
+	model.Property("Grid", 23, 4, 8570255972576011839)
+	model.Property("Width", 6, 5, 4492379083027535731)
+	model.Property("Start_X", 6, 6, 4655222207200051383)
+	model.Property("Start_Y", 6, 7, 8094724709565254531)
+	model.EntityLastPropertyId(7, 8094724709565254531)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -772,12 +804,17 @@ func (store_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id
 	obj := object.(*store)
 	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
 	var offsetAddress = fbutils.CreateStringOffset(fbb, obj.Address)
+	var offsetGrid = fbutils.CreateByteVectorOffset(fbb, obj.Grid)
 
 	// build the FlatBuffers object
-	fbb.StartObject(3)
+	fbb.StartObject(7)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetUOffsetTSlot(fbb, 1, offsetName)
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetAddress)
+	fbutils.SetInt64Slot(fbb, 4, int64(obj.Width))
+	fbutils.SetUOffsetTSlot(fbb, 3, offsetGrid)
+	fbutils.SetInt64Slot(fbb, 5, int64(obj.Start.X))
+	fbutils.SetInt64Slot(fbb, 6, int64(obj.Start.Y))
 	return nil
 }
 
@@ -798,6 +835,12 @@ func (store_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface{}
 		ID:      propID,
 		Name:    fbutils.GetStringSlot(table, 6),
 		Address: fbutils.GetStringSlot(table, 8),
+		Width:   fbutils.GetIntSlot(table, 12),
+		Grid:    fbutils.GetByteVectorSlot(table, 10),
+		Start: point{
+			X: fbutils.GetIntSlot(table, 14),
+			Y: fbutils.GetIntSlot(table, 16),
+		},
 	}, nil
 }
 
