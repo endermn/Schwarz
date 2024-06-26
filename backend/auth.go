@@ -77,6 +77,25 @@ func authenticate(userBox *userBox, w http.ResponseWriter, username string, pass
 	return user
 }
 
+func logIn(w http.ResponseWriter, user *user) {
+	var sessionID sessionID
+	rand.Read(sessionID[:])
+	sessions[sessionID] = session{user}
+	go func() {
+		time.Sleep(sessionDuration)
+		delete(sessions, sessionID)
+	}()
+
+	encodedSessionID := base64.StdEncoding.EncodeToString(sessionID[:])
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    encodedSessionID,
+		Path:     "/",
+		Expires:  time.Now().Add(sessionDuration),
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
 func handleAuth(mux *http.ServeMux, userBox *userBox) {
 	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
@@ -108,6 +127,8 @@ func handleAuth(mux *http.ServeMux, userBox *userBox) {
 			return
 		}
 		log.Println("Created user", id, params.Username, params.Password)
+
+		logIn(w, user)
 	})
 
 	mux.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
@@ -123,22 +144,7 @@ func handleAuth(mux *http.ServeMux, userBox *userBox) {
 			return
 		}
 
-		var sessionID sessionID
-		rand.Read(sessionID[:])
-		sessions[sessionID] = session{user}
-		go func() {
-			time.Sleep(sessionDuration)
-			delete(sessions, sessionID)
-		}()
-
-		encodedSessionID := base64.StdEncoding.EncodeToString(sessionID[:])
-		http.SetCookie(w, &http.Cookie{
-			Name:     "session",
-			Value:    encodedSessionID,
-			Path:     "/",
-			Expires:  time.Now().Add(sessionDuration),
-			SameSite: http.SameSiteLaxMode,
-		})
+		logIn(w, user)
 	})
 
 	mux.HandleFunc("GET /check-session", func(w http.ResponseWriter, r *http.Request) {
