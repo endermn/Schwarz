@@ -73,11 +73,8 @@ func reconstructPath(prev [][]point, start point, end point) []point {
 }
 
 func createDistanceAndPathMatrix(grid [][]square, points []point) (distMatrix [][]float64, pathMatrix [][][]point) {
-	width := getWidth(grid)
-	height := len(grid)
-
 	distMatrix = makeGrid[float64](len(points), len(points))
-	pathMatrix = makeGrid[[]point](width, height)
+	pathMatrix = makeGrid[[]point](len(points), len(points))
 
 	for i, p := range points {
 		pset := set[point]{}
