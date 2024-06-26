@@ -85,6 +85,7 @@ export function Products() {
 				{filteredProducts.length !== 0 ? (
 					filteredProducts.map((p) => (
 						<ProductCard
+							key={p.id}
 							id={p.id}
 							category={p.category}
 							name={p.name}

@@ -2,7 +2,6 @@ import { Outlet, useOutletContext } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
 import { ThemeProvider } from "./components/theme-provider";
 import { Footer } from "./components/Footer";
-import { UserProvider } from "./lib/UserContext";
 import { useState } from "react";
 import { ProductI, UserI } from "@/lib/types";
 
@@ -19,15 +18,13 @@ function App() {
 
 	return (
 		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-			<UserProvider>
-				<div className="flex flex-col h-screen">
-					<NavBar />
-					<div className="flex-1">
-						<Outlet context={{ cart, addToCart, removeFromCart }} />
-					</div>
-					<Footer />
+			<div className="flex flex-col h-screen">
+				<NavBar />
+				<div className="flex-1">
+					<Outlet context={{ cart, addToCart, removeFromCart }} />
 				</div>
-			</UserProvider>
+				<Footer />
+			</div>
 		</ThemeProvider>
 	);
 }

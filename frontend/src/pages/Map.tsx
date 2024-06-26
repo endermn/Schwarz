@@ -5,15 +5,17 @@ import { HandIcon, PlusIcon } from "lucide-react";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
-	const resMap = await fetch("http://localhost:12345/store-layout");
+	const resMap = await fetch("http://localhost:12345/stores/0/layout");
 	const dataMap = await resMap.json();
-	const resPath = await fetch("http://localhost:12345/find-route", {
+	console.log("MAP HERE \n", dataMap);
+	const resPath = await fetch("http://localhost:12345/stores/0/find-route", {
 		method: "POST",
 		body: JSON.stringify({
-			products: [3, 12, 43, 51, 61, 123, 210, 89, 69, 101, 10, 44],
+			products: [3, 12, 43],
 		}),
 	});
 	const dataPath = await resPath.json();
+	console.log(dataPath);
 	return { dataMap, dataPath };
 }
 
