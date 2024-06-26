@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { HandIcon, PlusIcon, XIcon } from "lucide-react";
@@ -12,15 +12,17 @@ export async function loader() {
 	return { dataMap };
 }
 
-export async function action() {
+export async function action({ request }: any) {
+	const formData = await request.formData();
+	let products = formData.get("products");
+	console.log(products);
 	const resPath = await fetch("http://localhost:12345/stores/0/find-route", {
 		method: "POST",
-		body: JSON.stringify({
-			products: [3, 12, 43],
-		}),
+		body: products,
 	});
 	const dataPath = await resPath.json();
-	return dataPath;
+	console.log("ACTION CALLED", dataPath);
+	return { dataPath };
 }
 
 interface PointI {
@@ -77,8 +79,6 @@ const Grid = ({
 		return () => window.removeEventListener("resize", updateCellSize);
 	}, [gridData]);
 
-	useEffect(() => console.log(cellSize), [cellSize]);
-
 	const grid = gridData.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex">
 			{row.map((cell, colIndex) => (
@@ -105,6 +105,10 @@ const Grid = ({
 		</div>
 	));
 
+	const fetcher = useFetcher();
+	const data = fetcher.data?.dataPath;
+	console.log("DATA 123", data);
+
 	return (
 		<div className="flex justify-center items-center h-full">
 			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
@@ -125,9 +129,15 @@ const Grid = ({
 							);
 						})}
 					</ul>
-					<Button disabled={user.cart.length !== 0}>
-						Намери пътя към светлината!
-					</Button>
+					<fetcher.Form method="post">
+						<Button
+							disabled={user.cart.length === 0}
+							name="products"
+							value={JSON.stringify({ products: user.cart.map((p) => p.id) })}
+						>
+							Намери пътя към светлината!
+						</Button>
+					</fetcher.Form>
 				</div>
 				<div
 					className="col-span-3 flex flex-col items-center justify-center md:rotate-0 rotate-90"
