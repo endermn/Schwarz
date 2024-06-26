@@ -15,4 +15,4 @@ RUN go build
 
 EXPOSE 12345
 
-CMD [ "./backend", "product_master_data.csv" ]
+CMD [ "./backend", "product_master_data.csv", "store.csv" ]

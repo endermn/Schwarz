@@ -58,21 +58,47 @@ func main() {
 	productBox := BoxForproduct(box)
 	storeBox := BoxForstore(box)
 
-	if len(os.Args) >= 2 {
-		if os.Args[1] == "create-admin" && len(os.Args) == 4 {
-			passwordHash := sha512.Sum512([]byte(os.Args[3]))
-			_, err = userBox.Put(&user{username: os.Args[2], passwordHash: passwordHash[:]})
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-			return
-		} else if len(os.Args) == 2 {
-			readProductsFromCSV(os.Args[1], productBox)
-		} else {
-			fmt.Println("usage:", os.Args[0], "[create-admin <username> <password>]")
+	var defaultStoreID uint64
+
+	if len(os.Args) == 4 && os.Args[1] == "create-admin" {
+		passwordHash := sha512.Sum512([]byte(os.Args[3]))
+		_, err = userBox.Put(&user{username: os.Args[2], passwordHash: passwordHash[:]})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		return
+	} else if len(os.Args) == 3 {
+		readProductsFromCSV(os.Args[1], productBox)
+
+		storeText, err := os.ReadFile(os.Args[2])
+		if err != nil {
+			log.Printf("Failed to open data: %v", err)
+			os.Exit(1)
+		}
+		grid, start, err := parseCSV(string(storeText))
+		if err != nil {
+			log.Printf("Failed to parse layout CSV: %v", err)
+			os.Exit(1)
+		}
+		_, err = storeBox.Query(store_.Name.Equals("default", true)).Remove()
+		if err != nil {
+			panic(err)
+		}
+		defaultStoreID, err = storeBox.Insert(&store{
+			Name:  "default",
+			Width: getWidth(grid),
+			Grid:  encodeGrid(grid),
+			Start: start,
+			Owner: 0,
+		})
+		if err != nil {
+			log.Printf("Failed to insert store into database: %v", err)
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("usage:", os.Args[0], "(create-admin <username> <password> | <products.csv> <store.csv>)")
+		os.Exit(1)
 	}
 
 	_, err = userBox.Query(user_.username.Equals("admin", true)).Remove()
@@ -135,6 +161,9 @@ func main() {
 			http.Error(w, "invalid ID", http.StatusBadRequest)
 			return
 		}
+		if storeID == 0 {
+			storeID = defaultStoreID
+		}
 		store, err := storeBox.Get(storeID)
 		if err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -195,6 +224,9 @@ func main() {
 		if err != nil {
 			http.Error(w, "invalid ID", http.StatusBadRequest)
 			return
+		}
+		if storeID == 0 {
+			storeID = defaultStoreID
 		}
 		store, err := storeBox.Get(storeID)
 		if err != nil {
