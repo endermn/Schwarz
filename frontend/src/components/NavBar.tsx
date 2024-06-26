@@ -1,19 +1,17 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 import {
 	NavigationMenu,
-	NavigationMenuContent,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-	NavigationMenuTrigger,
 	navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
-import { UserNav } from './UserNav';
-import { ModeToggle } from './mode-toggle';
+} from "@/components/ui/navigation-menu";
+import { UserNav } from "./UserNav";
+import { ModeToggle } from "./mode-toggle";
 import {
 	Sheet,
 	SheetContent,
@@ -21,36 +19,41 @@ import {
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from '@/components/ui/sheet';
+} from "@/components/ui/sheet";
 
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Link } from './Link';
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Link } from "./Link";
+import { useUser } from "@/lib/UserContext";
 const components: { title: string; href: string; description: string }[] = [
 	{
-		title: 'Sign In',
-		href: '/signin',
-		description: 'Sign in to use all the features of our app!',
+		title: "Sign In",
+		href: "/signin",
+		description: "Sign in to use all the features of our app!",
 	},
 	{
-		title: 'Home',
-		href: '/',
-		description: 'Home sweat home',
+		title: "Home",
+		href: "/",
+		description: "Home sweat home",
 	},
 	{
-		title: '404',
-		href: '/404',
-		description: 'Going to void',
+		title: "404",
+		href: "/404",
+		description: "Going to void",
 	},
 ];
 
 export function NavBar() {
+	const {
+		user: { isAuthenticated },
+	} = useUser();
+
 	return (
 		<div className="flex justify-between m-3">
 			<ModeToggle />
@@ -67,6 +70,11 @@ export function NavBar() {
 								Map
 							</NavigationMenuLink>
 						</Link>
+						<Link href="/map/editor">
+							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+								Map Editor
+							</NavigationMenuLink>
+						</Link>
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<Link href="/products">
@@ -80,7 +88,7 @@ export function NavBar() {
 			<div className="md:hidden">
 				<Sheet>
 					<SheetTrigger>
-						<Button variant={'outline'}>Menu</Button>
+						<Button variant={"outline"}>Menu</Button>
 					</SheetTrigger>
 					<SheetContent>
 						<SheetHeader>
@@ -99,19 +107,30 @@ export function NavBar() {
 									))}
 								</Accordion>
 							</SheetDescription>
-							<Button variant={'outline'}>Documentation</Button>
+							<Button variant={"outline"}>Documentation</Button>
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>
 			</div>
-			<UserNav />
+			{isAuthenticated ? (
+				<UserNav />
+			) : (
+				<div>
+					<a href="/signin">
+						<Button>Sign in</Button>
+					</a>
+					<a className="ml-5" href="/products">
+						<Button>Sign up</Button>
+					</a>
+				</div>
+			)}
 		</div>
 	);
 }
 
 const ListItem = React.forwardRef<
-	React.ElementRef<'a'>,
-	React.ComponentPropsWithoutRef<'a'>
+	React.ElementRef<"a">,
+	React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, ...props }, ref) => {
 	return (
 		<li>
@@ -119,7 +138,7 @@ const ListItem = React.forwardRef<
 				<a
 					ref={ref}
 					className={cn(
-						'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+						"block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
 						className
 					)}
 					{...props}
@@ -133,4 +152,4 @@ const ListItem = React.forwardRef<
 		</li>
 	);
 });
-ListItem.displayName = 'ListItem';
+ListItem.displayName = "ListItem";

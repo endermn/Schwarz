@@ -18,7 +18,7 @@ type Product = {
 export function ProductCard(props: Product) {
 	const { name, category } = props;
 	return (
-		<Card className="w-[250px] h-[250px] flex flex-col justify-evenly items-center">
+		<Card className="w-full flex flex-col justify-evenly items-center">
 			<CardHeader>
 				<CardTitle>{name}</CardTitle>
 			</CardHeader>

@@ -1,10 +1,20 @@
 import { useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { HandIcon, PlusIcon } from "lucide-react";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
-	const res = await fetch("http://localhost:12345/store-layout");
-	const data = await res.json();
-	return { data };
+	const resMap = await fetch("http://localhost:12345/store-layout");
+	const dataMap = await resMap.json();
+	const resPath = await fetch("http://localhost:12345/find-route", {
+		method: "POST",
+		body: JSON.stringify({
+			products: [3, 12, 43, 51, 61, 123, 210, 89, 69, 101, 10, 44],
+		}),
+	});
+	const dataPath = await resPath.json();
+	return { dataMap, dataPath };
 }
 
 export const MyComponent = () => (
@@ -19,86 +29,149 @@ export const MyComponent = () => (
 );
 
 // src/Grid.js
-const pointsa = [
-	{ x: 1, y: 2 },
-	{ x: 3, y: 4 },
-	{ x: 5, y: 1 },
-	{ x: 7, y: 6 },
-	{ x: 2, y: 24 },
-];
-
 interface PointI {
 	x: number;
 	y: number;
 }
 
-const kindColors = {
-	0: "bg-transparent",
-	1: "bg-red-500",
-	2: "bg-slate-500",
-	3: "bg-blue-500",
-	4: "bg-yellow-500",
-	// Add more colors if needed
-};
 interface DataI {
 	kind: number;
 	productId: number;
 	checkoutName: string;
 }
+interface PointI {
+	x: number;
+	y: number;
+}
 
-const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const gridColumns = 24;
-	const gridRows = 42;
-	const squareSize = 20; // Adjust square size as needed
+interface PathI {
+	path: PointI[];
+}
+
+const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
+	const [selectedProductId, setSelectedProductId] = useState(0);
+	const [cellSize, setCellSize] = useState(20);
+	const mapContainerRef = useRef<HTMLDivElement | null>(null);
+
+	console.log(selectedProductId);
+	const handleTap = (productId: number) => {
+		setSelectedProductId(productId);
+	};
+
+	useEffect(() => {
+		const updateCellSize = () => {
+			let { clientWidth } = mapContainerRef.current!; // Use getBoundingClientRect for precise width
+			if (clientWidth < 600) {
+				clientWidth *= 0.3;
+			} else {
+				clientWidth *= 0.5;
+			}
+			const cols = gridData[0]?.length || 1;
+			const cellWidth = Math.floor(clientWidth / cols); // Round cellWidth to an integer
+			setCellSize(cellWidth);
+		};
+
+		updateCellSize();
+		window.addEventListener("resize", updateCellSize);
+		return () => window.removeEventListener("resize", updateCellSize);
+	}, [gridData]);
+
+	useEffect(() => console.log(cellSize), [cellSize]);
+
+	const grid = gridData.map((row, rowIndex) => (
+		<div key={rowIndex} className="flex">
+			{row.map((cell, colIndex) => (
+				<motion.div
+					key={colIndex}
+					className={` m-1 shadow-md round-[${Math.floor(
+						Math.random() * 20
+					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
+					initial={{ scale: 0 }}
+					animate={{
+						scale: 1,
+					}}
+					transition={{
+						duration: 0.2,
+						delay:
+							rowIndex * 0.04 + colIndex * 0.04 * (cell.kind !== 0 ? 0 : 1),
+					}}
+					onHoverStart={() => {
+						if (cell.kind === 3) handleTap(cell.productId);
+					}}
+					style={{ width: cellSize, height: cellSize }}
+				/>
+			))}
+		</div>
+	));
 
 	return (
-		<>
-			<div className="relative flex justify-center ">
+		<div className="flex justify-center items-center h-full">
+			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
+				<div className="col-span-1 flex md:flex-col justify-center items-center">
+					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+						<HandIcon />
+					</div>
+					<div className="bg-slate-700 flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
+						<PlusIcon />
+					</div>
+				</div>
 				<div
-					className="relative m-auto"
-					style={{
-						width: `${gridColumns * squareSize}px`,
-						height: `${gridRows * squareSize}px`,
-						display: "grid",
-						gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
-						gridTemplateRows: `repeat(${gridRows}, 1fr)`,
-					}}
+					className="col-span-3 flex flex-col items-center justify-center"
+					ref={mapContainerRef}
 				>
-					{gridData.map((row, y) =>
-						row.map((item, x) => (
-							<motion.div
-								key={`${x}-${y}`}
-								className={`absolute w-5 h-5  ${
-									(kindColors as any)[item.kind]
-								}`}
-								initial={{ opacity: 0, scale: 0 }}
-								animate={{ opacity: 1, scale: 1 }}
-								transition={{
-									duration: 0.5,
-									delay: (x + y * gridColumns) * 0.004,
-								}}
-								style={{
-									left: `${x * squareSize}px`,
-									top: `${y * squareSize}px`,
-								}}
-							/>
-						))
-					)}
+					{grid}
+					<h1>{selectedProductId}</h1>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 
+const getColorFromKind = (kind: number, x: number, y: number, path: PathI) => {
+	const good = path.path.find((point) => point.x === x && point.y === y);
+	if (good) {
+		if (kind === 0) return "bg-red-300";
+		switch (kind) {
+			case 1:
+				return `bg-gradient-to-r from-blue-500 to-red-300`;
+			case 2:
+				return `bg-gradient-to-r from-bg-green-500 to-red-300`;
+			case 3:
+				return `bg-gradient-to-r from-yellow-500 to-red-900`;
+			case 4:
+				return `bg-gradient-to-r from-purple-500 to-red-300`;
+			default:
+				return "bg-gray-300";
+		}
+	}
+	switch (kind) {
+		case 0:
+			return "dark:bg-white dark:opacity-30 bg-transparent";
+		case 1:
+			return `bg-blue-500`;
+		case 2:
+			return "bg-green-500";
+		case 3:
+			return "bg-yellow-500";
+		case 4:
+			return "bg-purple-500";
+		default:
+			return "bg-gray-300";
+	}
+};
+
 export function Map() {
-	const { data } = useLoaderData() as { data: DataI[][] };
-	console.log(data);
+	const { dataPath, dataMap } = useLoaderData() as {
+		dataMap: DataI[][];
+		dataPath: PathI;
+	};
+
+	console.log(dataPath);
 
 	return (
 		<>
-			<h1>Map</h1>
-			<Grid gridData={data} />
-			<canvas id="map"></canvas>
+			<Grid gridData={dataMap} path={dataPath} />
+			<canvas id="map" className="hidden"></canvas>
 		</>
 	);
 }
