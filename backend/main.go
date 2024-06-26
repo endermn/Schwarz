@@ -114,6 +114,7 @@ func main() {
 
 	userBox := BoxForuser(box)
 	productBox := BoxForproduct(box)
+	storeBox := BoxForstore(box)
 
 	if len(os.Args) >= 2 {
 		if os.Args[1] == "create-admin" && len(os.Args) == 4 {
@@ -221,6 +222,16 @@ func main() {
 		log.Println("solving time:", end.Sub(begin))
 
 		json.NewEncoder(w).Encode(routeFound{path})
+	})
+
+	mux.HandleFunc("GET /stores", func(w http.ResponseWriter, r *http.Request) {
+		stores, err := storeBox.GetAll()
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			log.Printf("Failed to get stores: %v", err)
+			return
+		}
+		json.NewEncoder(w).Encode(stores)
 	})
 
 	mux.HandleFunc("GET /store-layout", func(w http.ResponseWriter, r *http.Request) {

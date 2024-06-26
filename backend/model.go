@@ -15,3 +15,9 @@ type product struct {
 	Category  string `json:"category"`
 	Name      string `json:"name"`
 }
+
+type store struct {
+	ID      uint64 `json:"id"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}

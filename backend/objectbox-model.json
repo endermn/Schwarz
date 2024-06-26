@@ -53,9 +53,32 @@
           "type": 6
         }
       ]
+    },
+    {
+      "id": "3:5163714544596411561",
+      "lastPropertyId": "3:4068089464479254277",
+      "name": "store",
+      "properties": [
+        {
+          "id": "1:7653259777755128627",
+          "name": "ID",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4379718477179833862",
+          "name": "Name",
+          "type": 9
+        },
+        {
+          "id": "3:4068089464479254277",
+          "name": "Address",
+          "type": 9
+        }
+      ]
     }
   ],
-  "lastEntityId": "2:2607280839378962321",
+  "lastEntityId": "3:5163714544596411561",
   "lastIndexId": "",
   "lastRelationId": "",
   "modelVersion": 5,
