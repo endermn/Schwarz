@@ -36,6 +36,13 @@ type routeFindingParams struct {
 	Products []int `json:"products"`
 }
 
+type storeParams struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	CSV     string `json:"csv"`
+	Grid    [][]square
+}
+
 type point struct {
 	X int `json:"x"`
 	Y int `json:"y"`
@@ -139,6 +146,20 @@ func main() {
 		Handler: handler,
 	}
 
+	mux.HandleFunc("GET /categories", func(w http.ResponseWriter, r *http.Request) {
+		var categories set[string]
+		products, err := productBox.GetAll()
+		if err != nil {
+			log.Printf("Failed to get products: %v", err)
+		}
+
+		for _, product := range products {
+			categories.insert(product.Category)
+		}
+
+		json.NewEncoder(w).Encode(categories)
+	})
+
 	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
 		var params userCredentials
 		err := newJSONDecoder(r.Body).Decode(&params)
@@ -202,7 +223,6 @@ func main() {
 			SameSite: http.SameSiteLaxMode,
 		})
 	})
-
 	mux.HandleFunc("POST /find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
@@ -222,6 +242,24 @@ func main() {
 		log.Println("solving time:", end.Sub(begin))
 
 		json.NewEncoder(w).Encode(routeFound{path})
+	})
+
+	mux.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
+		var params storeParams
+		err := newJSONDecoder(r.Body).Decode(&params)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		id, err := storeBox.Insert(&store{
+			Name:    params.Name,
+			Address: params.Address,
+		})
+		if err != nil {
+			log.Printf("Did not manage to insert store into database: %v", err)
+			return
+		}
+		json.NewEncoder(w).Encode(id)
 	})
 
 	mux.HandleFunc("GET /stores", func(w http.ResponseWriter, r *http.Request) {
