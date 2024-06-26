@@ -93,77 +93,69 @@ func createDistanceAndPathMatrix(grid [][]square, points []point) (distMatrix []
 	return
 }
 
-func tsp_with_one_checkout_greedy(dist_matrix [][]float64, path_matrix [][][]point, items []point, checkouts []point, entrance point, exit point) []point {
-	n_items := len(items)
-	entrance_idx := 0
-	exit_idx := len(items) + len(checkouts) + 1
+func tspWithOneCheckoutGreedy(distMatrix [][]float64, pathMatrix [][][]point, items []point, checkouts []point, entrance point, exit point) []point {
+	allPoints := slices.Concat([]point{entrance}, items, checkouts, []point{exit})
+	iBegin := 0
+	iEnd := len(items) + len(checkouts) + 1
 
-	all_points := slices.Concat([]point{entrance}, items, checkouts, []point{exit})
-	n := len(all_points)
+	visited := make([]bool, len(allPoints))
+	visited[iBegin] = true
+	visitedItems := 0
+	visitedCheckout := false
 
-	visited := make([]bool, n)
-	visited[entrance_idx] = true
-	visited_items := 0
-	visited_checkout := false
+	currentPos := iBegin
+	pathOrder := []int{currentPos}
 
-	current_pos := entrance_idx
-	path_order := []int{current_pos}
+	for visitedItems < len(items) || !visitedCheckout {
+		nextPos := -1
+		minDist := math.Inf(1)
 
-	for visited_items < n_items || !visited_checkout {
-		next_pos := -1
-		min_dist := math.Inf(1)
-
-		for i := range n {
-			if i == 0 {
+		for iPoint := range len(allPoints) {
+			if iPoint == 0 {
 				continue
 			}
-			if !visited[i] {
-				if i <= n_items { // item
-					if dist_matrix[current_pos][i] < min_dist {
-						min_dist = dist_matrix[current_pos][i]
-						next_pos = i
-					}
-				} else if i > n_items && visited_items == n_items { // checkout
-					if dist_matrix[current_pos][i] < min_dist {
-						min_dist = dist_matrix[current_pos][i]
-						next_pos = i
+			if !visited[iPoint] {
+				if iPoint <= len(items) || visitedItems == len(items) { // item or checkout
+					if distMatrix[currentPos][iPoint] < minDist {
+						minDist = distMatrix[currentPos][iPoint]
+						nextPos = iPoint
 					}
 				}
 			}
 		}
 
-		if next_pos == -1 {
+		if nextPos == -1 {
 			break
 		}
 
-		visited[next_pos] = true
-		path_order = append(path_order, next_pos)
-		current_pos = next_pos
+		visited[nextPos] = true
+		pathOrder = append(pathOrder, nextPos)
+		currentPos = nextPos
 
-		if next_pos <= n_items {
-			visited_items += 1
-		} else if next_pos > n_items {
-			visited_checkout = true
+		if nextPos <= len(items) {
+			visitedItems += 1
+		} else {
+			visitedCheckout = true
 		}
 	}
 
-	path_order = append(path_order, exit_idx)
+	pathOrder = append(pathOrder, iEnd)
 
-	full_path := []point{}
-	for i := range len(path_order) - 1 {
-		x := path_matrix[path_order[i]][path_order[i+1]]
-		full_path = append(full_path, x[:len(x)-1]...)
+	fullPath := []point{}
+	for i := range len(pathOrder) - 1 {
+		pathToNextPoint := pathMatrix[pathOrder[i]][pathOrder[i+1]]
+		fullPath = append(fullPath, pathToNextPoint[:len(pathToNextPoint)-1]...)
 	}
-	full_path = append(full_path, path_matrix[path_order[len(path_order)-1]][exit_idx]...)
+	fullPath = append(fullPath, pathMatrix[pathOrder[len(pathOrder)-1]][iEnd]...)
 
-	return full_path
+	return fullPath
 }
 
 func solve(grid [][]square, start point, products set[int]) []point {
 	items, checkouts, end := extractPoints(grid, products)
 	points := slices.Concat([]point{start}, items, checkouts, []point{end})
-	dist_matrix, path_matrix := createDistanceAndPathMatrix(grid, points)
-	path := tsp_with_one_checkout_greedy(dist_matrix, path_matrix, items, checkouts, start, end)
+	distMatrix, pathMatrix := createDistanceAndPathMatrix(grid, points)
+	path := tspWithOneCheckoutGreedy(distMatrix, pathMatrix, items, checkouts, start, end)
 	return path
 }
 
@@ -171,10 +163,10 @@ func theAlgorithm(grid [][]square, start point, products set[int]) []point {
 	bestPath := []point{}
 	// best_egg := -1
 	for _, egg := range eggs {
-		new_required := maps.Clone(products)
-		new_required.insert(egg)
+		newRequired := maps.Clone(products)
+		newRequired.insert(egg)
 		// grid = generate_grid(data_dict, new_required)
-		path := solve(grid, start, new_required)
+		path := solve(grid, start, newRequired)
 		if len(path) < len(bestPath) || len(bestPath) == 0 {
 			bestPath = path
 			// best_egg = egg
