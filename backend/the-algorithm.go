@@ -6,10 +6,7 @@ import (
 	"slices"
 )
 
-func extractPoints(grid [][]square, products set[int]) ([]point, []point, point) {
-	items := []point{}
-	checkouts := []point{}
-	var end point
+func extractPoints(grid [][]square, products set[int]) (items []point, checkouts []point, end point) {
 	for y, row := range grid {
 		for x, cell := range row {
 			if cell.Kind == productSquare && products.contains(cell.ProductID) { // Required products to be visited
@@ -21,41 +18,46 @@ func extractPoints(grid [][]square, products set[int]) ([]point, []point, point)
 			}
 		}
 	}
-	return items, checkouts, end
+	return
 }
 
-func bfs(grid [][]square, start point, pointsWithItems set[point]) ([][]float64, [][]point) {
+func bfs(grid [][]square, start point, targetPoints set[point]) ([][]float64, [][]point) {
 	startingFromCheckout := grid[start.Y][start.X].Kind.isCheckout()
 	directions := []point{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}}
 	width := getWidth(grid)
 	height := len(grid)
-	dist := makeGrid[float64](width, height)
-	for y, r := range dist {
-		for x := range r {
-			dist[y][x] = math.Inf(1)
+
+	distFromStart := makeGrid[float64](width, height)
+	for y := range height {
+		for x := range width {
+			distFromStart[y][x] = math.Inf(1)
 		}
 	}
+
 	prev := makeGrid[point](width, height)
-	dist[start.Y][start.X] = 0
+	distFromStart[start.Y][start.X] = 0
 	queue := []point{start}
 
 	for len(queue) > 0 {
-		p := queue[0]
+		pos := queue[0]
 		queue = queue[1:]
-		for _, d := range directions {
-			n := point{p.X + d.X, p.Y + d.Y}
-			if 0 <= n.X && n.X < width && 0 <= n.Y && n.Y < height && !(grid[n.Y][n.X].Kind == wallSquare || grid[n.Y][n.X].Kind == productSquare && !pointsWithItems.contains(n) || grid[n.Y][n.X].Kind.isCheckout() && startingFromCheckout) && dist[n.Y][n.X] == math.Inf(1) {
-				if pointsWithItems.contains(p) && pointsWithItems.contains(n) {
+		for _, dir := range directions {
+			nextPos := point{pos.X + dir.X, pos.Y + dir.Y}
+			if !(0 <= nextPos.X && nextPos.X < width && 0 <= nextPos.Y && nextPos.Y < height) {
+				continue
+			}
+			if !(grid[nextPos.Y][nextPos.X].Kind == wallSquare || grid[nextPos.Y][nextPos.X].Kind == productSquare && !targetPoints.contains(nextPos) || grid[nextPos.Y][nextPos.X].Kind.isCheckout() && startingFromCheckout) && distFromStart[nextPos.Y][nextPos.X] == math.Inf(1) {
+				if targetPoints.contains(pos) && targetPoints.contains(nextPos) {
 					continue // skip direct paths between items
 				}
-				dist[n.Y][n.X] = dist[p.Y][p.X] + 1
-				prev[n.Y][n.X] = p
-				queue = append(queue, n)
+				distFromStart[nextPos.Y][nextPos.X] = distFromStart[pos.Y][pos.X] + 1
+				prev[nextPos.Y][nextPos.X] = pos
+				queue = append(queue, nextPos)
 			}
 		}
 	}
 
-	return dist, prev
+	return distFromStart, prev
 }
 
 func reconstructPath(prev [][]point, start point, end point) []point {
