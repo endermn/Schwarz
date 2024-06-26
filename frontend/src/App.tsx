@@ -21,7 +21,7 @@ function App() {
 			<div className="flex flex-col h-screen">
 				<NavBar />
 				<div className="flex-1">
-					<Outlet context={{ cart, addToCart, removeFromCart }} />
+					<Outlet context={{ cart, addToCart, removeFromCart, paht: null }} />
 				</div>
 				<Footer />
 			</div>

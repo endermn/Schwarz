@@ -108,7 +108,22 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	}, [gridData]);
 
 	const fetcher = useFetcher();
-	const data = user.cart.length === 0 ? null : fetcher.data?.dataPath; // path repaint is on button submit... which becomes diabled when there are rzero elements
+	console.log(fetcher.data);
+	let data = fetcher.data?.dataPath; // path repaint is on button submit... which becomes diabled when there are rzero elements
+	if (data) {
+		user.path = data;
+	}
+
+	if (user.cart.length === 0) {
+		// reset everything
+		data = null;
+		user.path = null;
+	}
+
+	if (!data && user.path) {
+		// if there is no path from action used saved data
+		data = user.path;
+	}
 
 	useEffect(() => {
 		controls.start({ scale: 1 });

@@ -21,6 +21,7 @@ export interface ProductI {
 
 export interface UserI {
 	cart: ProductI[];
+	path: PathI | null;
 	addToCart: (product: ProductI) => void;
 	removeFromCart: (productId: number) => void;
 }
