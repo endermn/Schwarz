@@ -68,7 +68,7 @@ func main() {
 			}
 			return
 		} else if len(os.Args) == 2 {
-			readCSV(os.Args[1], productBox)
+			readProductsFromCSV(os.Args[1], productBox)
 		} else {
 			fmt.Println("usage:", os.Args[0], "[create-admin <username> <password>]")
 			os.Exit(1)

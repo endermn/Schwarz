@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func readCSV(filePath string, box *productBox) {
+func readProductsFromCSV(filePath string, box *productBox) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Printf("Failed to open data")
