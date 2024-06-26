@@ -32,20 +32,19 @@ import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
 import { useUser } from "@/lib/UserContext";
 const components: { title: string; href: string; description: string }[] = [
+	// {
+	// 	title: "Sign In",
+	// 	href: "/signin",
+	// 	description: "Sign in to use all the features of our app!",
+	// },
 	{
-		title: "Sign In",
-		href: "/signin",
-		description: "Sign in to use all the features of our app!",
-	},
-	{
-		title: "Home",
+		title: "Начало",
 		href: "/",
-		description: "Home sweat home",
+		description: "Дом сладък дом",
 	},
 	{
-		title: "404",
-		href: "/404",
-		description: "Going to void",
+		title: "Продукти",
+		href: "/products",
 	},
 ];
 
@@ -62,24 +61,24 @@ export function NavBar() {
 					<NavigationMenuItem>
 						<Link href="/">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Home
+								Начало
 							</NavigationMenuLink>
 						</Link>
 						<Link href="/map">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Map
+								Карта
 							</NavigationMenuLink>
 						</Link>
 						<Link href="/map/editor">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Map Editor
+								Редактор
 							</NavigationMenuLink>
 						</Link>
 					</NavigationMenuItem>
 					<NavigationMenuItem>
 						<Link href="/products">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Product List
+								Продукти
 							</NavigationMenuLink>
 						</Link>
 					</NavigationMenuItem>
@@ -88,11 +87,11 @@ export function NavBar() {
 			<div className="md:hidden">
 				<Sheet>
 					<SheetTrigger>
-						<Button variant={"outline"}>Menu</Button>
+						<Button variant={"outline"}>Меню</Button>
 					</SheetTrigger>
 					<SheetContent>
 						<SheetHeader>
-							<SheetTitle>Links</SheetTitle>
+							<SheetTitle>Меню</SheetTitle>
 							<Separator />
 
 							<SheetDescription>
@@ -117,11 +116,11 @@ export function NavBar() {
 			) : (
 				<div>
 					<a href="/signin">
-						<Button>Sign in</Button>
+						<Button>Влез</Button>
 					</a>
-					<a className="ml-5" href="/signup">
-						<Button>Sign up</Button>
-					</a>
+					{/* <a className="ml-5" href="/signup"> */}
+					{/* 	<Button>Sign up</Button> */}
+					{/* </a> */}
 				</div>
 			)}
 		</div>

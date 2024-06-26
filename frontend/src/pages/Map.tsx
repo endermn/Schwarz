@@ -84,7 +84,7 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 				<motion.div
 					key={colIndex}
 					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
-						Math.random() * 20
+						Math.random() * 20,
 					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, path)}`}
 					initial={{ scale: 0 }}
 					animate={{
@@ -109,10 +109,10 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
 				<div className="col-span-1 flex md:flex-col justify-center items-center">
 					<div className="bg-slate-700 justify-center items-center rounded-lg cursor-pointer size-10 m-2 hidden md:flex">
-						<HandIcon />
+						<HandIcon className="text-white" />
 					</div>
 					<div className="bg-slate-700 hidden md:flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
-						<PlusIcon />
+						<PlusIcon className="text-white" />
 					</div>
 				</div>
 				<div

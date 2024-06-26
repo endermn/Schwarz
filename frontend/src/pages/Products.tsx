@@ -24,7 +24,7 @@ export function Products() {
 	const [search, setSearch] = useState("");
 
 	const filteredProducts = products.filter((p) =>
-		p.name.toLocaleLowerCase().startsWith(search)
+		p.name.toLocaleLowerCase().startsWith(search),
 	);
 	console.log(search);
 
@@ -32,10 +32,10 @@ export function Products() {
 		<>
 			<div className="flex justify-center flex-col gap-3 m-4">
 				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-					Our products
+					Нашите продукти
 				</h1>
 				<div className="max-w-96">
-					<Label htmlFor="name">Fresh and sweet, everything you need</Label>
+					<Label htmlFor="name">Всичко от кето имаш нужда</Label>
 					<Input
 						type="text"
 						placeholder="Плодове"
@@ -57,7 +57,7 @@ export function Products() {
 						></ProductCard>
 					))
 				) : (
-					<p>No products found!</p>
+					<p>Няма намерени продукти!</p>
 				)}
 			</ProductView>
 		</>

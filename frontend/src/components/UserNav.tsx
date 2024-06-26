@@ -10,17 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
-} from "@/components/ui/drawer";
-
 export function UserNav() {
 	return (
 		<DropdownMenu>
@@ -42,13 +31,11 @@ export function UserNav() {
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
-					<DropdownMenuItem>Profile</DropdownMenuItem>
-					<DropdownMenuItem>Settings</DropdownMenuItem>
-					<DropdownMenuItem>Test 1</DropdownMenuItem>
-					<DropdownMenuItem>Test 2</DropdownMenuItem>
+					<DropdownMenuItem>Профил</DropdownMenuItem>
+					<DropdownMenuItem>Настройки</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>Log Out</DropdownMenuItem>
+				<DropdownMenuItem>Излез</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
