@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { XIcon } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
@@ -82,6 +83,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const [cellSize, setCellSize] = useState(20);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
+	const [steps, setSteps] = useState(0);
+
 	const user = getUser();
 	const controls = useAnimationControls();
 
@@ -129,6 +132,26 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		controls.start({ scale: 1 });
 	}, []);
 
+	const productCoords: PointI[] = [];
+
+	const currentPath = data?.path as PointI[];
+
+	for (let i = 0; i < currentPath?.length; i++) {
+		let el = gridData[currentPath[i].y][currentPath[i].x];
+		if (el.kind === 3) {
+			productCoords.push(currentPath[i]);
+		}
+	}
+
+	console.log(productCoords);
+
+	const upTo =
+		steps === productCoords.length
+			? currentPath?.length
+			: currentPath?.findIndex(
+					(p) =>
+						p.x === productCoords[steps].x && p.y === productCoords[steps].y
+			  ) + 1;
 	const grid = gridData.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex">
 			{row.map((cell, colIndex) => (
@@ -136,7 +159,12 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					key={colIndex}
 					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
 						Math.random() * 20
-					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, data)}`}
+					)}]  ${getColorFromKind(
+						cell.kind,
+						colIndex,
+						rowIndex,
+						currentPath?.slice(0, upTo)
+					)}`}
 					initial={{ scale: 0 }}
 					animate={controls}
 					transition={{
@@ -173,6 +201,21 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							);
 						})}
 					</ul>
+					<Input
+						disabled={user.cart.length === 0}
+						className="w-1/2 mb-2"
+						value={steps}
+						type="number"
+						placeholder="Map size"
+						onChange={(e) => {
+							if (
+								+e.target.value <= productCoords.length &&
+								+e.target.value >= 0
+							) {
+								setSteps(+e.target.value);
+							}
+						}}
+					/>
 					<fetcher.Form method="post">
 						<Button
 							disabled={user.cart.length === 0}
@@ -199,9 +242,9 @@ const getColorFromKind = (
 	kind: number,
 	x: number,
 	y: number,
-	path: PathI | null
+	path: PointI[] | null
 ) => {
-	const good = path?.path.find((point) => point.x === x && point.y === y);
+	const good = path?.find((point) => point.x === x && point.y === y);
 	if (good) {
 		if (kind === 0) return "bg-red-300";
 		switch (kind) {
