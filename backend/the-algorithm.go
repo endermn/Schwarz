@@ -25,6 +25,7 @@ func extractPoints(grid [][]square, products set[int]) ([]point, []point, point)
 }
 
 func bfs(grid [][]square, start point, pointsWithItems set[point]) ([][]float64, [][]point) {
+	startingFromCheckout := grid[start.Y][start.X].Kind.isCheckout()
 	directions := []point{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}}
 	width := getWidth(grid)
 	height := len(grid)
@@ -43,7 +44,7 @@ func bfs(grid [][]square, start point, pointsWithItems set[point]) ([][]float64,
 		queue = queue[1:]
 		for _, d := range directions {
 			n := point{p.X + d.X, p.Y + d.Y}
-			if 0 <= n.X && n.X < width && 0 <= n.Y && n.Y < height && !(grid[n.Y][n.X].Kind == wallSquare || grid[n.Y][n.X].Kind == productSquare && !pointsWithItems.contains(n)) && dist[n.Y][n.X] == math.Inf(1) {
+			if 0 <= n.X && n.X < width && 0 <= n.Y && n.Y < height && !(grid[n.Y][n.X].Kind == wallSquare || grid[n.Y][n.X].Kind == productSquare && !pointsWithItems.contains(n) || grid[n.Y][n.X].Kind.isCheckout() && startingFromCheckout) && dist[n.Y][n.X] == math.Inf(1) {
 				if pointsWithItems.contains(p) && pointsWithItems.contains(n) {
 					continue // skip direct paths between items
 				}
