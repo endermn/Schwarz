@@ -1,13 +1,18 @@
 import { useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { HandIcon, PlusIcon } from "lucide-react";
+import { HandIcon, PlusIcon, XIcon } from "lucide-react";
+import { getUser } from "@/App";
+import { Button } from "@/components/ui/button";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/stores/0/layout");
 	const dataMap = await resMap.json();
-	console.log("MAP HERE \n", dataMap);
+	return { dataMap };
+}
+
+export async function action() {
 	const resPath = await fetch("http://localhost:12345/stores/0/find-route", {
 		method: "POST",
 		body: JSON.stringify({
@@ -15,22 +20,9 @@ export async function loader() {
 		}),
 	});
 	const dataPath = await resPath.json();
-	console.log(dataPath);
-	return { dataMap, dataPath };
+	return dataPath;
 }
 
-export const MyComponent = () => (
-	<motion.div
-		className="w-56 h-56 bg-slate-700"
-		animate={{
-			scale: [1, 2, 2, 1, 1],
-			rotate: [0, 0, 270, 270, 0],
-			borderRadius: ["20%", "20%", "50%", "50%", "20%"],
-		}}
-	/>
-);
-
-// src/Grid.js
 interface PointI {
 	x: number;
 	y: number;
@@ -50,12 +42,19 @@ interface PathI {
 	path: PointI[];
 }
 
-const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
+const Grid = ({
+	gridData,
+	path,
+}: {
+	gridData: DataI[][];
+	path: PathI | null;
+}) => {
 	const [selectedProductId, setSelectedProductId] = useState(0);
 	const [cellSize, setCellSize] = useState(20);
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
-	console.log(selectedProductId);
+	const user = getUser();
+
 	const handleTap = (productId: number) => {
 		setSelectedProductId(productId);
 	};
@@ -107,18 +106,31 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 	));
 
 	return (
-		<div className="flex justify-center items-center h-full rotate-90 md:rotate-0">
+		<div className="flex justify-center items-center h-full">
 			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
 				<div className="col-span-1 flex md:flex-col justify-center items-center">
-					<div className="bg-slate-700 justify-center items-center rounded-lg cursor-pointer size-10 m-2 hidden md:flex">
-						<HandIcon className="text-white" />
-					</div>
-					<div className="bg-slate-700 hidden md:flex justify-center items-center rounded-lg cursor-pointer size-10 m-2">
-						<PlusIcon className="text-white" />
-					</div>
+					<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+						Продукти
+					</h2>
+					<ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+						{user.cart.map((p) => {
+							return (
+								<li>
+									{p.name}{" "}
+									<XIcon
+										className="inline size-4 cursor-pointer"
+										onClick={() => user.removeFromCart(p.id)}
+									/>
+								</li>
+							);
+						})}
+					</ul>
+					<Button disabled={user.cart.length !== 0}>
+						Намери пътя към светлината!
+					</Button>
 				</div>
 				<div
-					className="col-span-3 flex flex-col items-center justify-center"
+					className="col-span-3 flex flex-col items-center justify-center md:rotate-0 rotate-90"
 					ref={mapContainerRef}
 				>
 					{grid}
@@ -129,8 +141,13 @@ const Grid = ({ gridData, path }: { gridData: DataI[][]; path: PathI }) => {
 	);
 };
 
-const getColorFromKind = (kind: number, x: number, y: number, path: PathI) => {
-	const good = path.path.find((point) => point.x === x && point.y === y);
+const getColorFromKind = (
+	kind: number,
+	x: number,
+	y: number,
+	path: PathI | null
+) => {
+	const good = path?.path.find((point) => point.x === x && point.y === y);
 	if (good) {
 		if (kind === 0) return "bg-red-300";
 		switch (kind) {
@@ -163,16 +180,13 @@ const getColorFromKind = (kind: number, x: number, y: number, path: PathI) => {
 };
 
 export function Map() {
-	const { dataPath, dataMap } = useLoaderData() as {
+	const { dataMap } = useLoaderData() as {
 		dataMap: DataI[][];
-		dataPath: PathI;
 	};
-
-	console.log(dataPath);
 
 	return (
 		<>
-			<Grid gridData={dataMap} path={dataPath} />
+			<Grid gridData={dataMap} path={null} />
 			<canvas id="map" className="hidden"></canvas>
 		</>
 	);
