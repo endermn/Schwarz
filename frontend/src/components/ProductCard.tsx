@@ -38,7 +38,7 @@ export function ProductCard(props: Product) {
 						}}
 						variant="destructive"
 					>
-						Remove from cart
+						Премахни
 					</Button>
 				) : (
 					<Button
@@ -48,7 +48,7 @@ export function ProductCard(props: Product) {
 						}}
 						variant="default"
 					>
-						Add to cart
+						Добави към количката
 					</Button>
 				)}
 			</CardFooter>

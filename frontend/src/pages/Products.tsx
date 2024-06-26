@@ -32,11 +32,11 @@ export function Products() {
 	};
 
 	const [search, setSearch] = useState("");
-	const [category, setCategory] = useState("");
+	const [category, setCategory] = useState("empty");
 
 	const filteredProducts = products.filter(
 		(p) =>
-			(p.category === category || category === "") &&
+			(p.category === category || category === "empty") &&
 			p.name
 				.toLocaleLowerCase()
 				.split(" ")
@@ -50,7 +50,7 @@ export function Products() {
 					Нашите продукти
 				</h1>
 				<div className="max-w-96">
-					<Label htmlFor="name">Fresh and sweet, everything you need</Label>
+					<Label htmlFor="name">Нашите вкусни продукти!</Label>
 					<div className="flex gap-2">
 						<Input
 							type="text"
@@ -69,9 +69,10 @@ export function Products() {
 							}}
 						>
 							<SelectTrigger className="w-64">
-								<SelectValue placeholder="Categories" />
+								<SelectValue placeholder="Категории" />
 							</SelectTrigger>
 							<SelectContent>
+								<SelectItem value={"empty"}>Всички</SelectItem>
 								{categories.map((c) => (
 									<SelectItem value={c}>{c}</SelectItem>
 								))}
