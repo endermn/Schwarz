@@ -236,6 +236,11 @@ func main() {
 			SameSite: http.SameSiteLaxMode,
 		})
 	})
+
+	mux.HandleFunc("GET /check-session", func(w http.ResponseWriter, r *http.Request) {
+		checkSesssion(w, r)
+	})
+
 	mux.HandleFunc("POST /stores/{store}/find-route", func(w http.ResponseWriter, r *http.Request) {
 		var params routeFindingParams
 		err := newJSONDecoder(r.Body).Decode(&params)
