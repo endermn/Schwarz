@@ -238,7 +238,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /check-session", func(w http.ResponseWriter, r *http.Request) {
-		checkSesssion(w, r)
+		_ = checkSesssion(w, r)
 	})
 
 	mux.HandleFunc("POST /stores/{store}/find-route", func(w http.ResponseWriter, r *http.Request) {
@@ -276,6 +276,11 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
+		session := checkSesssion(w, r)
+		if session == nil {
+			return
+		}
+
 		var params storeParams
 		err := newJSONDecoder(r.Body).Decode(&params)
 		if err != nil {
@@ -299,6 +304,7 @@ func main() {
 			Width:   getWidth(grid),
 			Grid:    encodeGrid(grid),
 			Start:   start,
+			Owner:   session.user.id,
 		})
 		if err != nil {
 			log.Printf("Failed to insert store into database: %v", err)

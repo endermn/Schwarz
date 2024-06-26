@@ -73,7 +73,7 @@ func encodeGrid(grid [][]square) []byte {
 func decodeGrid(bytes []byte, width int) [][]square {
 	height := len(bytes) / 2 / width
 	grid := make([][]square, height)
-	for y, _ := range grid {
+	for y := range height {
 		grid[y] = make([]square, width)
 		for x := range width {
 			word := uint16(bytes[(y*width+x)*2]) | uint16(bytes[(y*width+x)*2+1])<<8

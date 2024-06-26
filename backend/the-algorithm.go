@@ -30,7 +30,7 @@ func bfs(grid [][]square, start point, pointsWithItems set[point]) ([][]float64,
 	height := len(grid)
 	dist := makeGrid[float64](width, height)
 	for y, r := range dist {
-		for x, _ := range r {
+		for x := range r {
 			dist[y][x] = math.Inf(1)
 		}
 	}

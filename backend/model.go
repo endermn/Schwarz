@@ -23,4 +23,5 @@ type store struct {
 	Width   int
 	Grid    []byte
 	Start   point
+	Owner   uint64
 }
