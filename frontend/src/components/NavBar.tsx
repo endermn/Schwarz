@@ -10,7 +10,6 @@ import {
 	NavigationMenuList,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { UserNav } from "./UserNav";
 import { ModeToggle } from "./mode-toggle";
 import {
 	Sheet,
@@ -21,38 +20,20 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
-const components: { title: string; href: string; description: string }[] = [
-	// {
-	// 	title: "Sign In",
-	// 	href: "/signin",
-	// 	description: "Sign in to use all the features of our app!",
-	// },
-	{
-		title: "Начало",
-		href: "/",
-		description: "Дом сладък дом",
-	},
-	{
-		title: "Продукти",
-		href: "/products",
-		description: "",
-	},
-];
+import { MenuIcon } from "lucide-react";
 
 export function NavBar() {
 	return (
 		<div className="flex justify-between m-3">
-			<ModeToggle />
-			<NavigationMenu className="hidden md:block">
+			<div className="order-1 hidden md:block">
+				<ModeToggle />
+			</div>
+
+			{/* Big menu */}
+			<NavigationMenu className="hidden order-2 md:block">
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<Link href="/">
@@ -80,41 +61,47 @@ export function NavBar() {
 					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenu>
-			<div className="md:hidden">
+
+			{/* Mobile Haburger */}
+			<div className="md:hidden order-3">
 				<Sheet>
 					<SheetTrigger>
-						<Button variant={"outline"}>Меню</Button>
+						<Button variant={"ghost"}>
+							<MenuIcon />
+						</Button>
 					</SheetTrigger>
-					<SheetContent>
+					<SheetContent side={"left"} className="flex flex-col">
 						<SheetHeader>
-							<SheetTitle>Меню</SheetTitle>
+							<div className="flex">
+								<SheetTitle>Меню</SheetTitle>
+							</div>
 							<Separator />
-
-							<SheetDescription>
-								<Accordion type="single" collapsible className="w-full">
-									{components.map((component) => (
-										<AccordionItem value={component.title}>
-											<AccordionTrigger>{component.title}</AccordionTrigger>
-											<AccordionContent>
-												{component.description}
-											</AccordionContent>
-										</AccordionItem>
-									))}
-								</Accordion>
+							<SheetDescription className="flex flex-col">
+								<ModeToggle />
+								<a href="/">
+									<Button variant="ghost" className="w-full m-1">
+										Начало
+									</Button>
+								</a>
+								<a href="/products">
+									<Button variant="ghost" className="w-full m-1">
+										Продукти
+									</Button>
+								</a>
+								<a href="/map">
+									<Button variant="ghost" className="w-full m-1">
+										Карта
+									</Button>
+								</a>
+								<a href="/map/editor">
+									<Button variant="ghost" className="w-full m-1">
+										Редактор
+									</Button>
+								</a>
 							</SheetDescription>
-							<Button variant={"outline"}>Documentation</Button>
 						</SheetHeader>
 					</SheetContent>
 				</Sheet>
-			</div>
-			<UserNav />
-			<div>
-				<a href="/signin">
-					<Button>Влез</Button>
-				</a>
-				{/* <a className="ml-5" href="/signup"> */}
-				{/* 	<Button>Sign up</Button> */}
-				{/* </a> */}
 			</div>
 		</div>
 	);
@@ -131,7 +118,7 @@ const ListItem = React.forwardRef<
 					ref={ref}
 					className={cn(
 						"block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-						className
+						className,
 					)}
 					{...props}
 				>
