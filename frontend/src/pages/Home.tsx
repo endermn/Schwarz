@@ -12,7 +12,7 @@ export function Home() {
 					</p>
 					<div className="mt-10 flex items-center justify-center gap-x-6">
 						<a
-							href="/signup"
+							href="/products"
 							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white"
 						>
 							Пазарувай
