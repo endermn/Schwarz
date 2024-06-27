@@ -90,6 +90,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 			for (let i = 0; i < pathSlice.length; i++) {
 				let el = gridCopy[currentPath[i].y][currentPath[i].x];
 				if (i === 0) el.kind = SquareType.START;
+				else if (el.kind == SquareType.PRODUCT_VISITED) continue;
 				else if (el.kind === SquareType.PRODUCT) {
 					el.kind = SquareType.PRODUCT_VISITED;
 				} else if (el.kind === SquareType.CHECKOUT) {

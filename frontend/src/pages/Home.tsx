@@ -1,8 +1,6 @@
-import { getContext } from "@/App";
 import PartnersCarousel from "@/components/PartnersCarousel";
 
 export function Home() {
-	const context = getContext();
 	return (
 		<>
 			<div className="container mx-auto px-4 py-16 sm:py-28 md:py-40 lg:py-48">
