@@ -40,8 +40,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	const currentPath = fetcher.data?.dataPath.path as PointI[];
 
-	const gridMemo = useMemo<DataI[][]>(() => {
-		const gridCopy = JSON.parse(JSON.stringify(gridData));
+	const pathSlice = useMemo(() => {
+		const currentPath = fetcher.data?.dataPath.path as PointI[];
 		if (currentPath) {
 			const stops = currentPath.filter((poit) =>
 				[
@@ -62,7 +62,15 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y,
 						) + 1;
 
-			for (let i = 0; i < currentPath.slice(0, upTo).length; i++) {
+			return currentPath.slice(0, upTo);
+		}
+		return [];
+	}, [fetcher, gridData, pathStops]);
+
+	const gridMemo = useMemo<DataI[][]>(() => {
+		const gridCopy = JSON.parse(JSON.stringify(gridData));
+		if (currentPath && !itemRemoved && fetcher.state === "idle") {
+			for (let i = 0; i < pathSlice.length; i++) {
 				let el = gridCopy[currentPath[i].y][currentPath[i].x];
 				if (i === 0) el.kind = SquareType.START;
 				else if (el.kind === SquareType.PRODUCT) {
@@ -81,8 +89,6 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		return gridCopy;
 	}, [fetcher, pathStops, user.cart, itemRemoved]);
 
-	console.log(gridData);
-
 	const grid = gridMemo.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex w-full flex-1">
 			{row.map((cell, colIndex) => {
@@ -93,11 +99,25 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				const pointIndex = currentPath?.findIndex(
 					(square) => square.x === colIndex && square.y === rowIndex,
 				);
-				console.log("STEPS:", pathStops);
+
 				let delay = 0;
-				if (pointIndex) {
-					delay = pointIndex * 0.05;
+				if (pointIndex && pointIndex !== -1) {
+					console.log(pathSlice.length - pointIndex);
+					console.log(currentPath.length);
+					delay = (currentPath.length - (pathSlice.length - pointIndex)) * 0.05;
 				}
+
+				/*
+				if (pointIndex >= 0) {
+					const visiblePathIndex = currentPath
+						.slice(0, pathStops + 1)
+						.findIndex(
+							(square) => square.x === colIndex && square.y === rowIndex,
+						);
+					if (visiblePathIndex >= 0) {
+						delay = visiblePathIndex * 0.05;
+					}
+				}*/
 
 				return (
 					<motion.div
