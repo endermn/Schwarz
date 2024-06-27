@@ -65,7 +65,7 @@ func loadProducts(records [][]string, box *productBox) {
 		log.Printf("Failed to clear the products table: %v", err)
 		os.Exit(1)
 	}
-	lines, err := readFile("./cmd/urls.txt")
+	lines, err := readFile("./image-searcher/urls.txt")
 	if err != nil {
 		log.Printf("Did not manage to read from file: %v", err)
 	}

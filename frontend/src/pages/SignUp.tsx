@@ -47,7 +47,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 
 	const signedUp = await fakeAuthProvider.signup(
 		username as string,
-		password as string
+		password as string,
 	);
 	if (!signedUp) {
 		return {
@@ -65,9 +65,9 @@ export function SignUp() {
 	let actionData = useActionData() as Errors;
 
 	return (
-		<div className="flex justify-center items-center h-full">
-			<div className="max-w-sm w-full">
-				<Form method="post" replace className="flex flex-col gap-y-7 ">
+		<div className="flex h-full items-center justify-center">
+			<div className="w-full max-w-sm">
+				<Form method="post" replace className="flex flex-col gap-y-7">
 					<div>
 						<Label>
 							Потребителско име:{" "}
@@ -92,9 +92,9 @@ export function SignUp() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="my-2 rounded-lg flex flex-col justify-center ">
+					<div className="my-2 flex flex-col justify-center rounded-lg">
 						<button
-							className="my-2 w-full bg-blue-500 text-white py-2"
+							className="my-2 w-full bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isSigningUp}
 						>
