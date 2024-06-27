@@ -25,23 +25,23 @@ const partners: Partner[] = [
 
 	{
 		name: "Lidl",
-		image: "../../public/partners/Lidl.png",
+		image: "/partners/Lidl.png",
 	},
 	{
 		name: "Kaufland",
-		image: "../../public/partners/Kaufland.png",
+		image: "/partners/Kaufland.png",
 	},
 	{
 		name: "Schwarz",
-		image: "../../public/partners/Schwarz.png",
+		image: "/partners/Schwarz.png",
 	},
 	{
 		name: "Spge",
-		image: "../../public/partners/Spge.jpeg",
+		image: "partners/Spge.jpeg",
 	},
 	{
 		name: "Gnu",
-		image: "../../public/partners/Gnu.png",
+		image: "/partners/Gnu.png",
 	},
 ];
 

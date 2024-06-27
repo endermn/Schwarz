@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
+	// DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -28,12 +28,10 @@ export function UserNav({ user }: { user: UserI }) {
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuItem>Профил</DropdownMenuItem>
-					<DropdownMenuItem>Настройки</DropdownMenuItem>
-				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>Излез</DropdownMenuItem>
+				<a href="/signout">
+					<DropdownMenuItem>Излез</DropdownMenuItem>
+				</a>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
