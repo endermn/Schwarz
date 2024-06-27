@@ -31,7 +31,6 @@ export function UserNav({ user }: { user: UserI }) {
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuSeparator />
 				<Link to={"/signout"}>
 					<DropdownMenuItem>Излез</DropdownMenuItem>
 				</Link>

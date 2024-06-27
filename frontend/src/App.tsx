@@ -35,10 +35,12 @@ function App() {
 		setCart(cleanData);
 	};
 
+	console.log(cart);
+
 	return (
 		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 			<div className="flex h-screen flex-col">
-				<NavBar user={user} />
+				<NavBar user={user} cart={cart} />
 				<div className="flex-1">
 					<Outlet
 						context={{

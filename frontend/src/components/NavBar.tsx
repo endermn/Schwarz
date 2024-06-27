@@ -21,9 +21,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
-import { MenuIcon, XIcon } from "lucide-react";
+import { MenuIcon, ShoppingCart, XIcon } from "lucide-react";
 import { UserNav } from "./UserNav";
-import { UserI } from "@/lib/types";
+import { ProductI, UserI } from "@/lib/types";
 import { NavLink } from "react-router-dom";
 import { useState, forwardRef } from "react";
 
@@ -46,8 +46,7 @@ const pages = [
 	},
 ];
 
-export function NavBar({ user }: { user: UserI }) {
-	console.log(user);
+export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 	const [open, setOpen] = useState(false);
 	return (
 		<div className="m-2 flex justify-between p-2">
@@ -55,7 +54,6 @@ export function NavBar({ user }: { user: UserI }) {
 				<ModeToggle />
 			</div>
 
-			{/* Big menu */}
 			<NavigationMenu className="hidden md:block">
 				<NavigationMenuList>
 					{pages.map((page) => (
@@ -104,14 +102,25 @@ export function NavBar({ user }: { user: UserI }) {
 				</Sheet>
 			</div>
 
-			{/* Account or Sign in */}
-			{user?.username ? (
-				<UserNav user={user} />
-			) : (
-				<Link href="/signin">
-					<Button className="">Влез</Button>
-				</Link>
-			)}
+			<div className="flex items-center gap-2">
+				{user?.username ? (
+					<UserNav user={user} />
+				) : (
+					<Link href="/signin">
+						<Button className="">Влез</Button>
+					</Link>
+				)}
+				<NavLink to={cart.length === 0 ? "/products" : "/map"}>
+					<div className="relative inline-block">
+						<ShoppingCart size={28} />
+						{cart.length > 0 && (
+							<span className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-green-500 px-1 text-xs font-bold text-white">
+								{cart.length}
+							</span>
+						)}
+					</div>
+				</NavLink>
+			</div>
 		</div>
 	);
 }
