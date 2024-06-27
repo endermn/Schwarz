@@ -35,8 +35,14 @@ export interface ProductI {
 }
 
 export interface UserI {
+	username?: string;
+}
+
+export interface ContextI {
 	cart: ProductI[];
 	path: PathI | null;
+
+	user: UserI;
 	addToCart: (product: ProductI) => void;
 	removeFromCart: (productId: number) => void;
 }

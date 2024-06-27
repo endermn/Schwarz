@@ -2,7 +2,7 @@ import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
-import { getUser } from "@/App";
+import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,7 +29,7 @@ export async function action({ request }: any) {
 const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const user = getUser();
+	const user = getContext();
 	const [pathStops, setPathStops] = useState(user.cart.length + 1);
 	const [gridD, setGridD] = useState(gridData);
 
@@ -47,7 +47,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					SquareType.SELFCHECKOUT,
 					SquareType.SELFCHECKOUT_VISITED,
 					SquareType.EXIT,
-				].includes(gridData[poit.y][poit.x].kind)
+				].includes(gridData[poit.y][poit.x].kind),
 			);
 
 			console.log(stops);
@@ -57,8 +57,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				pathStops === -1
 					? 0
 					: currentPath.findIndex(
-							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y
-					  ) + 1;
+							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y,
+						) + 1;
 
 			const gridCopy = JSON.parse(JSON.stringify(gridData));
 

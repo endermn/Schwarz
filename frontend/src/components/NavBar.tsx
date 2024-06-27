@@ -24,8 +24,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
 import { MenuIcon } from "lucide-react";
+import { UserNav } from "./UserNav";
+import { UserI } from "@/lib/types";
 
-export function NavBar() {
+export function NavBar({ user }: { user: UserI }) {
+	console.log(user);
 	return (
 		<div className="m-3 flex justify-between">
 			<div className="hidden md:block">
@@ -104,7 +107,11 @@ export function NavBar() {
 
 			{/* Account or Sign in */}
 			<a href="/signin">
-				<Button className="">Влез</Button>
+				{user.username ? (
+					<UserNav user={user} />
+				) : (
+					<Button className="">Влез</Button>
+				)}
 			</a>
 		</div>
 	);

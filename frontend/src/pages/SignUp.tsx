@@ -1,6 +1,7 @@
 import { fakeAuthProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePersistentStorageValue } from "@/lib/useLocalStorage";
 
 import {
 	Form,
@@ -55,6 +56,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 		} as Errors;
 	}
 
+	localStorage.setItem("user", JSON.stringify({ username }));
 	return null;
 }
 
@@ -64,6 +66,16 @@ export function SignUp() {
 
 	let actionData = useActionData() as Errors;
 
+	if (
+		actionData &&
+		!actionData.password &&
+		!actionData.password &&
+		!actionData.username
+	) {
+		usePersistentStorageValue("user", {
+			username: navigation.formData?.get("username"),
+		});
+	}
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div className="w-full max-w-sm">
@@ -78,11 +90,11 @@ export function SignUp() {
 							{actionData && actionData.username ? (
 								<p style={{ color: "red" }}>{actionData.username}</p>
 							) : null}
-						</Label>{" "}
+						</Label>
 					</div>
 					<div>
 						<Label>
-							Парола:{" "}
+							Парола:
 							<Input
 								className="dark:bg-white dark:text-black"
 								name="password"
