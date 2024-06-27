@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/sha512"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,6 +17,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/objectbox/objectbox-go/objectbox"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const defaultImage = "https://www.worldplumbing.org/wp-content/uploads/2016/11/white-background-500x500.jpg"
@@ -80,15 +80,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	passwordHash := sha512.Sum512([]byte("admin"))
-	defaultUser := &user{username: "admin", passwordHash: passwordHash[:]}
+	passwordHash, _ := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
+	defaultUser := &user{username: "admin", passwordHash: passwordHash}
 	_, err = userBox.Insert(defaultUser)
 	if err != nil {
 		panic(err)
 	}
 
 	if len(os.Args) == 4 && os.Args[1] == "create-admin" {
-		passwordHash := sha512.Sum512([]byte(os.Args[3]))
+		passwordHash, _ := bcrypt.GenerateFromPassword([]byte(os.Args[3]), bcrypt.DefaultCost)
 		_, err = userBox.Put(&user{username: os.Args[2], passwordHash: passwordHash[:]})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
