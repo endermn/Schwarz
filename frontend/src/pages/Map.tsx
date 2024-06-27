@@ -36,8 +36,13 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	const fetcher = useFetcher();
 
+	const divVariants = (delay: number) => ({
+		hidden: { scale: 0 },
+		visible: { scale: 1, transition: { duration: 0.1, delay } },
+	});
+
+	const currentPath = fetcher.data?.dataPath.path as PointI[];
 	useEffect(() => {
-		const currentPath = fetcher.data?.dataPath.path as PointI[];
 		const gridCopy = JSON.parse(JSON.stringify(gridData));
 		if (currentPath && !itemRemoved && fetcher.state === "idle") {
 			const stops = currentPath.filter((poit) =>
@@ -85,14 +90,32 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	const grid = gridD.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex w-full flex-1">
-			{row.map((cell, colIndex) => (
-				<motion.div
-					key={colIndex}
-					className={`m-[1px] flex-1 shadow-md md:m-1 round-[${Math.floor(
-						Math.random() * 20,
-					)}] ${getColorFromKind(cell.kind)}`}
-				/>
-			))}
+			{row.map((cell, colIndex) => {
+				const isAnimated = [
+					SquareType.VISITED,
+					SquareType.PRODUCT_VISITED,
+				].includes(cell.kind);
+
+				const pointIndex = currentPath?.findIndex(
+					(square) => square.x === colIndex && square.y === rowIndex,
+				);
+				let delay = 0;
+				if (pointIndex) {
+					delay = pointIndex * 0.05;
+				}
+
+				return (
+					<motion.div
+						key={colIndex}
+						animate={isAnimated ? "visible" : "hidden"}
+						variants={divVariants(delay)}
+						initial={isAnimated ? "hidden" : "visible"}
+						className={`m-[1px] flex-1 shadow-md md:m-1 round-[${Math.floor(
+							Math.random() * 20,
+						)}] ${getColorFromKind(cell.kind)}`}
+					/>
+				);
+			})}
 		</div>
 	));
 
