@@ -1,14 +1,13 @@
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet, useLoaderData, useOutletContext } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
 import { ThemeProvider } from "./components/theme-provider";
 import { Footer } from "./components/Footer";
 import { useState } from "react";
 import { ContextI, ProductI, UserI } from "@/lib/types";
-import { usePersistentStorageValue } from "./lib/useLocalStorage";
 
 function App() {
 	const [cart, setCart] = useState<ProductI[]>([]);
-	const [user, setUser] = usePersistentStorageValue<UserI>("user");
+	const user = useLoaderData() as UserI; // no username -> no user
 
 	const addToCart = (product: ProductI) => {
 		setCart((prevCart) => [...prevCart, product]);
@@ -30,7 +29,6 @@ function App() {
 							removeFromCart,
 							paht: null,
 							user,
-							setUser,
 						}}
 					/>
 				</div>

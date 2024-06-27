@@ -36,7 +36,7 @@ export interface ProductI {
 }
 
 export interface UserI {
-	username?: string;
+	username: string | null;
 }
 
 export interface ContextI {

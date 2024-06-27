@@ -10,14 +10,6 @@ import {
 	useNavigation,
 } from "react-router-dom";
 
-export async function signUpLoader() {
-	if (localStorage.getItem("user")) {
-		return redirect("/");
-	}
-
-	return null;
-}
-
 type Errors = {
 	password?: string;
 	username?: string;
