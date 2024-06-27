@@ -12,8 +12,8 @@ import {
 } from "react-router-dom";
 
 export async function loginLoader() {
-	if (fakeAuthProvider.isAuthenticated) {
-		return redirect("/dashboard");
+	if (localStorage.getItem("user")) {
+		return redirect("/");
 	}
 
 	return null;

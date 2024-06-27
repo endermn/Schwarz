@@ -107,7 +107,7 @@ export function NavBar({ user }: { user: UserI }) {
 
 			{/* Account or Sign in */}
 			<a href="/signin">
-				{user.username ? (
+				{user?.username ? (
 					<UserNav user={user} />
 				) : (
 					<Button className="">Влез</Button>
