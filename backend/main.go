@@ -74,6 +74,17 @@ func main() {
 
 	var defaultStoreID uint64
 
+	_, err = userBox.Query(user_.username.Equals("admin", true)).Remove()
+	if err != nil {
+		panic(err)
+	}
+	passwordHash := sha512.Sum512([]byte("admin"))
+	defaultUser := &user{username: "admin", passwordHash: passwordHash[:]}
+	_, err = userBox.Insert(defaultUser)
+	if err != nil {
+		panic(err)
+	}
+
 	if len(os.Args) == 4 && os.Args[1] == "create-admin" {
 		passwordHash := sha512.Sum512([]byte(os.Args[3]))
 		_, err = userBox.Put(&user{username: os.Args[2], passwordHash: passwordHash[:]})
@@ -84,7 +95,7 @@ func main() {
 		return
 	} else if len(os.Args) == 3 {
 		records := readRecordsFromCSV(os.Args[1])
-		loadProducts(records, productBox)
+		loadProducts(records, productBox, defaultUser)
 
 		storeText, err := os.ReadFile(os.Args[2])
 		if err != nil {
@@ -114,16 +125,6 @@ func main() {
 	} else {
 		fmt.Println("usage:", os.Args[0], "(create-admin <username> <password> | <products.csv> <store.csv>)")
 		os.Exit(1)
-	}
-
-	_, err = userBox.Query(user_.username.Equals("admin", true)).Remove()
-	if err != nil {
-		panic(err)
-	}
-	passwordHash := sha512.Sum512([]byte("admin"))
-	_, err = userBox.Insert(&user{username: "admin", passwordHash: passwordHash[:]})
-	if err != nil {
-		panic(err)
 	}
 
 	mux := http.NewServeMux()

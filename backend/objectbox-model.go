@@ -16,6 +16,7 @@ func ObjectBoxModel() *objectbox.Model {
 	model.RegisterBinding(productBinding)
 	model.RegisterBinding(storeBinding)
 	model.LastEntityId(3, 951846619275233843)
+	model.LastIndexId(1, 7204456745477744477)
 
 	return model
 }

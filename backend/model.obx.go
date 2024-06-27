@@ -363,11 +363,13 @@ var productBinding = product_EntityInfo{
 
 // product_ contains type-based Property helpers to facilitate some common operations such as Queries.
 var product_ = struct {
-	id        *objectbox.PropertyUint64
-	ProductID *objectbox.PropertyInt
-	Category  *objectbox.PropertyString
-	Name      *objectbox.PropertyString
-	ImageURL  *objectbox.PropertyString
+	id          *objectbox.PropertyUint64
+	ProductID   *objectbox.PropertyInt
+	Category    *objectbox.PropertyString
+	Name        *objectbox.PropertyString
+	ImageURL    *objectbox.PropertyString
+	IsGoldenEgg *objectbox.PropertyBool
+	Owner       *objectbox.RelationToOne
 }{
 	id: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -399,6 +401,19 @@ var product_ = struct {
 			Entity: &productBinding.Entity,
 		},
 	},
+	IsGoldenEgg: &objectbox.PropertyBool{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     6,
+			Entity: &productBinding.Entity,
+		},
+	},
+	Owner: &objectbox.RelationToOne{
+		Property: &objectbox.BaseProperty{
+			Id:     10,
+			Entity: &productBinding.Entity,
+		},
+		Target: &userBinding.Entity,
+	},
 }
 
 // GeneratorVersion is called by ObjectBox to verify the compatibility of the generator used to generate this code
@@ -415,7 +430,11 @@ func (product_EntityInfo) AddToModel(model *objectbox.Model) {
 	model.Property("Category", 9, 3, 5517858282805562198)
 	model.Property("Name", 9, 4, 1335036859670648677)
 	model.Property("ImageURL", 9, 5, 5812541690724631292)
-	model.EntityLastPropertyId(5, 5812541690724631292)
+	model.Property("IsGoldenEgg", 1, 6, 5408075221887068005)
+	model.Property("Owner", 11, 10, 4934046679137846153)
+	model.PropertyFlags(520)
+	model.PropertyRelation("user", 1, 7204456745477744477)
+	model.EntityLastPropertyId(10, 4934046679137846153)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -431,6 +450,16 @@ func (product_EntityInfo) SetId(object interface{}, id uint64) error {
 
 // PutRelated is called by ObjectBox to put related entities before the object itself is flattened and put
 func (product_EntityInfo) PutRelated(ob *objectbox.ObjectBox, object interface{}, id uint64) error {
+	if rel := object.(*product).Owner; rel != nil {
+		if rId, err := userBinding.GetId(rel); err != nil {
+			return err
+		} else if rId == 0 {
+			// NOTE Put/PutAsync() has a side-effect of setting the rel.ID
+			if _, err := BoxForuser(ob).Put(rel); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -441,13 +470,26 @@ func (product_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, 
 	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
 	var offsetImageURL = fbutils.CreateStringOffset(fbb, obj.ImageURL)
 
+	var rIdOwner uint64
+	if rel := obj.Owner; rel != nil {
+		if rId, err := userBinding.GetId(rel); err != nil {
+			return err
+		} else {
+			rIdOwner = rId
+		}
+	}
+
 	// build the FlatBuffers object
-	fbb.StartObject(5)
+	fbb.StartObject(10)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetInt64Slot(fbb, 1, int64(obj.ProductID))
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetCategory)
 	fbutils.SetUOffsetTSlot(fbb, 3, offsetName)
 	fbutils.SetUOffsetTSlot(fbb, 4, offsetImageURL)
+	fbutils.SetBoolSlot(fbb, 5, obj.IsGoldenEgg)
+	if obj.Owner != nil {
+		fbutils.SetUint64Slot(fbb, 9, rIdOwner)
+	}
 	return nil
 }
 
@@ -464,12 +506,23 @@ func (product_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface
 
 	var propid = table.GetUint64Slot(4, 0)
 
+	var relOwner *user
+	if rId := fbutils.GetUint64PtrSlot(table, 22); rId != nil && *rId > 0 {
+		if rObject, err := BoxForuser(ob).Get(*rId); err != nil {
+			return nil, err
+		} else {
+			relOwner = rObject
+		}
+	}
+
 	return &product{
-		id:        propid,
-		ProductID: fbutils.GetIntSlot(table, 6),
-		Category:  fbutils.GetStringSlot(table, 8),
-		Name:      fbutils.GetStringSlot(table, 10),
-		ImageURL:  fbutils.GetStringSlot(table, 12),
+		id:          propid,
+		ProductID:   fbutils.GetIntSlot(table, 6),
+		Category:    fbutils.GetStringSlot(table, 8),
+		Name:        fbutils.GetStringSlot(table, 10),
+		ImageURL:    fbutils.GetStringSlot(table, 12),
+		IsGoldenEgg: fbutils.GetBoolSlot(table, 14),
+		Owner:       relOwner,
 	}, nil
 }
 

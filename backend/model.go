@@ -10,11 +10,13 @@ type user struct {
 }
 
 type product struct {
-	id        uint64
-	ProductID int    `json:"id"`
-	Category  string `json:"category"`
-	Name      string `json:"name"`
-	ImageURL  string `json:"imageURL"`
+	id          uint64
+	ProductID   int    `json:"id"`
+	Category    string `json:"category"`
+	Name        string `json:"name"`
+	ImageURL    string `json:"imageURL"`
+	IsGoldenEgg bool   `json:"isGoldenEgg"`
+	Owner       *user  `objectbox:"link"`
 }
 
 type store struct {

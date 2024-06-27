@@ -28,7 +28,7 @@
     },
     {
       "id": "2:758365456359428036",
-      "lastPropertyId": "5:5812541690724631292",
+      "lastPropertyId": "10:4934046679137846153",
       "name": "product",
       "properties": [
         {
@@ -56,6 +56,19 @@
           "id": "5:5812541690724631292",
           "name": "ImageURL",
           "type": 9
+        },
+        {
+          "id": "6:5408075221887068005",
+          "name": "IsGoldenEgg",
+          "type": 1
+        },
+        {
+          "id": "10:4934046679137846153",
+          "name": "Owner",
+          "indexId": "1:7204456745477744477",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "user"
         }
       ]
     },
@@ -110,13 +123,17 @@
     }
   ],
   "lastEntityId": "3:951846619275233843",
-  "lastIndexId": "",
+  "lastIndexId": "1:7204456745477744477",
   "lastRelationId": "",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    8748088617385218217,
+    7830096473106622296,
+    8845914807361689754
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

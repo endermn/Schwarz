@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -58,13 +59,12 @@ func extractURL(line string) string {
 	return line[startIndex : startIndex+endIndex]
 }
 
-func loadProducts(records [][]string, box *productBox) {
-
-	err := box.RemoveAll()
-	if err != nil {
-		log.Printf("Failed to clear the products table: %v", err)
-		os.Exit(1)
-	}
+func loadProducts(records [][]string, box *productBox, defaultUser *user) {
+	// err := box.RemoveAll()
+	// if err != nil {
+	// 	log.Printf("Failed to clear the products table: %v", err)
+	// 	os.Exit(1)
+	// }
 	lines, err := readFile("./image-searcher/urls.txt")
 	if err != nil {
 		log.Printf("Did not manage to read from file: %v", err)
@@ -78,11 +78,18 @@ func loadProducts(records [][]string, box *productBox) {
 		}
 		url := extractURL(lines[i])
 
+		_, err = box.Query(product_.ProductID.Equals(id)).Remove()
+		if err != nil {
+			log.Printf("failed to remove product: %v", err)
+			os.Exit(1)
+		}
 		activeProduct := &product{
-			ProductID: id,
-			Category:  record[1],
-			Name:      record[2],
-			ImageURL:  url,
+			ProductID:   id,
+			Category:    record[1],
+			Name:        record[2],
+			ImageURL:    url,
+			IsGoldenEgg: slices.Contains(eggs, id),
+			Owner:       defaultUser,
 		}
 		_, err = box.Put(activeProduct)
 		if err != nil {
