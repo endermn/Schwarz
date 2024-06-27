@@ -92,7 +92,7 @@ func logIn(w http.ResponseWriter, user *user) {
 		Value:    encodedSessionID,
 		Path:     "/",
 		Expires:  time.Now().Add(sessionDuration),
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	})
 }
 
