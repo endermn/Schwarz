@@ -27,13 +27,13 @@ import { MenuIcon } from "lucide-react";
 
 export function NavBar() {
 	return (
-		<div className="flex justify-between m-3">
+		<div className="m-3 flex justify-between">
 			<div className="hidden md:block">
 				<ModeToggle />
 			</div>
 
 			{/* Big menu */}
-			<NavigationMenu className="hidden  md:block">
+			<NavigationMenu className="hidden md:block">
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<Link href="/">
@@ -61,7 +61,7 @@ export function NavBar() {
 			</NavigationMenu>
 
 			{/* Mobile Haburger */}
-			<div className="md:hidden order-3">
+			<div className="order-3 md:hidden">
 				<ModeToggle />
 				<Sheet>
 					<SheetTrigger>
@@ -69,30 +69,30 @@ export function NavBar() {
 							<MenuIcon />
 						</Button>
 					</SheetTrigger>
-					<SheetContent side={"right"} className="flex flex-col w-1/3">
+					<SheetContent side={"right"} className="flex w-1/3 flex-col">
 						<SheetHeader>
-							<div className="flex justify-between items-center">
+							<div className="flex items-center justify-between">
 								<SheetTitle>Меню</SheetTitle>
 							</div>
 							<Separator />
 							<SheetDescription className="flex flex-col">
 								<a href="/">
-									<Button variant="ghost" className="w-full m-1">
+									<Button variant="ghost" className="m-1 w-full">
 										Начало
 									</Button>
 								</a>
 								<a href="/products">
-									<Button variant="ghost" className="w-full m-1">
+									<Button variant="ghost" className="m-1 w-full">
 										Продукти
 									</Button>
 								</a>
 								<a href="/map">
-									<Button variant="ghost" className="w-full m-1">
+									<Button variant="ghost" className="m-1 w-full">
 										Карта
 									</Button>
 								</a>
 								<a href="/map/editor">
-									<Button variant="ghost" className="w-full m-1">
+									<Button variant="ghost" className="m-1 w-full">
 										Редактор
 									</Button>
 								</a>

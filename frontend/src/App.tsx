@@ -18,7 +18,7 @@ function App() {
 
 	return (
 		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-			<div className="flex flex-col h-screen">
+			<div className="flex h-screen flex-col">
 				<NavBar />
 				<div className="flex-1">
 					<Outlet context={{ cart, addToCart, removeFromCart, paht: null }} />

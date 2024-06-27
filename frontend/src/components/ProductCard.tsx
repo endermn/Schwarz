@@ -9,23 +9,20 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { getUser } from "@/App";
+import { ProductI } from "@/lib/types";
 
-type Product = {
-	id: number;
-	name: string;
-	category: string;
-};
-
-export function ProductCard(props: Product) {
-	const { name, category, id } = props;
+export function ProductCard(props: ProductI) {
+	const { name, category, id, imageURL } = props;
 	const user = getUser();
 
 	const inCart = user.cart.find((p) => p.id === id);
 
 	return (
-		<Card className="w-full flex flex-col justify-evenly items-center">
+		<Card className="flex w-full flex-col items-center justify-evenly">
 			<CardHeader className="text-center">
 				<CardTitle>{name}</CardTitle>
+				{/* Uncomment for images */}
+				{/* <img src={imageURL} alt="image" /> */}
 			</CardHeader>
 			<CardContent>
 				<CardDescription>{category}</CardDescription>
@@ -44,7 +41,7 @@ export function ProductCard(props: Product) {
 					<Button
 						onClick={() => {
 							console.log("test");
-							user.addToCart({ category, id, name });
+							user.addToCart({ category, id, name, imageURL });
 						}}
 						variant="default"
 					>

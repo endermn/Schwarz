@@ -40,13 +40,13 @@ export function Products() {
 			p.name
 				.toLocaleLowerCase()
 				.split(" ")
-				.some((word) => word.startsWith(search))
+				.some((word) => word.startsWith(search)),
 	);
 
 	return (
 		<>
 			<div className="container">
-				<div className="flex justify-center items-center flex-col gap-3 m-4">
+				<div className="m-4 flex flex-col items-center justify-center gap-3">
 					<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
 						Нашите продукти
 					</h1>
@@ -89,6 +89,7 @@ export function Products() {
 							id={p.id}
 							category={p.category}
 							name={p.name}
+							imageURL={p.imageURL}
 						></ProductCard>
 					))
 				) : (

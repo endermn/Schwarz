@@ -22,7 +22,7 @@ export function MapEditor() {
 	}, [sliderY, sliderX]);
 
 	const emptyMap = Array.from({ length: sliderX }).map(() =>
-		Array.from({ length: sliderY })
+		Array.from({ length: sliderY }),
 	);
 
 	const grid = emptyMap.map((row, rowIndex) => (
@@ -30,9 +30,9 @@ export function MapEditor() {
 			{row.map((_, colIndex) => (
 				<motion.div
 					key={colIndex}
-					className={`w-4 h-4 m-1 shadow-md round-[${Math.floor(
-						Math.random() * 20
-					)}]  bg-slate-500`}
+					className={`m-1 h-4 w-4 shadow-md round-[${Math.floor(
+						Math.random() * 20,
+					)}] bg-slate-500`}
 					initial={{ scale: 0 }}
 					animate={controls}
 					onClick={(e) => {

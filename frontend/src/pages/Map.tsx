@@ -5,6 +5,7 @@ import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
@@ -54,29 +55,29 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	console.log(gridData);
 
 	const grid = gridD.map((row, rowIndex) => (
-		<div key={rowIndex} className="flex flex-1 w-full">
+		<div key={rowIndex} className="flex w-full flex-1">
 			{row.map((cell, colIndex) => (
 				<motion.div
 					key={colIndex}
-					className={` md:m-1 m-[1px] flex-1 shadow-md round-[${Math.floor(
-						Math.random() * 20
-					)}]  ${getColorFromKind(cell.kind)}`}
+					className={`m-[1px] flex-1 shadow-md md:m-1 round-[${Math.floor(
+						Math.random() * 20,
+					)}] ${getColorFromKind(cell.kind)}`}
 				/>
 			))}
 		</div>
 	));
 
 	return (
-		<div className="flex justify-center items-center h-full">
-			<div className="grid grid-cols-1 lg:grid-cols-4 w-full md:min-h-[80vh]">
-				<div className="col-span-1 flex md:flex-col justify-center items-center">
+		<div className="flex h-full items-center justify-center">
+			<div className="grid w-full grid-cols-1 md:min-h-[80vh] lg:grid-cols-4">
+				<div className="col-span-1 flex items-center justify-center md:flex-col">
 					<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
 						Продукти
 					</h2>
-					<ul className="my-6 ml-6 list-disc [&>li]:mt-2">
+					<ScrollArea className="my-6 ml-6 h-[50vh]">
 						{user.cart.map((p) => {
 							return (
-								<li>
+								<li className="my-3">
 									{p.name}
 									<XIcon
 										className="inline size-4 cursor-pointer"
@@ -85,15 +86,15 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 								</li>
 							);
 						})}
-					</ul>
-					<div className="flex justify-between w-1/4">
+					</ScrollArea>
+					<div className="flex w-1/4 justify-between">
 						<ArrowLeft
 							onClick={() => {
 								if (pathStops > 0) {
 									setPathStops((prevState) => prevState - 1);
 								}
 							}}
-							className="inline size-8 font-bold cursor-pointer"
+							className="inline size-8 cursor-pointer font-bold"
 						/>
 						<ArrowRight
 							onClick={() => {
@@ -102,7 +103,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									setPathStops((prevState) => prevState + 1);
 								}
 							}}
-							className="inline size-8 font-bold cursor-pointer"
+							className="inline size-8 cursor-pointer font-bold"
 						/>
 					</div>
 					<fetcher.Form method="post">
@@ -115,7 +116,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						</Button>
 					</fetcher.Form>
 				</div>
-				<div className="col-span-3 flex flex-col items-center justify-center p-5 h-[60vw] max-h-[80vh]">
+				<div className="col-span-3 flex h-[60vw] max-h-[80vh] flex-col items-center justify-center p-5">
 					{grid}
 					<h1 className="hidden md:hidden">{0}</h1>
 				</div>
