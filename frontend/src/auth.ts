@@ -19,8 +19,6 @@ export const authProvider: AuthProvider = {
 			return false;
 		}
 
-		const data = await res.json();
-
 		return true;
 	},
 
@@ -50,8 +48,6 @@ export const authProvider: AuthProvider = {
 		if (res.status == 400) {
 			return false;
 		}
-
-		const data = await res.json();
 
 		return true;
 	},
