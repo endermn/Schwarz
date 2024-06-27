@@ -126,6 +126,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							})}
 						</ScrollArea>
 					</div>
+
 					<div className="flex flex-col gap-y-5">
 						<fetcher.Form method="post">
 							<Button
@@ -152,7 +153,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							<span>
 								{user.cart.length !== 0 && (
 									<span>
-										{fetcher.data ? pathStops + 1 : 0} / {user.cart.length + 3}
+										{fetcher.data && !itemRemoved ? pathStops + 1 : 0} /{" "}
+										{user.cart.length + 3}
 									</span>
 								)}
 							</span>
