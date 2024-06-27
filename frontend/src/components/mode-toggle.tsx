@@ -3,8 +3,6 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
@@ -27,15 +25,6 @@ export function ModeToggle() {
 					<span className="sr-only">Тема</span>
 				</Button>
 			</DropdownMenuTrigger>
-			{/* <DropdownMenuContent align="end">
-				<DropdownMenuItem onClick={() => setTheme("light")}>
-					Светла
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme("dark")}>
-					Тъмна
-				</DropdownMenuItem>
-
-			</DropdownMenuContent> */}
 		</DropdownMenu>
 	);
 }

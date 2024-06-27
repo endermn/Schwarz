@@ -151,12 +151,29 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	const productLegend = [
 		{
+			kind: SquareType.START,
+			name: "Вход",
+		},
+		{
+			kind: SquareType.BLOCAKDE,
+			name: "Стена",
+		},
+		{
+			kind: SquareType.EMPTY,
+			name: "Празен път",
+		},
+
+		{
+			kind: SquareType.VISITED,
+			name: "Изминат път",
+		},
+		{
 			kind: SquareType.PRODUCT,
 			name: "Продукт",
 		},
 		{
-			kind: SquareType.BLOCAKDE,
-			name: "Блокада",
+			kind: SquareType.PRODUCT_VISITED,
+			name: "Посетен продукт",
 		},
 		{
 			kind: SquareType.CHECKOUT,
@@ -166,22 +183,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 			kind: SquareType.CHECKOUT_VISITED,
 			name: "Посетена каса",
 		},
-		{
-			kind: SquareType.EMPTY,
-			name: "Празен път",
-		},
-		{
-			kind: SquareType.EXIT,
-			name: "Изход",
-		},
-		{
-			kind: SquareType.EXIT_VISITED,
-			name: "Изход посетен",
-		},
-		{
-			kind: SquareType.PRODUCT_VISITED,
-			name: "Посетен продукт",
-		},
+
 		{
 			kind: SquareType.SELFCHECKOUT,
 			name: "Каса на самообслужване",
@@ -190,13 +192,14 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 			kind: SquareType.SELFCHECKOUT_VISITED,
 			name: "Посетена каса на самообслужване",
 		},
+
 		{
-			kind: SquareType.START,
-			name: "Вход",
+			kind: SquareType.EXIT,
+			name: "Изход",
 		},
 		{
-			kind: SquareType.VISITED,
-			name: "Посетено място",
+			kind: SquareType.EXIT_VISITED,
+			name: "Изход посетен",
 		},
 	];
 
@@ -222,34 +225,32 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						</h2>
 						<ScrollArea className="my-6 ml-6 h-[25vh] md:h-[50vh]">
 							<AnimatePresence mode="popLayout">
-								{user.cart.map((p) => {
-									return (
-										<motion.div
-											key={p.id}
-											layout
-											initial={{ opacity: 0, x: -400, scale: 0.5 }}
-											animate={{ opacity: 1, x: 0, scale: 1 }}
-											exit={{ opacity: 0, x: 200, scale: 1.2 }}
-											transition={{ duration: 0.6, type: "spring" }}
-											className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70"
-										>
-											{p.name}
-											<XIcon
-												className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
-												onClick={() => {
-													user.removeFromCart(p.id);
-													setItemRemoved(true);
-													setPathStops((prevPath) => prevPath - 1);
-												}}
-											/>
-										</motion.div>
-									);
-								})}
+								{user.cart.map((p) => (
+									<motion.div
+										key={p.id}
+										layout
+										initial={{ opacity: 0, x: -400, scale: 0.5 }}
+										animate={{ opacity: 1, x: 0, scale: 1 }}
+										exit={{ opacity: 0, x: 200, scale: 1.2 }}
+										transition={{ duration: 0.6, type: "spring" }}
+										className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70"
+									>
+										{p.name}
+										<XIcon
+											className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
+											onClick={() => {
+												user.removeFromCart(p.id);
+												setItemRemoved(true);
+												setPathStops((prevPath) => prevPath - 1);
+											}}
+										/>
+									</motion.div>
+								))}
 							</AnimatePresence>
 						</ScrollArea>
 					</div>
 
-					<div className="flex flex-col gap-y-5">
+					<div className="flex max-w-[80vw] flex-col gap-y-5">
 						<div className="flex gap-4">
 							<AlertDialog open={legendOpen}>
 								<AlertDialogTrigger>
@@ -264,12 +265,15 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									<AlertDialogHeader>
 										<AlertDialogTitle>Легенда на картата</AlertDialogTitle>
 										<AlertDialogDescription>
-											<div className="grid grid-cols-2 items-center">
+											<div className="grid grid-cols-1 items-center md:grid-cols-2">
 												{productLegend.map((product) => {
 													return (
-														<div className="flex items-center gap-2">
+														<div
+															key={product.name}
+															className="flex h-full text-balance border-b-2 border-b-black/20 py-2"
+														>
 															<div
-																className={`h-4 w-4 border-2 border-black dark:border-white ${getColorFromKind(product.kind)}`}
+																className={`mr-3 h-4 w-4 border-2 border-black dark:border-white ${getColorFromKind(product.kind)}`}
 															></div>
 															{product.name}
 														</div>
