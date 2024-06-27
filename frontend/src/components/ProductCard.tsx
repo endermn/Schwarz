@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
-import { getUser } from "@/App";
+import { getContext } from "@/App";
 import { ProductI } from "@/lib/types";
 
 export function ProductCard(props: ProductI) {
 	const { name, category, id, imageURL } = props;
-	const user = getUser();
+	const user = getContext();
 
 	const inCart = user.cart.find((p) => p.id === id);
 

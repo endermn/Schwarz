@@ -1,4 +1,7 @@
+import { getContext } from "@/App";
+
 export function Home() {
+	const context = getContext();
 	return (
 		<div>
 			<div className="mx-auto max-w-2xl py-32 sm:py-48 md:py-56">

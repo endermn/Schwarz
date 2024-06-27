@@ -1,6 +1,7 @@
 import { fakeAuthProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePersistentStorageValue } from "@/lib/useLocalStorage";
 
 import {
 	Form,
@@ -51,10 +52,11 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 	);
 	if (!signedUp) {
 		return {
-			signingUp: "There was an error when signing up",
+			signingUp: "Възникна проблем повреме на регистрацията",
 		} as Errors;
 	}
 
+	localStorage.setItem("user", JSON.stringify({ username }));
 	return null;
 }
 
@@ -64,6 +66,16 @@ export function SignUp() {
 
 	let actionData = useActionData() as Errors;
 
+	if (
+		actionData &&
+		!actionData.password &&
+		!actionData.password &&
+		!actionData.username
+	) {
+		usePersistentStorageValue("user", {
+			username: navigation.formData?.get("username"),
+		});
+	}
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div className="w-full max-w-sm">
@@ -72,19 +84,19 @@ export function SignUp() {
 						<Label>
 							Потребителско име:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="username"
 							/>
 							{actionData && actionData.username ? (
 								<p style={{ color: "red" }}>{actionData.username}</p>
 							) : null}
-						</Label>{" "}
+						</Label>
 					</div>
 					<div>
 						<Label>
-							Парола:{" "}
+							Парола:
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="password"
 							/>
 							{actionData && actionData.password ? (
@@ -92,13 +104,13 @@ export function SignUp() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="my-2 flex flex-col justify-center rounded-lg">
+					<div className="flex flex-col justify-center rounded-lg">
 						<button
-							className="my-2 w-full bg-blue-500 py-2 text-white"
+							className="mb-1 w-full rounded bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isSigningUp}
 						>
-							{isSigningUp ? "Влизане..." : "Влез"}
+							{isSigningUp ? "Регистриране..." : "Регистрирай се"}
 						</button>
 						<Label>
 							{actionData && actionData.signingUp ? (

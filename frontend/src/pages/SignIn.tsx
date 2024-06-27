@@ -1,6 +1,8 @@
 import { fakeAuthProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePersistentStorageValue } from "@/lib/useLocalStorage";
+
 import {
 	Form,
 	LoaderFunctionArgs,
@@ -54,6 +56,7 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
 		} as Errors;
 	}
 
+	localStorage.setItem("user", JSON.stringify({ username }));
 	return null;
 }
 
@@ -62,6 +65,16 @@ export function SignIn() {
 	let isLoggingIn = navigation.formData?.get("username") != null;
 
 	let actionData = useActionData() as Errors;
+	if (
+		actionData &&
+		!actionData.password &&
+		!actionData.password &&
+		!actionData.username
+	) {
+		usePersistentStorageValue("user", {
+			username: navigation.formData?.get("username"),
+		});
+	}
 
 	return (
 		<div className="flex h-full items-center justify-center">
@@ -71,7 +84,7 @@ export function SignIn() {
 						<Label>
 							Потребителско име:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="username"
 							/>
 							{actionData && actionData.username ? (
@@ -83,7 +96,7 @@ export function SignIn() {
 						<Label>
 							Парола:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="password"
 							/>
 							{actionData && actionData.password ? (
@@ -91,9 +104,9 @@ export function SignIn() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="my-2 flex flex-col justify-center rounded-lg">
+					<div className="flex flex-col justify-center rounded-lg">
 						<button
-							className="my-2 w-full bg-blue-500 py-2 text-white"
+							className="mb-1 w-full rounded bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isLoggingIn}
 						>

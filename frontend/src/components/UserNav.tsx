@@ -1,3 +1,4 @@
+import { getContext } from "@/App";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +10,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { UserI } from "@/lib/types";
 
-export function UserNav() {
+export function UserNav({ user }: { user: UserI }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger>
@@ -23,10 +25,7 @@ export function UserNav() {
 			<DropdownMenuContent className="w-56" align="end" forceMount>
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
-						<p className="text-sm font-medium leading-none">Stoyan Kukev</p>
-						<p className="text-xs leading-none text-muted-foreground">
-							samokukata@gotin.pitch
-						</p>
+						<p className="text-sm font-medium leading-none">{user.username}</p>
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
