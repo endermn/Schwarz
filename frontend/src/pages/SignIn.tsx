@@ -1,12 +1,4 @@
 import { fakeAuthProvider } from "@/auth";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -58,7 +50,7 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
 	);
 	if (!signedIn) {
 		return {
-			signingIn: "Yo shit aint right dawg",
+			signingIn: "Грешно потребителско име или парола",
 		} as Errors;
 	}
 
@@ -73,27 +65,40 @@ export function SignIn() {
 
 	return (
 		<div className="flex justify-center items-center h-full">
-			<div>
-				<Form method="post" replace>
-					<input type="hidden" name="redirectTo" />
-					<Label>
-						Username: <input name="username" />
-						{actionData && actionData.username ? (
-							<p style={{ color: "red" }}>{actionData.username}</p>
+			<div className="max-w-sm w-full">
+				<Form method="post" replace className="flex flex-col gap-y-7 ">
+					<div>
+						<Label>
+							Потребителско име:{" "}
+							<Input
+								className="dark:bg-white dark:text-black"
+								name="username"
+							/>
+							{actionData && actionData.username ? (
+								<p style={{ color: "red" }}>{actionData.username}</p>
+							) : null}
+						</Label>{" "}
+					</div>
+					<div>
+						<Label>
+							Парола:{" "}
+							<Input
+								className="dark:bg-white dark:text-black"
+								name="password"
+							/>
+							{actionData && actionData.password ? (
+								<p style={{ color: "red" }}>{actionData.password}</p>
+							) : null}
+						</Label>{" "}
+					</div>
+					<div className="w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
+						<button type="submit" disabled={isLoggingIn}>
+							{isLoggingIn ? "Влизане..." : "Влез"}
+						</button>
+						{actionData && actionData.signingIn ? (
+							<p style={{ color: "red" }}>{actionData.signingIn}</p>
 						) : null}
-					</Label>{" "}
-					<Label>
-						Password: <input name="password" />
-						{actionData && actionData.password ? (
-							<p style={{ color: "red" }}>{actionData.password}</p>
-						) : null}
-					</Label>{" "}
-					{actionData && actionData.signingIn ? (
-						<p style={{ color: "red" }}>{actionData.signingIn}</p>
-					) : null}
-					<button type="submit" disabled={isLoggingIn}>
-						{isLoggingIn ? "Logging in..." : "Login"}
-					</button>
+					</div>
 				</Form>
 			</div>
 		</div>
