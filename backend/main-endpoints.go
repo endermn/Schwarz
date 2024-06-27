@@ -10,11 +10,8 @@ import (
 	"time"
 )
 
-<<<<<<< HEAD
 const defaultImage = "https://www.worldplumbing.org/wp-content/uploads/2016/11/white-background-500x500.jpg"
 
-=======
->>>>>>> main
 type routeFindingParams struct {
 	Products []int `json:"products"`
 }
@@ -71,7 +68,6 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 		json.NewEncoder(w).Encode(categories.toArray())
 	})
 
-<<<<<<< HEAD
 	mux.HandleFunc("POST /users/{user}/products", func(w http.ResponseWriter, r *http.Request) {
 		username := r.PathValue("user")
 
@@ -121,10 +117,6 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 		}
 
 		products, err := productBox.Query(product_.Owner.Equals(users[0].id)).Find()
-=======
-	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
-		products, err := productBox.GetAll()
->>>>>>> main
 		if err != nil {
 			log.Println("Failed to get products:", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -155,11 +147,7 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 			log.Printf("Failed to get store: %v", err)
 			return
 		}
-<<<<<<< HEAD
 		json.NewEncoder(w).Encode(decodeGrid(store.grid, store.width))
-=======
-		json.NewEncoder(w).Encode(decodeGrid(store.Grid, store.Width))
->>>>>>> main
 	})
 
 	mux.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
@@ -188,17 +176,10 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 		id, err := storeBox.Insert(&store{
 			Name:    params.Name,
 			Address: params.Address,
-<<<<<<< HEAD
 			width:   getWidth(grid),
 			grid:    encodeGrid(grid),
 			start:   start,
 			owner:   user.id,
-=======
-			Width:   getWidth(grid),
-			Grid:    encodeGrid(grid),
-			Start:   start,
-			Owner:   user.id,
->>>>>>> main
 		})
 		if err != nil {
 			log.Printf("Failed to insert store into database: %v", err)
@@ -225,11 +206,7 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 			return
 		}
 
-<<<<<<< HEAD
 		if user.id != activeStore.owner {
-=======
-		if user.id != activeStore.Owner {
->>>>>>> main
 			log.Printf("User with id: %v is not the owner of this store", user.id)
 			http.Error(w, "Invalid user", http.StatusBadRequest)
 			return
@@ -256,15 +233,9 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 			ID:      storeID,
 			Name:    params.Name,
 			Address: params.Address,
-<<<<<<< HEAD
 			width:   getWidth(grid),
 			grid:    encodeGrid(grid),
 			start:   start,
-=======
-			Width:   getWidth(grid),
-			Grid:    encodeGrid(grid),
-			Start:   start,
->>>>>>> main
 		})
 		if err != nil {
 			log.Printf("Failed to update store: %v", err)
@@ -297,11 +268,7 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 			products[productID] = struct{}{}
 		}
 		begin := time.Now()
-<<<<<<< HEAD
 		path := theAlgorithm(decodeGrid(store.grid, store.width), store.start, products)
-=======
-		path := theAlgorithm(decodeGrid(store.Grid, store.Width), store.Start, products)
->>>>>>> main
 		log.Println("solving time:", time.Since(begin))
 		log.Println("length:", len(path))
 

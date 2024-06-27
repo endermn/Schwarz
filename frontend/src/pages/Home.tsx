@@ -12,17 +12,10 @@ export function Home() {
 					<p className="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl md:text-2xl lg:text-3xl">
 						Спри да губиш време в магазина!
 					</p>
-<<<<<<< HEAD
-					<div className="mt-10 flex items-center justify-center gap-x-6">
-						<a
-							href="/products"
-							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white"
-=======
 					<div className="mt-10 flex items-center justify-center gap-4 sm:gap-6">
 						<NavLink
 							to="/products"
 							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white hover:bg-indigo-500 sm:text-lg md:text-xl"
->>>>>>> main
 						>
 							Пазарувай
 						</NavLink>
