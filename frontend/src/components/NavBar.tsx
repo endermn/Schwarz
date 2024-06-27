@@ -21,11 +21,30 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "./Link";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, XIcon } from "lucide-react";
 import { UserNav } from "./UserNav";
 import { UserI } from "@/lib/types";
 import { NavLink } from "react-router-dom";
 import { useState, forwardRef } from "react";
+
+const pages = [
+	{
+		title: "Начало",
+		href: "/",
+	},
+	{
+		title: "Продукти",
+		href: "/products",
+	},
+	{
+		title: "Карта",
+		href: "/map",
+	},
+	{
+		title: "Редактор",
+		href: "/map/editor",
+	},
+];
 
 export function NavBar({ user }: { user: UserI }) {
 	console.log(user);
@@ -39,33 +58,20 @@ export function NavBar({ user }: { user: UserI }) {
 			{/* Big menu */}
 			<NavigationMenu className="hidden md:block">
 				<NavigationMenuList>
-					<NavigationMenuItem>
-						<Link href="/">
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Начало
-							</NavigationMenuLink>
-						</Link>
-						<Link href="/products">
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Продукти
-							</NavigationMenuLink>
-						</Link>
-						<Link href="/map">
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Карта
-							</NavigationMenuLink>
-						</Link>
-						<Link href="/map/editor">
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Редактор
-							</NavigationMenuLink>
-						</Link>
-					</NavigationMenuItem>
+					{pages.map((page) => (
+						<NavigationMenuItem>
+							<Link href={page.href}>
+								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+									{page.title}
+								</NavigationMenuLink>
+							</Link>{" "}
+						</NavigationMenuItem>
+					))}
 				</NavigationMenuList>
 			</NavigationMenu>
 
 			{/* Mobile Haburger */}
-			<div className="order-3 md:hidden">
+			<div className="order-3 flex md:hidden">
 				<ModeToggle />
 				<Sheet open={open}>
 					<SheetTrigger onClick={() => setOpen(true)}>
@@ -73,49 +79,25 @@ export function NavBar({ user }: { user: UserI }) {
 							<MenuIcon />
 						</Button>
 					</SheetTrigger>
-					<SheetContent side={"right"} className="flex w-1/3 flex-col">
+					<SheetContent side={"right"} className="flex w-1/2 flex-col">
 						<SheetHeader>
-							<div className="flex items-center justify-between">
+							<div className="flex items-center justify-around">
 								<SheetTitle>Меню</SheetTitle>
+								<XIcon onClick={() => setOpen(false)} className="size-6" />
 							</div>
 							<Separator />
 							<SheetDescription className="flex flex-col">
-								<NavLink to="/">
-									<Button
-										onClick={() => setOpen(false)}
-										variant="ghost"
-										className="m-1 w-full"
-									>
-										Начало
-									</Button>
-								</NavLink>
-								<NavLink to="/products">
-									<Button
-										onClick={() => setOpen(false)}
-										variant="ghost"
-										className="m-1 w-full"
-									>
-										Продукти
-									</Button>
-								</NavLink>
-								<NavLink to="/map">
-									<Button
-										onClick={() => setOpen(false)}
-										variant="ghost"
-										className="m-1 w-full"
-									>
-										Карта
-									</Button>
-								</NavLink>
-								<NavLink to="/map/editor">
-									<Button
-										onClick={() => setOpen(false)}
-										variant="ghost"
-										className="m-1 w-full"
-									>
-										Редактор
-									</Button>
-								</NavLink>
+								{pages.map((page) => (
+									<NavLink to={page.href}>
+										<Button
+											onClick={() => setOpen(false)}
+											variant="ghost"
+											className="m-1 w-full"
+										>
+											{page.title}
+										</Button>
+									</NavLink>
+								))}
 							</SheetDescription>
 						</SheetHeader>
 					</SheetContent>
@@ -126,9 +108,9 @@ export function NavBar({ user }: { user: UserI }) {
 			{user?.username ? (
 				<UserNav user={user} />
 			) : (
-				<a href="/signin">
+				<Link href="/signin">
 					<Button className="">Влез</Button>
-				</a>
+				</Link>
 			)}
 		</div>
 	);

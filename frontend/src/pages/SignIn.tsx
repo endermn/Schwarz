@@ -1,4 +1,4 @@
-import { fakeAuthProvider } from "@/auth";
+import { authProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -37,7 +37,7 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
 		return errors;
 	}
 
-	const signedIn = await fakeAuthProvider.signin(
+	const signedIn = await authProvider.signin(
 		username as string,
 		password as string,
 	);

@@ -45,7 +45,6 @@ function App() {
 							cart,
 							addToCart,
 							removeFromCart,
-							paht: null,
 							user,
 						}}
 					/>

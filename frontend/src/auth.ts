@@ -1,17 +1,10 @@
 interface AuthProvider {
-	isAuthenticated: boolean;
-	role: string;
-	username: string | null;
 	signin(username: string, password: string): Promise<boolean>;
 	signup(username: string, password: string): Promise<boolean>;
 	signout(): Promise<boolean>;
 }
 
-export const fakeAuthProvider: AuthProvider = {
-	isAuthenticated: false,
-	username: null,
-	role: "user",
-
+export const authProvider: AuthProvider = {
 	async signin(username, password) {
 		const res = await fetch("http://localhost:3000/api/login", {
 			headers: {
@@ -27,9 +20,6 @@ export const fakeAuthProvider: AuthProvider = {
 		}
 
 		const data = await res.json();
-		this.username = data["username"];
-		this.role = data["role"];
-		this.isAuthenticated = true;
 
 		return true;
 	},
@@ -43,10 +33,6 @@ export const fakeAuthProvider: AuthProvider = {
 		if (res.status != 202) {
 			return false;
 		}
-
-		this.isAuthenticated = false;
-		this.username = null;
-		this.role = "user";
 
 		return true;
 	},
@@ -66,8 +52,6 @@ export const fakeAuthProvider: AuthProvider = {
 		}
 
 		const data = await res.json();
-		this.username = data["username"];
-		this.role = data["role"];
 
 		return true;
 	},
