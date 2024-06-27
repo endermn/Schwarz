@@ -1,10 +1,10 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
-import { PointI, DataI } from "@/lib/types";
+import { PointI, DataI, SquareType } from "@/lib/types";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
@@ -28,43 +28,32 @@ export async function action({ request }: any) {
 const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const [productsReached, setProductsReached] = useState(0);
+	const [pathStops, setPathStops] = useState(0);
+	const [gridD, setGridD] = useState(gridData);
 
 	const user = getUser();
-
 	const fetcher = useFetcher();
-	const currentPath = fetcher.data?.dataPath.path as PointI[];
 
-	// dear programmer, the code above is grotesque to say the least. There are 2 renders of the component and I can't seem to make it work with useEffect and thus the below code was born
-	const checkouts = gridData.flatMap((row) =>
-		row.filter((el) => el.kind === 4 || el.kind === 44)
-	);
-
-	const selfCheckouts = gridData.flatMap((row) =>
-		row.filter((el) => el.kind === 5 || el.kind === 45)
-	);
-
-	for (let i = 0; i < currentPath?.length; i++) {
-		let el = gridData[currentPath[i].y][currentPath[i].x];
-		if (
-			user.cart.find((p) => p.id === el.productId) ||
-			GOLDEN.includes(el.productId)
-		) {
-			el.kind = 43; // visited product
-		} else if (
-			checkouts.map((checkout) => checkout.productId).includes(el.productId)
-		) {
-			el.kind = 44;
-		} else if (
-			selfCheckouts.map((checkout) => checkout.productId).includes(el.productId)
-		) {
-			el.kind = 45;
-		} else {
-			el.kind = 42; // part of path
+	useEffect(() => {
+		const currentPath = fetcher.data?.dataPath.path as PointI[];
+		for (let i = 0; i < currentPath?.length; i++) {
+			let el = gridData[currentPath[i].y][currentPath[i].x];
+			if (i === 0) el.kind = SquareType.START;
+			else if (el.kind === SquareType.PRODUCT) {
+				el.kind = SquareType.PRODUCT_VISITED;
+			} else if (el.kind === SquareType.CHECKOUT) {
+				el.kind = SquareType.CHECKOUT_VISITED;
+			} else if (el.kind === SquareType.SELFCHECKOUT) {
+				el.kind = SquareType.SELFCHECKOUT_VISITED;
+			} else {
+				el.kind = SquareType.VISITED;
+			}
 		}
-	}
+	}, [fetcher, pathStops]);
 
-	const grid = gridData.map((row, rowIndex) => (
+	console.log(gridData);
+
+	const grid = gridD.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex flex-1 w-full">
 			{row.map((cell, colIndex) => (
 				<motion.div
@@ -100,16 +89,17 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					<div className="flex justify-between w-1/4">
 						<ArrowLeft
 							onClick={() => {
-								if (productsReached > 0) {
-									setProductsReached((prevState) => prevState - 1);
+								if (pathStops > 0) {
+									setPathStops((prevState) => prevState - 1);
 								}
 							}}
 							className="inline size-8 font-bold cursor-pointer"
 						/>
 						<ArrowRight
 							onClick={() => {
-								if (productsReached < user.cart.length) {
-									setProductsReached((prevState) => prevState + 1);
+								if (pathStops < user.cart.length + 1 + 1) {
+									// 1 GOLDEN egg, 1 checkout
+									setPathStops((prevState) => prevState + 1);
 								}
 							}}
 							className="inline size-8 font-bold cursor-pointer"
@@ -136,26 +126,28 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 const getColorFromKind = (kind: number) => {
 	switch (kind) {
-		case 0:
+		case SquareType.EMPTY:
 			return "dark:bg-white dark:opacity-30 bg-transparent";
-		case 1:
-			return `bg-blue-500`;
-		case 2:
-			return "bg-green-500";
-		case 3:
+		case SquareType.EXIT:
+			return `bg-red-500`;
+		case SquareType.BLOCAKDE:
+			return "bg-gray-500";
+		case SquareType.PRODUCT:
 			return "bg-yellow-500";
-		case 4:
+		case SquareType.CHECKOUT:
 			return "bg-purple-500";
-		case 5:
+		case SquareType.SELFCHECKOUT:
 			return "bg-pink-500";
-		case 42:
+		case SquareType.VISITED:
 			return "bg-cyan-500";
-		case 43:
-			return "bg-cyan-200";
-		case 44:
+		case SquareType.PRODUCT_VISITED:
+			return "bg-yellow-200";
+		case SquareType.CHECKOUT_VISITED:
 			return "bg-purple-200";
-		case 45:
+		case SquareType.SELFCHECKOUT_VISITED:
 			return "bg-pink-200";
+		case SquareType.START:
+			return "bg-green-500";
 		default:
 			return "bg-gray-300";
 	}

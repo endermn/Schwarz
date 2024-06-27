@@ -1,7 +1,21 @@
+enum SquareType {
+	EMPTY = 0,
+	EXIT,
+	BLOCAKDE,
+	PRODUCT,
+	CHECKOUT,
+	SELFCHECKOUT,
+	VISITED,
+	PRODUCT_VISITED,
+	CHECKOUT_VISITED,
+	SELFCHECKOUT_VISITED,
+	START,
+}
+
 export interface DataI {
 	kind: number;
 	productId: number;
-	checkoutNumber: number;
+	checkoutNumber: SquareType;
 }
 
 export interface PointI {
