@@ -30,14 +30,16 @@ const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
-	const [pathStops, setPathStops] = useState(user.cart.length + 1);
+	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
 	const [gridD, setGridD] = useState(gridData);
+	const [itemRemoved, setItemRemoved] = useState(false);
 
 	const fetcher = useFetcher();
 
 	useEffect(() => {
 		const currentPath = fetcher.data?.dataPath.path as PointI[];
-		if (currentPath) {
+		const gridCopy = JSON.parse(JSON.stringify(gridData));
+		if (currentPath && !itemRemoved && fetcher.state === "idle") {
 			const stops = currentPath.filter((poit) =>
 				[
 					SquareType.PRODUCT,
@@ -60,8 +62,6 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y,
 						) + 1;
 
-			const gridCopy = JSON.parse(JSON.stringify(gridData));
-
 			for (let i = 0; i < currentPath.slice(0, upTo).length; i++) {
 				let el = gridCopy[currentPath[i].y][currentPath[i].x];
 				if (i === 0) el.kind = SquareType.START;
@@ -71,13 +71,15 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					el.kind = SquareType.CHECKOUT_VISITED;
 				} else if (el.kind === SquareType.SELFCHECKOUT) {
 					el.kind = SquareType.SELFCHECKOUT_VISITED;
+				} else if (el.kind === SquareType.EXIT) {
+					el.kind = SquareType.EXIT_VISITED;
 				} else {
 					el.kind = SquareType.VISITED;
 				}
 			}
-			setGridD(gridCopy);
 		}
-	}, [fetcher, pathStops]);
+		setGridD(gridCopy);
+	}, [fetcher, pathStops, user.cart, itemRemoved]);
 
 	console.log(gridData);
 
@@ -97,55 +99,76 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div className="grid w-full grid-cols-1 md:min-h-[80vh] lg:grid-cols-4">
-				<div className="col-span-1 flex items-center justify-center md:flex-col">
-					<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-						Продукти
-					</h2>
-					<ScrollArea className="my-6 ml-6 h-[50vh]">
-						{user.cart.map((p) => {
-							return (
-								<li className="my-3">
-									{p.name}
-									<XIcon
-										className="inline size-4 cursor-pointer"
-										onClick={() => user.removeFromCart(p.id)}
-									/>
-								</li>
-							);
-						})}
-					</ScrollArea>
-					<div className="flex w-1/4 justify-between">
-						<ArrowLeft
-							onClick={() => {
-								if (pathStops > -1) {
-									setPathStops((prevState) => prevState - 1);
-								}
-							}}
-							className="inline size-8 cursor-pointer font-bold"
-						/>
-						<ArrowRight
-							onClick={() => {
-								if (pathStops < user.cart.length + 1 + 1) {
-									// 1 GOLDEN egg, 1 checkout
-									setPathStops((prevState) => prevState + 1);
-								}
-							}}
-							className="inline size-8 cursor-pointer font-bold"
-						/>
-					</div>
-					<fetcher.Form method="post">
-						<Button
-							disabled={user.cart.length === 0}
-							name="products"
-							value={JSON.stringify({ products: user.cart.map((p) => p.id) })}
-						>
-							Намери пътя към светлината!
-						</Button>
-					</fetcher.Form>
-				</div>
 				<div className="col-span-3 flex h-[60vw] max-h-[80vh] flex-col items-center justify-center p-5">
-					{grid}
+					{grid.reverse()}
 					<h1 className="hidden md:hidden">{0}</h1>
+				</div>
+				<div className="col-span-1 flex flex-col items-center justify-between">
+					<div>
+						<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+							Продукти
+						</h2>
+						<ScrollArea className="my-6 ml-6 h-[25vh] md:h-[50vh]">
+							{user.cart.map((p) => {
+								return (
+									<div className="my-3">
+										{p.name}
+										<XIcon
+											className="inline size-4 cursor-pointer"
+											onClick={() => {
+												user.removeFromCart(p.id);
+												setItemRemoved(true);
+												setPathStops((prevPath) => prevPath - 1);
+											}}
+										/>
+									</div>
+								);
+							})}
+						</ScrollArea>
+					</div>
+
+					<div className="flex flex-col gap-y-5">
+						<fetcher.Form method="post">
+							<Button
+								disabled={user.cart.length === 0}
+								name="products"
+								value={JSON.stringify({ products: user.cart.map((p) => p.id) })}
+								className="bg-green-500 disabled:bg-slate-500"
+								onClick={() => {
+									setItemRemoved(false);
+								}}
+							>
+								Намери пътя към светлината!
+							</Button>
+						</fetcher.Form>
+						<div className="flex w-full justify-around">
+							<ArrowLeft
+								onClick={() => {
+									if (pathStops > -1) {
+										setPathStops((prevState) => prevState - 1);
+									}
+								}}
+								className="inline size-8 cursor-pointer font-bold"
+							/>
+							<span>
+								{user.cart.length !== 0 && (
+									<span>
+										{fetcher.data && !itemRemoved ? pathStops + 1 : 0} /{" "}
+										{user.cart.length + 3}
+									</span>
+								)}
+							</span>
+							<ArrowRight
+								onClick={() => {
+									if (pathStops < user.cart.length + 1 + 1) {
+										// 1 GOLDEN egg, 1 checkout
+										setPathStops((prevState) => prevState + 1);
+									}
+								}}
+								className="inline size-8 cursor-pointer font-bold"
+							/>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -169,13 +192,17 @@ const getColorFromKind = (kind: number) => {
 		case SquareType.VISITED:
 			return "bg-cyan-500";
 		case SquareType.PRODUCT_VISITED:
-			return "bg-yellow-200";
+			return "bg-yellow-700";
 		case SquareType.CHECKOUT_VISITED:
-			return "bg-purple-200";
+			return "bg-purple-700";
 		case SquareType.SELFCHECKOUT_VISITED:
-			return "bg-pink-200";
+			return "bg-pink-700";
 		case SquareType.START:
 			return "bg-green-500";
+		case SquareType.START:
+			return "bg-green-500";
+		case SquareType.EXIT_VISITED:
+			return "bg-red-700";
 		default:
 			return "bg-gray-300";
 	}
