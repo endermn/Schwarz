@@ -15,7 +15,7 @@ export function Home() {
 					</p>
 					<div className="mt-10 flex items-center justify-center gap-4 sm:gap-6">
 						<a
-							href="/signup"
+							href="/signin"
 							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white hover:bg-indigo-500 sm:text-lg md:text-xl"
 						>
 							Пазарувай
