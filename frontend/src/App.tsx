@@ -6,15 +6,33 @@ import { useState } from "react";
 import { ContextI, ProductI, UserI } from "@/lib/types";
 
 function App() {
-	const [cart, setCart] = useState<ProductI[]>([]);
+	const localStorageCart = localStorage.getItem("products");
+	let cartData = [] as ProductI[];
+	if (localStorageCart) cartData = JSON.parse(localStorageCart);
+	const [cart, setCart] = useState<ProductI[]>(cartData);
 	const user = useLoaderData() as UserI; // no username -> no user
 
 	const addToCart = (product: ProductI) => {
-		setCart((prevCart) => [...prevCart, product]);
+		const data = localStorage.getItem("products") as any;
+		let cart = [] as ProductI[];
+		if (data != null) {
+			cart = JSON.parse(data) as ProductI[];
+		}
+
+		cart.push(product);
+		localStorage.setItem("products", JSON.stringify(cart));
+		setCart(cart);
 	};
 
 	const removeFromCart = (id: number) => {
-		setCart((prevCart) => prevCart.filter((p) => p.id !== id));
+		let cardData = [] as ProductI[];
+		const localStorageCart = localStorage.getItem("products");
+		if (localStorageCart) cardData = JSON.parse(localStorageCart);
+
+		const cleanData = cardData.filter((product) => product.id !== id);
+		localStorage.setItem("products", JSON.stringify(cleanData));
+
+		setCart(cleanData);
 	};
 
 	return (
