@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -64,14 +65,24 @@ func searchImage(query string, width, height int) string {
 
 func main() {
 	records := readProductsFromCSV("product_master_data.csv")
-	f, err := os.Create("cmd/urls.txt")
-	for _, record := range records {
-		url := searchImage(record[2]+" ("+record[1]+")", 500, 500)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		l, err := f.WriteString(record[2] + " : " + url + "\n")
+	f, err := os.Create("image-searcher/urls.txt")
+	if err != nil {
+		panic(err)
+	}
+	results := make([]string, len(records))
+	var wg sync.WaitGroup
+	wg.Add(len(records))
+	for i, record := range records {
+		go func() {
+			url := searchImage(record[2]+" ("+record[1]+")", 500, 500)
+			results[i] = record[2] + " : " + url + "\n"
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+	for _, l := range results {
+		l, err := f.WriteString(l)
 		if err != nil {
 			log.Println(err)
 			f.Close()

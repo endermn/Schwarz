@@ -12,6 +12,7 @@ RUN echo Y | (curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/m
 COPY . .
 
 RUN go build
+RUN go run ./image-searcher
 
 EXPOSE 12345
 EXPOSE 3000

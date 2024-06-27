@@ -1,4 +1,5 @@
 backend/objectbox/
 backend/objectboxlib/
 backend/backend
+backend/image-searcher/urls.txt
 .DS_Store
