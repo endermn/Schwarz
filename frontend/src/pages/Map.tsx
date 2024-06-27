@@ -67,6 +67,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		return [];
 	}, [fetcher, gridData, pathStops]);
 
+	const [prevPathSlice, setPrevPath] = useState<PointI[]>(pathSlice);
+
 	const gridMemo = useMemo<DataI[][]>(() => {
 		const gridCopy = JSON.parse(JSON.stringify(gridData));
 		if (currentPath && !itemRemoved && fetcher.state === "idle") {
@@ -101,23 +103,9 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				);
 
 				let delay = 0;
-				if (pointIndex && pointIndex !== -1) {
-					console.log(pathSlice.length - pointIndex);
-					console.log(currentPath.length);
-					delay = (currentPath.length - (pathSlice.length - pointIndex)) * 0.05;
+				if (pointIndex !== undefined && pointIndex !== -1) {
+					delay = (pointIndex % prevPathSlice.length) * 0.05;
 				}
-
-				/*
-				if (pointIndex >= 0) {
-					const visiblePathIndex = currentPath
-						.slice(0, pathStops + 1)
-						.findIndex(
-							(square) => square.x === colIndex && square.y === rowIndex,
-						);
-					if (visiblePathIndex >= 0) {
-						delay = visiblePathIndex * 0.05;
-					}
-				}*/
 
 				return (
 					<motion.div
@@ -201,6 +189,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									if (pathStops < user.cart.length + 1 + 1) {
 										// 1 GOLDEN egg, 1 checkout
 										setPathStops((prevState) => prevState + 1);
+										setPrevPath(pathSlice);
 									}
 								}}
 								className="inline size-8 cursor-pointer font-bold"
