@@ -40,6 +40,13 @@ const router = createBrowserRouter([
 						loader: signUpLoader,
 						action: signUpAction,
 					},
+					{
+						path: "signout/",
+						async loader() {
+							console.log("signing out");
+							return await fakeAuthProvider.signout();
+						},
+					},
 					{ path: "products/", loader: productsLoader, element: <Products /> },
 					{
 						path: "map/",
@@ -86,6 +93,7 @@ const router = createBrowserRouter([
 	},
 ]);
 
+// eslint-disable-next-line no-empty-pattern
 async function protectedLoader({}: LoaderFunctionArgs) {
 	try {
 		const res = await fetch("http://localhost:12345/check-session", {
