@@ -46,7 +46,7 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
 
 	const signedIn = await fakeAuthProvider.signin(
 		username as string,
-		password as string
+		password as string,
 	);
 	if (!signedIn) {
 		return {
@@ -91,13 +91,21 @@ export function SignIn() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
+					<div className="my-2 w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
 						<button type="submit" disabled={isLoggingIn}>
 							{isLoggingIn ? "Влизане..." : "Влез"}
 						</button>
 						{actionData && actionData.signingIn ? (
 							<p style={{ color: "red" }}>{actionData.signingIn}</p>
 						) : null}
+					</div>
+					<div className="text-center text-sm text-muted-foreground">
+						<p>
+							Нямаш профил?{" "}
+							<a href="/signup" className="underline">
+								Регистрирай се
+							</a>
+						</p>
 					</div>
 				</Form>
 			</div>

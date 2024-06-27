@@ -1,6 +1,3 @@
-import { Separator } from "@/components/ui/separator";
-import { GithubIcon } from "lucide-react";
-
 export function Footer() {
 	return (
 		<footer className="w-full py-4 m-0 flex flex-col items-center justify-between">

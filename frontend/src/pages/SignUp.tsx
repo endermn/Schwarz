@@ -47,7 +47,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 
 	const signedUp = await fakeAuthProvider.signup(
 		username as string,
-		password as string
+		password as string,
 	);
 	if (!signedUp) {
 		return {
@@ -92,13 +92,21 @@ export function SignUp() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
+					<div className="my-2 w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
 						<button type="submit" disabled={isSigningUp}>
 							{isSigningUp ? "Регистриране..." : "Регистрирай се"}
 						</button>
 						{actionData && actionData.signingUp ? (
 							<p style={{ color: "red" }}>{actionData.signingUp}</p>
 						) : null}
+					</div>
+					<div className="text-center text-sm text-muted-foreground">
+						<p>
+							Имаш профил?{" "}
+							<a href="/signin" className="underline">
+								Влез
+							</a>
+						</p>
 					</div>
 				</Form>
 			</div>
