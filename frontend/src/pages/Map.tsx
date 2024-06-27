@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { XIcon, ArrowRight, ArrowLeft, SquareActivity } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
@@ -26,12 +26,9 @@ export async function action({ request }: any) {
 	return { dataPath };
 }
 
-const GOLDEN = [170, 130, 240, 119, 239];
-
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
 	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
-	const [gridD, setGridD] = useState(gridData);
 	const [itemRemoved, setItemRemoved] = useState(false);
 
 	const fetcher = useFetcher();
@@ -42,9 +39,10 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	});
 
 	const currentPath = fetcher.data?.dataPath.path as PointI[];
-	useEffect(() => {
+
+	const gridMemo = useMemo<DataI[][]>(() => {
 		const gridCopy = JSON.parse(JSON.stringify(gridData));
-		if (currentPath && !itemRemoved && fetcher.state === "idle") {
+		if (currentPath) {
 			const stops = currentPath.filter((poit) =>
 				[
 					SquareType.PRODUCT,
@@ -56,9 +54,6 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					SquareType.EXIT,
 				].includes(gridData[poit.y][poit.x].kind),
 			);
-
-			console.log(stops);
-			console.log(currentPath);
 
 			const upTo =
 				pathStops === -1
@@ -83,12 +78,12 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				}
 			}
 		}
-		setGridD(gridCopy);
+		return gridCopy;
 	}, [fetcher, pathStops, user.cart, itemRemoved]);
 
 	console.log(gridData);
 
-	const grid = gridD.map((row, rowIndex) => (
+	const grid = gridMemo.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex w-full flex-1">
 			{row.map((cell, colIndex) => {
 				const isAnimated = Object.values(SquareType)
@@ -98,6 +93,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				const pointIndex = currentPath?.findIndex(
 					(square) => square.x === colIndex && square.y === rowIndex,
 				);
+				console.log("STEPS:", pathStops);
 				let delay = 0;
 				if (pointIndex) {
 					delay = pointIndex * 0.05;
@@ -108,7 +104,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						key={colIndex}
 						animate={isAnimated ? "visible" : "hidden"}
 						variants={divVariants(delay)}
-						initial={isAnimated ? "hidden" : "visible"}
+						initial="hidden"
 						className={`m-[1px] flex-1 shadow-md md:m-1 round-[${Math.floor(
 							Math.random() * 20,
 						)}] ${getColorFromKind(cell.kind)}`}
