@@ -20,6 +20,8 @@ import (
 	"github.com/objectbox/objectbox-go/objectbox"
 )
 
+const defaultImage = "https://www.worldplumbing.org/wp-content/uploads/2016/11/white-background-500x500.jpg"
+
 type routeFindingParams struct {
 	Products []int `json:"products"`
 }
@@ -148,8 +150,55 @@ func main() {
 		json.NewEncoder(w).Encode(categories.toArray())
 	})
 
-	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
-		products, err := productBox.GetAll()
+	mux.HandleFunc("POST /users/{user}/products", func(w http.ResponseWriter, r *http.Request) {
+		username := r.PathValue("user")
+
+		users, err := userBox.Query(user_.username.Equals(username, true)).Find()
+		if err != nil {
+			log.Printf("Cannot get user: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		if len(users) == 0 {
+			http.Error(w, "User does not exist", http.StatusBadRequest)
+			return
+		}
+
+		var params product
+		err = newJSONDecoder(r.Body).Decode(&params)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if params.ImageURL == "" {
+			params.ImageURL = defaultImage
+		}
+		params.Owner = users[0]
+
+		_, err = productBox.Insert(&params)
+		if err != nil {
+			log.Printf("Failed to insert into database: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	})
+
+	mux.HandleFunc("GET /users/{user}/products", func(w http.ResponseWriter, r *http.Request) {
+		username := r.PathValue("user")
+
+		users, err := userBox.Query(user_.username.Equals(username, true)).Find()
+		if err != nil {
+			log.Printf("Cannot get user: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		if len(users) == 0 {
+			http.Error(w, "User does not exist", http.StatusBadRequest)
+			return
+		}
+
+		products, err := productBox.Query(product_.Owner.Equals(users[0].id)).Find()
 		if err != nil {
 			log.Println("Failed to get products:", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
