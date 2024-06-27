@@ -72,12 +72,12 @@ func readProductsFromCSV(filePath string, box *productBox) {
 			log.Printf("strconv.Atoi failed: %v", record[0][1:])
 			os.Exit(1)
 		}
-		url := searchImage(record[2])
+		// url := searchImage(record[2])
 		_, err = box.Insert(&product{
 			ProductID: id,
 			Category:  record[1],
 			Name:      record[2],
-			Image:     url,
+			// Image:     url,
 		})
 		if err != nil {
 			log.Printf("failed to insert product %v: %v", record, err)

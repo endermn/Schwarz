@@ -4,7 +4,7 @@ interface AuthProvider {
 	username: string | null;
 	signin(username: string, password: string): Promise<boolean>;
 	signup(username: string, password: string): Promise<boolean>;
-	signout(): Promise<void>;
+	signout(): Promise<boolean>;
 }
 
 export const fakeAuthProvider: AuthProvider = {
@@ -13,45 +13,61 @@ export const fakeAuthProvider: AuthProvider = {
 	role: "user",
 
 	async signin(username, password) {
-		const res = await fetch("http://localhost:12345/users/login", {
+		const res = await fetch("http://localhost:3000/api/login", {
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ username, password }),
 			method: "POST",
+			credentials: "include",
 		});
 
 		if (res.status == 400) {
 			return false;
 		}
 
-		fakeAuthProvider.isAuthenticated = true;
-		fakeAuthProvider.username = username;
+		const data = await res.json();
+		this.username = data["username"];
+		this.role = data["role"];
+		this.isAuthenticated = true;
 
 		return true;
 	},
 
 	async signout() {
-		await new Promise((r) => setTimeout(r, 500));
-		fakeAuthProvider.isAuthenticated = false;
-		fakeAuthProvider.username = null;
+		const res = await fetch("http://localhost:3000/api/logout", {
+			method: "POST",
+			credentials: "include",
+		});
+
+		if (res.status != 202) {
+			return false;
+		}
+
+		this.isAuthenticated = false;
+		this.username = null;
+		this.role = "user";
+
+		return true;
 	},
 
 	async signup(username, password) {
-		const res = await fetch("http://localhost:12345/users", {
+		const res = await fetch("http://localhost:3000/api/register", {
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ username, password }),
 			method: "POST",
+			credentials: "include",
 		});
 
 		if (res.status == 400) {
 			return false;
 		}
 
-		fakeAuthProvider.isAuthenticated = true;
-		fakeAuthProvider.username = username;
+		const data = await res.json();
+		this.username = data["username"];
+		this.role = data["role"];
 
 		return true;
 	},

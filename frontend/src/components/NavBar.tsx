@@ -28,12 +28,12 @@ import { MenuIcon } from "lucide-react";
 export function NavBar() {
 	return (
 		<div className="flex justify-between m-3">
-			<div className="order-1 hidden md:block">
+			<div className="hidden md:block">
 				<ModeToggle />
 			</div>
 
 			{/* Big menu */}
-			<NavigationMenu className="hidden order-2 md:block">
+			<NavigationMenu className="hidden  md:block">
 				<NavigationMenuList>
 					<NavigationMenuItem>
 						<Link href="/">
@@ -51,8 +51,6 @@ export function NavBar() {
 								Редактор
 							</NavigationMenuLink>
 						</Link>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
 						<Link href="/products">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 								Продукти
@@ -64,20 +62,20 @@ export function NavBar() {
 
 			{/* Mobile Haburger */}
 			<div className="md:hidden order-3">
+				<ModeToggle />
 				<Sheet>
 					<SheetTrigger>
 						<Button variant={"ghost"}>
 							<MenuIcon />
 						</Button>
 					</SheetTrigger>
-					<SheetContent side={"left"} className="flex flex-col">
+					<SheetContent side={"right"} className="flex flex-col w-1/3">
 						<SheetHeader>
-							<div className="flex">
+							<div className="flex justify-between items-center">
 								<SheetTitle>Меню</SheetTitle>
 							</div>
 							<Separator />
 							<SheetDescription className="flex flex-col">
-								<ModeToggle />
 								<a href="/">
 									<Button variant="ghost" className="w-full m-1">
 										Начало
@@ -103,6 +101,11 @@ export function NavBar() {
 					</SheetContent>
 				</Sheet>
 			</div>
+
+			{/* Account or Sign in */}
+			<a href="/signin">
+				<Button className="">Влез</Button>
+			</a>
 		</div>
 	);
 }
