@@ -314,7 +314,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							<span>
 								{user.cart.length !== 0 && (
 									<span>
-										{fetcher.data && !itemRemoved ? pathStops + 1 : 0} /{" "}
+										{fetcher.data && !itemRemoved ? pathStops + 1 : 0}/{" "}
 										{user.cart.length + 3}
 									</span>
 								)}
