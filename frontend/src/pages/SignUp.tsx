@@ -77,6 +77,7 @@ export function SignUp() {
 							Парола:
 							<Input
 								className="mb-1 dark:bg-white dark:text-black"
+								type="password"
 								name="password"
 							/>
 							{actionData && actionData.password ? (
