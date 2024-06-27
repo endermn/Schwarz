@@ -79,7 +79,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 			}
 			setGridD(gridCopy);
 		}
-	}, [fetcher, pathStops]);
+	}, [fetcher, pathStops, user.cart]);
 
 	console.log(gridData);
 
@@ -142,6 +142,13 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 								}}
 								className="inline size-8 cursor-pointer font-bold"
 							/>
+							<span>
+								{user.cart.length !== 0 && (
+									<span>
+										{fetcher.data ? pathStops + 1 : 0} / {user.cart.length + 3}
+									</span>
+								)}
+							</span>
 							<ArrowRight
 								onClick={() => {
 									if (pathStops < user.cart.length + 1 + 1) {
