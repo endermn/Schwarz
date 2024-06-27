@@ -1,11 +1,10 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { motion, useAnimationControls } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { XIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { PointI, DataI } from "@/lib/types";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
@@ -26,92 +25,44 @@ export async function action({ request }: any) {
 	return { dataPath };
 }
 
-interface PointI {
-	x: number;
-	y: number;
-}
-
-interface DataI {
-	kind: number;
-	productId: number;
-	checkoutName: string;
-}
-interface PointI {
-	x: number;
-	y: number;
-}
-
-interface PathI {
-	path: PointI[];
-}
-
-interface DataI {
-	kind: number;
-	productId: number;
-	checkoutName: string;
-}
-
-function rotate90(grid: DataI[][]): DataI[][] {
-	// Step 1: Transpose the matrix (swap rows and columns)
-	const transposedGrid = transpose(grid);
-
-	// Step 2: Reverse each row of the transposed matrix
-	const rotatedGrid = transposedGrid.map((row) => row.reverse());
-
-	return rotatedGrid;
-}
-
-function transpose(matrix: DataI[][]): DataI[][] {
-	// Create a new matrix where rows become columns (transpose operation)
-	const rows = matrix.length;
-	const cols = matrix[0].length;
-	const transposedMatrix: DataI[][] = [];
-
-	for (let j = 0; j < cols; j++) {
-		const newRow: DataI[] = [];
-		for (let i = 0; i < rows; i++) {
-			newRow.push(matrix[i][j]);
-		}
-		transposedMatrix.push(newRow);
-	}
-
-	return transposedMatrix;
-}
+const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const [selectedProductId, setSelectedProductId] = useState(-1);
-	const handleTap = (productId: number) => {
-		setSelectedProductId(productId);
-	};
-
-	const [steps, setSteps] = useState(0);
+	const [productsReached, setProductsReached] = useState(0);
 
 	const user = getUser();
-	const controls = useAnimationControls();
 
 	const fetcher = useFetcher();
-	let data = fetcher.data?.dataPath; // path repaint is on button submit... which becomes diabled when there are rzero elements
+	const currentPath = fetcher.data?.dataPath.path as PointI[];
 
-	const productCoords: PointI[] = [];
-	const currentPath = data?.path as PointI[];
+	// dear programmer, the code above is grotesque to say the least. There are 2 renders of the component and I can't seem to make it work with useEffect and thus the below code was born
+	const checkouts = gridData.flatMap((row) =>
+		row.filter((el) => el.kind === 4 || el.kind === 44)
+	);
+
+	const selfCheckouts = gridData.flatMap((row) =>
+		row.filter((el) => el.kind === 5 || el.kind === 45)
+	);
 
 	for (let i = 0; i < currentPath?.length; i++) {
 		let el = gridData[currentPath[i].y][currentPath[i].x];
-		if (el.kind === 3) {
-			productCoords.push(currentPath[i]);
-			el.kind = 43;
+		if (
+			user.cart.find((p) => p.id === el.productId) ||
+			GOLDEN.includes(el.productId)
+		) {
+			el.kind = 43; // visited product
+		} else if (
+			checkouts.map((checkout) => checkout.productId).includes(el.productId)
+		) {
+			el.kind = 44;
+		} else if (
+			selfCheckouts.map((checkout) => checkout.productId).includes(el.productId)
+		) {
+			el.kind = 45;
 		} else {
-			el.kind = 42;
+			el.kind = 42; // part of path
 		}
 	}
-
-	const upTo =
-		steps === productCoords.length
-			? currentPath?.length
-			: currentPath?.findIndex(
-					(p) =>
-						p.x === productCoords[steps].x && p.y === productCoords[steps].y
-			  ) + 1;
 
 	const grid = gridData.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex flex-1 w-full">
@@ -120,12 +71,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					key={colIndex}
 					className={` md:m-1 m-[1px] flex-1 shadow-md round-[${Math.floor(
 						Math.random() * 20
-					)}]  ${getColorFromKind(
-						cell.kind,
-						colIndex,
-						rowIndex,
-						currentPath?.slice(0, upTo)
-					)}`}
+					)}]  ${getColorFromKind(cell.kind)}`}
 				/>
 			))}
 		</div>
@@ -151,21 +97,24 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							);
 						})}
 					</ul>
-					<Input
-						disabled={user.cart.length === 0}
-						className="w-1/2 mb-2"
-						value={steps}
-						type="number"
-						placeholder="Map size"
-						onChange={(e) => {
-							if (
-								+e.target.value <= productCoords.length &&
-								+e.target.value >= 0
-							) {
-								setSteps(+e.target.value);
-							}
-						}}
-					/>
+					<div className="flex justify-between w-1/4">
+						<ArrowLeft
+							onClick={() => {
+								if (productsReached > 0) {
+									setProductsReached((prevState) => prevState - 1);
+								}
+							}}
+							className="inline size-8 font-bold cursor-pointer"
+						/>
+						<ArrowRight
+							onClick={() => {
+								if (productsReached < user.cart.length) {
+									setProductsReached((prevState) => prevState + 1);
+								}
+							}}
+							className="inline size-8 font-bold cursor-pointer"
+						/>
+					</div>
 					<fetcher.Form method="post">
 						<Button
 							disabled={user.cart.length === 0}
@@ -178,36 +127,14 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				</div>
 				<div className="col-span-3 flex flex-col items-center justify-center p-5 h-[60vw] max-h-[80vh]">
 					{grid}
-					<h1 className="hidden md:hidden">{selectedProductId}</h1>
+					<h1 className="hidden md:hidden">{0}</h1>
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const getColorFromKind = (
-	kind: number,
-	x: number,
-	y: number,
-	path: PointI[] | null
-) => {
-	/*
-	const good = path?.find((point) => point.x === x && point.y === y);
-	if (good) {
-		if (kind === 0) return "bg-red-300";
-		switch (kind) {
-			case 1:
-				return `bg-gradient-to-r from-blue-500 to-red-300`;
-			case 2:
-				return `bg-gradient-to-r from-bg-green-500 to-red-300`;
-			case 3:
-				return `bg-gradient-to-r from-yellow-500 to-red-900`;
-			case 4:
-				return `bg-gradient-to-r from-purple-500 to-red-300`;
-			default:
-				return "bg-gray-300";
-		}
-	}*/
+const getColorFromKind = (kind: number) => {
 	switch (kind) {
 		case 0:
 			return "dark:bg-white dark:opacity-30 bg-transparent";
@@ -219,10 +146,16 @@ const getColorFromKind = (
 			return "bg-yellow-500";
 		case 4:
 			return "bg-purple-500";
+		case 5:
+			return "bg-pink-500";
 		case 42:
 			return "bg-cyan-500";
 		case 43:
 			return "bg-cyan-200";
+		case 44:
+			return "bg-purple-200";
+		case 45:
+			return "bg-pink-200";
 		default:
 			return "bg-gray-300";
 	}
