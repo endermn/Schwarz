@@ -44,6 +44,11 @@ export function NavBar({ user }: { user: UserI }) {
 								Начало
 							</NavigationMenuLink>
 						</Link>
+						<Link href="/products">
+							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
+								Продукти
+							</NavigationMenuLink>
+						</Link>
 						<Link href="/map">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 								Карта
@@ -52,11 +57,6 @@ export function NavBar({ user }: { user: UserI }) {
 						<Link href="/map/editor">
 							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
 								Редактор
-							</NavigationMenuLink>
-						</Link>
-						<Link href="/products">
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Продукти
 							</NavigationMenuLink>
 						</Link>
 					</NavigationMenuItem>
