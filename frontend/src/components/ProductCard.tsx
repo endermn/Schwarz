@@ -26,6 +26,7 @@ export function ProductCard(props: ProductI) {
 			</CardHeader>
 			<CardContent>
 				<CardDescription>{category}</CardDescription>
+				<CardDescription className="text-center">Id: {id}</CardDescription>
 			</CardContent>
 			<CardFooter>
 				{inCart ? (
