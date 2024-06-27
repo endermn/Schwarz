@@ -361,7 +361,18 @@ func registerAuthHandlers(app *fiber.App, userBox *userBox) {
 
 		// Query user from database using ID
 		id, err := strconv.ParseUint(idString, 10, 64)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
 		user, err := userBox.Get(id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to get user",
+			})
+		}
 
 		// Go only exports types with a capital letter
 		// holy **** thats stupid
@@ -378,8 +389,6 @@ func registerAuthHandlers(app *fiber.App, userBox *userBox) {
 func requireUser(userBox *userBox, w http.ResponseWriter, r *http.Request) *user {
 	// Retrieve JWT token from cookie
 	cookie, _ := r.Cookie("jwt")
-
-	log.Println(cookie)
 
 	// Parse JWT token with claims
 	token, err := jwt.ParseWithClaims(cookie.Value, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -403,8 +412,12 @@ func requireUser(userBox *userBox, w http.ResponseWriter, r *http.Request) *user
 
 	// Query user from database using ID
 	id, err := strconv.ParseUint(idString, 10, 64)
-	user, err := userBox.Get(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return nil
+	}
 
+	user, err := userBox.Get(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil
