@@ -156,6 +156,8 @@ func GetUser(c *fiber.Ctx) error {
 	// Retrieve JWT token from cookie
 	cookie := c.Cookies("jwt")
 
+	log.Println(cookie)
+
 	// Parse JWT token with claims
 	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(jwtSecret), nil
@@ -171,7 +173,7 @@ func GetUser(c *fiber.Ctx) error {
 	// Extract claims from token
 	claims, ok := token.Claims.(*jwt.MapClaims)
 	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Failed to parse claims",
 		})
 	}

@@ -29,6 +29,7 @@ export const fakeAuthProvider: AuthProvider = {
 		const data = await res.json();
 		this.username = data["username"];
 		this.role = data["role"];
+		this.isAuthenticated = true;
 
 		return true;
 	},
@@ -51,7 +52,7 @@ export const fakeAuthProvider: AuthProvider = {
 	},
 
 	async signup(username, password) {
-		const res = await fetch("http://localhost:12345/users", {
+		const res = await fetch("http://localhost:3000/api/register", {
 			headers: {
 				"Content-Type": "application/json",
 			},
