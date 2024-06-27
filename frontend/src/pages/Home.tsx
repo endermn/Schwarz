@@ -14,7 +14,12 @@ export function Home() {
 						>
 							Пазарувай
 						</a>
-						<a href="#" className="leading-6 font-semibold text-sm">
+						<a
+							href="https://www.wikipedia.org/"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="leading-6 font-semibold text-sm"
+						>
 							Научи повече
 						</a>
 					</div>
