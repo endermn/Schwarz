@@ -1,4 +1,4 @@
-enum SquareType {
+export enum SquareType {
 	EMPTY = 0,
 	EXIT,
 	BLOCAKDE,
