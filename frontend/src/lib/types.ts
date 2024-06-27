@@ -1,7 +1,7 @@
 export interface DataI {
 	kind: number;
 	productId: number;
-	checkoutName: string;
+	checkoutNumber: number;
 }
 
 export interface PointI {

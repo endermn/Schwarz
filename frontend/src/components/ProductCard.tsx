@@ -24,7 +24,7 @@ export function ProductCard(props: Product) {
 
 	return (
 		<Card className="w-full flex flex-col justify-evenly items-center">
-			<CardHeader>
+			<CardHeader className="text-center">
 				<CardTitle>{name}</CardTitle>
 			</CardHeader>
 			<CardContent>

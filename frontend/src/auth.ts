@@ -22,7 +22,7 @@ export const fakeAuthProvider: AuthProvider = {
 			credentials: "include",
 		});
 
-		if (res.status == 400) {
+		if (res.status == 401) {
 			return false;
 		}
 

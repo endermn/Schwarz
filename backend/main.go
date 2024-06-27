@@ -15,6 +15,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/objectbox/objectbox-go/objectbox"
 )
 
@@ -131,8 +133,6 @@ func main() {
 		Handler: handler,
 	}
 
-	handleAuth(mux, userBox)
-
 	mux.HandleFunc("GET /categories", func(w http.ResponseWriter, r *http.Request) {
 		categories := set[string]{}
 		products, err := productBox.GetAll()
@@ -183,8 +183,8 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
-		session := checkSesssion(w, r)
-		if session == nil {
+		user := requireUser(userBox, w, r)
+		if user == nil {
 			return
 		}
 
@@ -211,7 +211,7 @@ func main() {
 			Width:   getWidth(grid),
 			Grid:    encodeGrid(grid),
 			Start:   start,
-			Owner:   session.user.id,
+			Owner:   user.id,
 		})
 		if err != nil {
 			log.Printf("Failed to insert store into database: %v", err)
@@ -221,8 +221,8 @@ func main() {
 	})
 
 	mux.HandleFunc("PUT /stores/{store}", func(w http.ResponseWriter, r *http.Request) {
-		session := checkSesssion(w, r)
-		if session == nil {
+		user := requireUser(userBox, w, r)
+		if user == nil {
 			return
 		}
 
@@ -238,8 +238,8 @@ func main() {
 			return
 		}
 
-		if session.user.id != activeStore.Owner {
-			log.Printf("User with id: %v is not the owner of this store", session.user.id)
+		if user.id != activeStore.Owner {
+			log.Printf("User with id: %v is not the owner of this store", user.id)
 			http.Error(w, "Invalid user", http.StatusBadRequest)
 			return
 		}
@@ -312,6 +312,21 @@ func main() {
 	go func() {
 		<-terminationChan
 		server.Shutdown(context.Background())
+	}()
+
+	go func() {
+		app := fiber.New()
+
+		app.Use(cors.New(cors.Config{
+			AllowOrigins:     "http://localhost:5173",
+			AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+			AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
+			AllowCredentials: true,
+		}))
+
+		registerAuthHandlers(app, userBox)
+
+		app.Listen(":3000")
 	}()
 
 	log.Println("Server started")
