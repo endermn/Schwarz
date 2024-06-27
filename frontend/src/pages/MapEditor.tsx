@@ -27,7 +27,7 @@ export function MapEditor() {
 
 	const grid = emptyMap.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex">
-			{row.map((cell, colIndex) => (
+			{row.map((_, colIndex) => (
 				<motion.div
 					key={colIndex}
 					className={`w-4 h-4 m-1 shadow-md round-[${Math.floor(
@@ -68,6 +68,14 @@ export function MapEditor() {
 			/>
 
 			<RadioGroup defaultValue="option-one">
+				<div className="flex items-center space-x-2">
+					<RadioGroupItem
+						value="empty"
+						id="empty"
+						onChange={(e) => console.log(e)}
+					/>
+					<Label htmlFor="empty">Empty</Label>
+				</div>
 				<div className="flex items-center space-x-2">
 					<RadioGroupItem
 						value="blockade"
