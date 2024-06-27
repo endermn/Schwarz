@@ -31,7 +31,7 @@ export function NavBar({ user }: { user: UserI }) {
 	console.log(user);
 	const [open, setOpen] = useState(false);
 	return (
-		<div className="m-3 flex justify-between">
+		<div className="m-2 flex justify-between p-2">
 			<div className="hidden md:block">
 				<ModeToggle />
 			</div>

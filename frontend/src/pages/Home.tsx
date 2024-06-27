@@ -1,19 +1,22 @@
 import { getContext } from "@/App";
+import PartnersCarousel from "@/components/PartnersCarousel";
 
 export function Home() {
 	const context = getContext();
 	return (
-		<div>
-			<div className="mx-auto max-w-2xl py-32 sm:py-48 md:py-56">
-				<div className="text-center">
-					<h1 className="text-5xl font-extrabold">Пазарувай лесно</h1>
-					<p className="text-current/50 mt-6 text-xl leading-8 text-muted-foreground">
+		<>
+			<div className="container mx-auto px-4 py-16 sm:py-28 md:py-40 lg:py-48">
+				<div id="hero" className="text-center">
+					<h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl lg:text-7xl">
+						Пазарувай лесно
+					</h1>
+					<p className="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl md:text-2xl lg:text-3xl">
 						не губи време в магазина
 					</p>
-					<div className="mt-10 flex items-center justify-center gap-x-6">
+					<div className="mt-10 flex items-center justify-center gap-4 sm:gap-6">
 						<a
 							href="/signup"
-							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white"
+							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white hover:bg-indigo-500 sm:text-lg md:text-xl"
 						>
 							Пазарувай
 						</a>
@@ -21,13 +24,19 @@ export function Home() {
 							href="https://www.wikipedia.org/"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-sm font-semibold leading-6"
+							className="text-sm font-semibold leading-6 hover:text-indigo-600 sm:text-lg md:text-xl"
 						>
 							Научи повече
 						</a>
 					</div>
 				</div>
+				<div id="partners-carousel" className="mt-10 hidden md:block">
+					<h2 className="text-center text-3xl font-bold sm:text-4xl md:text-5xl">
+						Нашите партньори
+					</h2>
+					<PartnersCarousel />
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
