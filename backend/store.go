@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/csv"
+	"io"
 	"strconv"
-	"strings"
 )
 
 type squareKind uint8
@@ -80,8 +80,8 @@ func decodeGrid(bytes []byte, width int) [][]square {
 	return grid
 }
 
-func parseCSV(input string) (grid [][]square, start point, err error) {
-	reader := csv.NewReader(strings.NewReader(input))
+func parseStoreCSV(input io.Reader) (grid [][]square, start point, err error) {
+	reader := csv.NewReader(input)
 	records, err := reader.ReadAll()
 	if err != nil {
 		return

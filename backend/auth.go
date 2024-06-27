@@ -1,157 +1,5 @@
 package main
 
-// import (
-// 	"crypto/rand"
-// 	"crypto/sha512"
-// 	"encoding/base64"
-// 	"fmt"
-// 	"log"
-// 	"net/http"
-// 	"time"
-// )
-
-// // JSON automagically encodes []byte in base64, but not [N]byte
-
-// const sessionIDLength = 15
-
-// type sessionID [sessionIDLength]byte
-
-// const sessionDuration = 7 * 24 * time.Hour
-
-// type userCredentials struct {
-// 	Username string `json:"username"`
-// 	Password string `json:"password"`
-// }
-
-// type session struct {
-// 	user *user
-// }
-
-// var sessions = map[sessionID]session{}
-
-// func checkSesssion(w http.ResponseWriter, r *http.Request) *session {
-// 	cookie, _ := r.Cookie("session")
-// 	if cookie == nil {
-// 		http.Error(w, "no session cookie", http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	sessionIDSlice, err := base64.StdEncoding.DecodeString(cookie.Value)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	if len(sessionIDSlice) != sessionIDLength {
-// 		http.Error(w, fmt.Sprint("Session ID must be ", sessionIDLength, " bytes"), http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	session, ok := sessions[*(*sessionID)(sessionIDSlice)]
-// 	if !ok {
-// 		http.Error(w, "Session does not exist (might have expired)", http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	return &session
-// }
-
-// func authenticate(userBox *userBox, w http.ResponseWriter, username string, password string) *user {
-// 	users, err := userBox.Query(user_.username.Equals(username, true)).Find()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return nil
-// 	}
-
-// 	if len(users) == 0 {
-// 		http.Error(w, "Invalid name or password", http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	if len(users) > 1 {
-// 		log.Println("Multiple users with the same name")
-// 		http.Error(w, "Internal server error", http.StatusInternalServerError)
-// 		return nil
-// 	}
-// 	user := users[0]
-
-// 	if [sha512.Size]byte(user.passwordHash) != sha512.Sum512([]byte(password)) {
-// 		http.Error(w, "Invalid name or password", http.StatusBadRequest)
-// 		return nil
-// 	}
-// 	return user
-// }
-
-// func logIn(w http.ResponseWriter, user *user) {
-// 	var sessionID sessionID
-// 	rand.Read(sessionID[:])
-// 	sessions[sessionID] = session{user}
-// 	go func() {
-// 		time.Sleep(sessionDuration)
-// 		delete(sessions, sessionID)
-// 	}()
-
-// 	encodedSessionID := base64.StdEncoding.EncodeToString(sessionID[:])
-// 	http.SetCookie(w, &http.Cookie{
-// 		Name:     "session",
-// 		Value:    encodedSessionID,
-// 		Path:     "/",
-// 		Expires:  time.Now().Add(sessionDuration),
-// 		SameSite: http.SameSiteNoneMode,
-// 	})
-// }
-
-// func handleAuth(mux *http.ServeMux, userBox *userBox) {
-// 	mux.HandleFunc("POST /users", func(w http.ResponseWriter, r *http.Request) {
-// 		var params userCredentials
-// 		err := newJSONDecoder(r.Body).Decode(&params)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusBadRequest)
-// 			return
-// 		}
-// 		if params.Username == "" || params.Password == "" {
-// 			http.Error(w, "Username and password must be non-empty", http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		existing_users, err := userBox.Query(user_.username.Contains(params.Username, true)).Find()
-// 		if err != nil {
-// 			http.Error(w, "Internal server error", http.StatusInternalServerError)
-// 			return
-// 		}
-// 		if len(existing_users) != 0 {
-// 			http.Error(w, "Such user already exists", http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		passwordHash := sha512.Sum512([]byte(params.Password))
-// 		user := &user{username: params.Username, passwordHash: passwordHash[:]}
-// 		id, err := userBox.Insert(user)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		log.Println("Created user", id, params.Username, params.Password)
-
-// 		logIn(w, user)
-// 	})
-
-// 	mux.HandleFunc("POST /users/login", func(w http.ResponseWriter, r *http.Request) {
-// 		var params userCredentials
-// 		err := newJSONDecoder(r.Body).Decode(&params)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		user := authenticate(userBox, w, params.Username, params.Password)
-// 		if user == nil {
-// 			return
-// 		}
-
-// 		logIn(w, user)
-// 	})
-
-// 	mux.HandleFunc("GET /check-session", func(w http.ResponseWriter, r *http.Request) {
-// 		_ = checkSesssion(w, r)
-// 	})
-// }
-
 import (
 	"log"
 	"net/http"
@@ -159,13 +7,14 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 const jwtSecret = "secret"
 
-func registerAuthHandlers(app *fiber.App, userBox *userBox) {
+func registerAuthEndpoints(app *fiber.App, userBox *userBox) {
 	app.Post("/api/register", func(c *fiber.Ctx) error {
 		log.Println("Received a registration request")
 		var data map[string]string
@@ -384,6 +233,21 @@ func registerAuthHandlers(app *fiber.App, userBox *userBox) {
 
 		return c.JSON(data)
 	})
+}
+
+func runAuth(userBox *userBox) {
+	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:5173",
+		AllowMethods:     "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Content-Type,Authorization,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods,Access-Control-Expose-Headers,Access-Control-Max-Age,Access-Control-Allow-Credentials",
+		AllowCredentials: true,
+	}))
+
+	registerAuthEndpoints(app, userBox)
+
+	app.Listen(":3000")
 }
 
 func requireUser(userBox *userBox, w http.ResponseWriter, r *http.Request) *user {
