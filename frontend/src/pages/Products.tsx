@@ -34,20 +34,22 @@ export function Products() {
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState("empty");
 
-	const filteredProducts = products.filter((p) => {
-		if (isNaN(Number(search)) || search === "") {
-			return (
-				((p.category === category || category === "empty") &&
+	const filteredProducts = products
+		.filter((p) => p.category === category || category === "empty")
+		.filter((p) => {
+			const searchIsntId = isNaN(Number(search)) || search === "";
+
+			if (searchIsntId) {
+				return (
 					p.name
 						.toLocaleLowerCase()
 						.split(" ")
-						.some((word) => word.startsWith(search))) ||
-				p.name.includes(search)
-			);
-		} else {
-			return p.id.toString() === search;
-		}
-	});
+						.some((word) => word.startsWith(search)) || p.name.includes(search)
+				);
+			} else {
+				return p.id.toString() === search;
+			}
+		});
 
 	return (
 		<>

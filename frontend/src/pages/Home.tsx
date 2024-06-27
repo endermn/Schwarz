@@ -1,4 +1,5 @@
 import PartnersCarousel from "@/components/PartnersCarousel";
+import { Link, NavLink } from "react-router-dom";
 
 export function Home() {
 	return (
@@ -9,17 +10,17 @@ export function Home() {
 						Пазарувай лесно
 					</h1>
 					<p className="mt-6 text-lg leading-8 text-muted-foreground sm:text-xl md:text-2xl lg:text-3xl">
-						не губи време в магазина
+						Спри да губиш време в магазина!
 					</p>
 					<div className="mt-10 flex items-center justify-center gap-4 sm:gap-6">
-						<a
-							href="/signin"
+						<NavLink
+							to="/products"
 							className="rounded-md bg-indigo-600 px-4 py-3 font-semibold leading-5 text-white hover:bg-indigo-500 sm:text-lg md:text-xl"
 						>
 							Пазарувай
-						</a>
+						</NavLink>
 						<a
-							href="https://www.wikipedia.org/"
+							href="/whole_squad.jpg"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="text-sm font-semibold leading-6 hover:text-indigo-600 sm:text-lg md:text-xl"

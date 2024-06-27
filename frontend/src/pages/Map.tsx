@@ -1,13 +1,12 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/stores/0/layout");
 	const dataMap = await resMap.json();
@@ -139,24 +138,24 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	));
 
 	return (
-		<div className="flex h-full items-center justify-center">
+		<div className="m-5 flex h-full items-center justify-center">
 			<div className="grid w-full grid-cols-1 md:min-h-[80vh] lg:grid-cols-4">
 				<div className="col-span-3 flex h-[60vw] max-h-[80vh] flex-col items-center justify-center p-5">
 					{grid.reverse()}
 					<h1 className="hidden md:hidden">{0}</h1>
 				</div>
 				<div className="col-span-1 flex flex-col items-center justify-between">
-					<div>
-						<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+					<div className="w-full">
+						<h2 className="scroll-m-20 border-b pb-2 text-center text-3xl font-semibold tracking-tight first:mt-0">
 							Продукти
 						</h2>
 						<ScrollArea className="my-6 ml-6 h-[25vh] md:h-[50vh]">
 							{user.cart.map((p) => {
 								return (
-									<div className="my-3">
+									<div className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70">
 										{p.name}
 										<XIcon
-											className="inline size-4 cursor-pointer"
+											className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
 											onClick={() => {
 												user.removeFromCart(p.id);
 												setItemRemoved(true);

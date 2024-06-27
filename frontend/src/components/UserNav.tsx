@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	// DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserI } from "@/lib/types";
+import { UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function UserNav({ user }: { user: UserI }) {
@@ -18,7 +18,9 @@ export function UserNav({ user }: { user: UserI }) {
 			<DropdownMenuTrigger>
 				<Button variant="ghost" className="relative h-10 w-10 rounded-full">
 					<Avatar className="h-10 w-10">
-						<AvatarFallback>S</AvatarFallback>
+						<AvatarFallback>
+							<UserIcon />
+						</AvatarFallback>
 					</Avatar>
 				</Button>
 			</DropdownMenuTrigger>
