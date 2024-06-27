@@ -81,7 +81,8 @@ func main() {
 		}
 		return
 	} else if len(os.Args) == 3 {
-		readProductsFromCSV(os.Args[1], productBox)
+		records := readRecordsFromCSV(os.Args[1])
+		loadProducts(records, productBox)
 
 		storeText, err := os.ReadFile(os.Args[2])
 		if err != nil {
@@ -153,6 +154,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		json.NewEncoder(w).Encode(products)
 	})
 
