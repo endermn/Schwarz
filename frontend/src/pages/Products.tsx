@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 
 export async function loader() {
-	const resProducts = await fetch("http://localhost:12345/products");
+	const resProducts = await fetch("http://localhost:12345/users/admin/products");
 	const products = await resProducts.json();
 
 	const resCategories = await fetch("http://localhost:12345/categories");
