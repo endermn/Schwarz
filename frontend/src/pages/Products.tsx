@@ -40,16 +40,16 @@ export function Products() {
 			p.name
 				.toLocaleLowerCase()
 				.split(" ")
-				.some((word) => word.startsWith(search)),
+				.some((word) => word.startsWith(search))
 	);
 
 	return (
 		<>
-			<div className="flex justify-center flex-col gap-3 m-4">
-				<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-					Нашите продукти
-				</h1>
-				<div className="max-w-96">
+			<div className="container">
+				<div className="flex justify-center items-center flex-col gap-3 m-4">
+					<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+						Нашите продукти
+					</h1>
 					<Label htmlFor="name">Нашите вкусни продукти!</Label>
 					<div className="flex gap-2">
 						<Input
