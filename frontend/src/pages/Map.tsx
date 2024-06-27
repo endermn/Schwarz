@@ -28,26 +28,53 @@ export async function action({ request }: any) {
 const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const [pathStops, setPathStops] = useState(0);
+	const user = getUser();
+	const [pathStops, setPathStops] = useState(user.cart.length + 1);
 	const [gridD, setGridD] = useState(gridData);
 
-	const user = getUser();
 	const fetcher = useFetcher();
 
 	useEffect(() => {
 		const currentPath = fetcher.data?.dataPath.path as PointI[];
-		for (let i = 0; i < currentPath?.length; i++) {
-			let el = gridData[currentPath[i].y][currentPath[i].x];
-			if (i === 0) el.kind = SquareType.START;
-			else if (el.kind === SquareType.PRODUCT) {
-				el.kind = SquareType.PRODUCT_VISITED;
-			} else if (el.kind === SquareType.CHECKOUT) {
-				el.kind = SquareType.CHECKOUT_VISITED;
-			} else if (el.kind === SquareType.SELFCHECKOUT) {
-				el.kind = SquareType.SELFCHECKOUT_VISITED;
-			} else {
-				el.kind = SquareType.VISITED;
+		if (currentPath) {
+			const stops = currentPath.filter((poit) =>
+				[
+					SquareType.PRODUCT,
+					SquareType.PRODUCT_VISITED,
+					SquareType.CHECKOUT,
+					SquareType.CHECKOUT_VISITED,
+					SquareType.SELFCHECKOUT,
+					SquareType.SELFCHECKOUT_VISITED,
+					SquareType.EXIT,
+				].includes(gridData[poit.y][poit.x].kind)
+			);
+
+			console.log(stops);
+			console.log(currentPath);
+
+			const upTo =
+				pathStops === -1
+					? 0
+					: currentPath.findIndex(
+							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y
+					  ) + 1;
+
+			const gridCopy = JSON.parse(JSON.stringify(gridData));
+
+			for (let i = 0; i < currentPath.slice(0, upTo).length; i++) {
+				let el = gridCopy[currentPath[i].y][currentPath[i].x];
+				if (i === 0) el.kind = SquareType.START;
+				else if (el.kind === SquareType.PRODUCT) {
+					el.kind = SquareType.PRODUCT_VISITED;
+				} else if (el.kind === SquareType.CHECKOUT) {
+					el.kind = SquareType.CHECKOUT_VISITED;
+				} else if (el.kind === SquareType.SELFCHECKOUT) {
+					el.kind = SquareType.SELFCHECKOUT_VISITED;
+				} else {
+					el.kind = SquareType.VISITED;
+				}
 			}
+			setGridD(gridCopy);
 		}
 	}, [fetcher, pathStops]);
 
@@ -89,7 +116,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					<div className="flex justify-between w-1/4">
 						<ArrowLeft
 							onClick={() => {
-								if (pathStops > 0) {
+								if (pathStops > -1) {
 									setPathStops((prevState) => prevState - 1);
 								}
 							}}
