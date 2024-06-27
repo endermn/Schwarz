@@ -30,7 +30,7 @@ const GOLDEN = [170, 130, 240, 119, 239];
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
-	const [pathStops, setPathStops] = useState(user.cart.length + 1);
+	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
 	const [gridD, setGridD] = useState(gridData);
 
 	const fetcher = useFetcher();
@@ -71,6 +71,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					el.kind = SquareType.CHECKOUT_VISITED;
 				} else if (el.kind === SquareType.SELFCHECKOUT) {
 					el.kind = SquareType.SELFCHECKOUT_VISITED;
+				} else if (el.kind === SquareType.EXIT) {
+					el.kind = SquareType.EXIT_VISITED;
 				} else {
 					el.kind = SquareType.VISITED;
 				}
@@ -134,7 +136,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						<div className="flex w-full justify-around">
 							<ArrowLeft
 								onClick={() => {
-									if (pathStops > 0) {
+									if (pathStops > -1) {
 										setPathStops((prevState) => prevState - 1);
 									}
 								}}
@@ -174,13 +176,17 @@ const getColorFromKind = (kind: number) => {
 		case SquareType.VISITED:
 			return "bg-cyan-500";
 		case SquareType.PRODUCT_VISITED:
-			return "bg-yellow-200";
+			return "bg-yellow-700";
 		case SquareType.CHECKOUT_VISITED:
-			return "bg-purple-200";
+			return "bg-purple-700";
 		case SquareType.SELFCHECKOUT_VISITED:
-			return "bg-pink-200";
+			return "bg-pink-700";
 		case SquareType.START:
 			return "bg-green-500";
+		case SquareType.START:
+			return "bg-green-500";
+		case SquareType.EXIT_VISITED:
+			return "bg-red-700";
 		default:
 			return "bg-gray-300";
 	}

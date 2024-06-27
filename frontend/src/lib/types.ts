@@ -10,6 +10,7 @@ export enum SquareType {
 	CHECKOUT_VISITED,
 	SELFCHECKOUT_VISITED,
 	START,
+	EXIT_VISITED,
 }
 
 export interface DataI {
