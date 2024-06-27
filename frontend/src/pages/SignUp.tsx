@@ -52,7 +52,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 	);
 	if (!signedUp) {
 		return {
-			signingUp: "There was an error when signing up",
+			signingUp: "Възникна проблем повреме на регистрацията",
 		} as Errors;
 	}
 
@@ -84,7 +84,7 @@ export function SignUp() {
 						<Label>
 							Потребителско име:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="username"
 							/>
 							{actionData && actionData.username ? (
@@ -96,7 +96,7 @@ export function SignUp() {
 						<Label>
 							Парола:
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="password"
 							/>
 							{actionData && actionData.password ? (
@@ -104,13 +104,13 @@ export function SignUp() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="my-2 flex flex-col justify-center rounded-lg">
+					<div className="flex flex-col justify-center rounded-lg">
 						<button
-							className="my-2 w-full bg-blue-500 py-2 text-white"
+							className="mb-1 w-full rounded bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isSigningUp}
 						>
-							{isSigningUp ? "Влизане..." : "Влез"}
+							{isSigningUp ? "Регистриране..." : "Регистрирай се"}
 						</button>
 						<Label>
 							{actionData && actionData.signingUp ? (

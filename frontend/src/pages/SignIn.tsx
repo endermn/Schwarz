@@ -84,7 +84,7 @@ export function SignIn() {
 						<Label>
 							Потребителско име:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="username"
 							/>
 							{actionData && actionData.username ? (
@@ -96,7 +96,7 @@ export function SignIn() {
 						<Label>
 							Парола:{" "}
 							<Input
-								className="dark:bg-white dark:text-black"
+								className="mb-1 dark:bg-white dark:text-black"
 								name="password"
 							/>
 							{actionData && actionData.password ? (
@@ -104,9 +104,9 @@ export function SignIn() {
 							) : null}
 						</Label>{" "}
 					</div>
-					<div className="my-2 flex flex-col justify-center rounded-lg">
+					<div className="flex flex-col justify-center rounded-lg">
 						<button
-							className="my-2 w-full bg-blue-500 py-2 text-white"
+							className="mb-1 w-full rounded bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isLoggingIn}
 						>
