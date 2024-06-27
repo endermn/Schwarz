@@ -1,4 +1,5 @@
 import { fakeAuthProvider } from "@/auth";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import {
@@ -46,7 +47,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 
 	const signedUp = await fakeAuthProvider.signup(
 		username as string,
-		password as string
+		password as string,
 	);
 	if (!signedUp) {
 		return {
@@ -65,27 +66,48 @@ export function SignUp() {
 
 	return (
 		<div className="flex justify-center items-center h-full">
-			<div>
-				<Form method="post" replace>
-					<input type="hidden" name="redirectTo" />
-					<Label>
-						Username: <input name="username" />
-						{actionData && actionData.username ? (
-							<p style={{ color: "red" }}>{actionData.username}</p>
+			<div className="max-w-sm w-full">
+				<Form method="post" replace className="flex flex-col gap-y-7 ">
+					<div>
+						<Label>
+							Потребителско име:{" "}
+							<Input
+								className="dark:bg-white dark:text-black"
+								name="username"
+							/>
+							{actionData && actionData.username ? (
+								<p style={{ color: "red" }}>{actionData.username}</p>
+							) : null}
+						</Label>{" "}
+					</div>
+					<div>
+						<Label>
+							Парола:{" "}
+							<Input
+								className="dark:bg-white dark:text-black"
+								name="password"
+							/>
+							{actionData && actionData.password ? (
+								<p style={{ color: "red" }}>{actionData.password}</p>
+							) : null}
+						</Label>{" "}
+					</div>
+					<div className="my-2 w-full bg-blue-500 text-white rounded-lg flex justify-center py-2">
+						<button type="submit" disabled={isSigningUp}>
+							{isSigningUp ? "Регистриране..." : "Регистрирай се"}
+						</button>
+						{actionData && actionData.signingUp ? (
+							<p style={{ color: "red" }}>{actionData.signingUp}</p>
 						) : null}
-					</Label>{" "}
-					<Label>
-						Password: <input name="password" />
-						{actionData && actionData.password ? (
-							<p style={{ color: "red" }}>{actionData.password}</p>
-						) : null}
-					</Label>{" "}
-					{actionData && actionData.signingUp ? (
-						<p style={{ color: "red" }}>{actionData.signingUp}</p>
-					) : null}
-					<button type="submit" disabled={isSigningUp}>
-						{isSigningUp ? "Signing up..." : "Sign up"}
-					</button>
+					</div>
+					<div className="text-center text-sm text-muted-foreground">
+						<p>
+							Имаш профил?{" "}
+							<a href="/signin" className="underline">
+								Влез
+							</a>
+						</p>
+					</div>
 				</Form>
 			</div>
 		</div>

@@ -92,7 +92,7 @@ func Login(c *fiber.Ctx) error {
 
 	var data map[string]string
 	if err := c.BodyParser(&data); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Failed to parse request body",
 		})
 	}
@@ -126,7 +126,7 @@ func Login(c *fiber.Ctx) error {
 	token, err := claims.SignedString([]byte(jwtSecret))
 	if err != nil {
 		log.Println("Error generating token:", err)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Failed to generate token",
 		})
 	}

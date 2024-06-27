@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { XIcon } from "lucide-react";
 import { getUser } from "@/App";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
@@ -21,7 +23,6 @@ export async function action({ request }: any) {
 		body: products,
 	});
 	const dataPath = await resPath.json();
-	console.log("ACTION CALLED", dataPath);
 	return { dataPath };
 }
 
@@ -78,76 +79,53 @@ function transpose(matrix: DataI[][]): DataI[][] {
 }
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const [selectedProductId, setSelectedProductId] = useState(0);
-	const [cellSize, setCellSize] = useState(20);
-	const mapContainerRef = useRef<HTMLDivElement | null>(null);
-
-	const user = getUser();
-	const controls = useAnimationControls();
-
+	const [selectedProductId, setSelectedProductId] = useState(-1);
 	const handleTap = (productId: number) => {
 		setSelectedProductId(productId);
 	};
 
-	useEffect(() => {
-		const updateCellSize = () => {
-			let { clientWidth } = mapContainerRef.current!; // Use getBoundingClientRect for precise width
-			if (clientWidth < 600) {
-				clientWidth *= 0.8;
-			} else {
-				clientWidth *= 0.5;
-			}
-			const cols = gridData[0]?.length || 1;
-			const cellWidth = Math.floor(clientWidth / cols); // Round cellWidth to an integer
-			setCellSize(cellWidth);
-		};
+	const [steps, setSteps] = useState(0);
 
-		updateCellSize();
-		window.addEventListener("resize", updateCellSize);
-		return () => window.removeEventListener("resize", updateCellSize);
-	}, [gridData]);
+	const user = getUser();
+	const controls = useAnimationControls();
 
 	const fetcher = useFetcher();
-	console.log(fetcher.data);
 	let data = fetcher.data?.dataPath; // path repaint is on button submit... which becomes diabled when there are rzero elements
-	if (data) {
-		user.path = data;
+
+	const productCoords: PointI[] = [];
+	const currentPath = data?.path as PointI[];
+
+	for (let i = 0; i < currentPath?.length; i++) {
+		let el = gridData[currentPath[i].y][currentPath[i].x];
+		if (el.kind === 3) {
+			productCoords.push(currentPath[i]);
+			el.kind = 43;
+		} else {
+			el.kind = 42;
+		}
 	}
 
-	if (user.cart.length === 0) {
-		// reset everything
-		data = null;
-		user.path = null;
-	}
-
-	if (!data && user.path) {
-		// if there is no path from action used saved data
-		data = user.path;
-	}
-
-	useEffect(() => {
-		controls.start({ scale: 1 });
-	}, []);
+	const upTo =
+		steps === productCoords.length
+			? currentPath?.length
+			: currentPath?.findIndex(
+					(p) =>
+						p.x === productCoords[steps].x && p.y === productCoords[steps].y
+			  ) + 1;
 
 	const grid = gridData.map((row, rowIndex) => (
-		<div key={rowIndex} className="flex">
+		<div key={rowIndex} className="flex flex-1 w-full">
 			{row.map((cell, colIndex) => (
 				<motion.div
 					key={colIndex}
-					className={` md:m-1 m-[1px] shadow-md round-[${Math.floor(
+					className={` md:m-1 m-[1px] flex-1 shadow-md round-[${Math.floor(
 						Math.random() * 20
-					)}]  ${getColorFromKind(cell.kind, colIndex, rowIndex, data)}`}
-					initial={{ scale: 0 }}
-					animate={controls}
-					transition={{
-						duration: 0.2,
-						delay:
-							rowIndex * 0.02 + colIndex * 0.02 * (cell.kind !== 0 ? 0 : 1),
-					}}
-					onHoverStart={() => {
-						if (cell.kind === 3) handleTap(cell.productId);
-					}}
-					style={{ width: cellSize, height: cellSize }}
+					)}]  ${getColorFromKind(
+						cell.kind,
+						colIndex,
+						rowIndex,
+						currentPath?.slice(0, upTo)
+					)}`}
 				/>
 			))}
 		</div>
@@ -155,7 +133,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	return (
 		<div className="flex justify-center items-center h-full">
-			<div className="grid grid-cols-1 md:grid-cols-4 w-full md:min-h-[80vh]">
+			<div className="grid grid-cols-1 lg:grid-cols-4 w-full md:min-h-[80vh]">
 				<div className="col-span-1 flex md:flex-col justify-center items-center">
 					<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
 						Продукти
@@ -164,7 +142,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						{user.cart.map((p) => {
 							return (
 								<li>
-									{p.name}{" "}
+									{p.name}
 									<XIcon
 										className="inline size-4 cursor-pointer"
 										onClick={() => user.removeFromCart(p.id)}
@@ -173,6 +151,21 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							);
 						})}
 					</ul>
+					<Input
+						disabled={user.cart.length === 0}
+						className="w-1/2 mb-2"
+						value={steps}
+						type="number"
+						placeholder="Map size"
+						onChange={(e) => {
+							if (
+								+e.target.value <= productCoords.length &&
+								+e.target.value >= 0
+							) {
+								setSteps(+e.target.value);
+							}
+						}}
+					/>
 					<fetcher.Form method="post">
 						<Button
 							disabled={user.cart.length === 0}
@@ -183,10 +176,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 						</Button>
 					</fetcher.Form>
 				</div>
-				<div
-					className="col-span-3 flex flex-col items-center justify-center p-10"
-					ref={mapContainerRef}
-				>
+				<div className="col-span-3 flex flex-col items-center justify-center p-5 h-[60vw] max-h-[80vh]">
 					{grid}
 					<h1 className="hidden md:hidden">{selectedProductId}</h1>
 				</div>
@@ -199,9 +189,10 @@ const getColorFromKind = (
 	kind: number,
 	x: number,
 	y: number,
-	path: PathI | null
+	path: PointI[] | null
 ) => {
-	const good = path?.path.find((point) => point.x === x && point.y === y);
+	/*
+	const good = path?.find((point) => point.x === x && point.y === y);
 	if (good) {
 		if (kind === 0) return "bg-red-300";
 		switch (kind) {
@@ -216,7 +207,7 @@ const getColorFromKind = (
 			default:
 				return "bg-gray-300";
 		}
-	}
+	}*/
 	switch (kind) {
 		case 0:
 			return "dark:bg-white dark:opacity-30 bg-transparent";
@@ -228,6 +219,10 @@ const getColorFromKind = (
 			return "bg-yellow-500";
 		case 4:
 			return "bg-purple-500";
+		case 42:
+			return "bg-cyan-500";
+		case 43:
+			return "bg-cyan-200";
 		default:
 			return "bg-gray-300";
 	}
