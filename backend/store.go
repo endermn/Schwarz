@@ -30,9 +30,8 @@ func (k squareKind) isCheckout() bool {
 // 0101nnnnnnnnnnnn self checkout k=kind n=number
 
 type square struct {
-	Kind           squareKind `json:"kind"`
-	ProductID      int        `json:"productId"`
-	CheckoutNumber int        `json:"checkoutNumber"`
+	Kind      squareKind `json:"kind"`
+	ProductID int        `json:"productId"`
 }
 
 func makeGrid[x any](width int, height int) [][]x {
@@ -60,9 +59,6 @@ func encodeGrid(grid [][]square) []byte {
 			if sq.Kind == productSquare {
 				word |= uint16(sq.ProductID)
 			}
-			if sq.Kind.isCheckout() {
-				word |= uint16(sq.CheckoutNumber)
-			}
 			bytes[(y*width+x)*2] = byte(word)
 			bytes[(y*width+x)*2+1] = byte(word >> 8)
 		}
@@ -78,7 +74,7 @@ func decodeGrid(bytes []byte, width int) [][]square {
 		for x := range width {
 			word := uint16(bytes[(y*width+x)*2]) | uint16(bytes[(y*width+x)*2+1])<<8
 			number := int(word & 0xfff)
-			grid[y][x] = square{Kind: squareKind(word >> 12), ProductID: number, CheckoutNumber: number}
+			grid[y][x] = square{Kind: squareKind(word >> 12), ProductID: number}
 		}
 	}
 	return grid
@@ -145,19 +141,9 @@ func parseCSV(input string) (grid [][]square, start point, err error) {
 			}
 			grid[y][x] = square{Kind: productSquare, ProductID: num}
 		} else if name[0] == 'C' && name[1] == 'A' {
-			var num int
-			num, err = strconv.Atoi(record[0][2:])
-			if err != nil {
-				return
-			}
-			grid[y][x] = square{Kind: selfCheckoutSquare, CheckoutNumber: num}
+			grid[y][x] = square{Kind: selfCheckoutSquare}
 		} else if name[0] == 'S' {
-			var num int
-			num, err = strconv.Atoi(record[0][1:])
-			if err != nil {
-				return
-			}
-			grid[y][x] = square{Kind: humanCheckoutSquare, CheckoutNumber: num}
+			grid[y][x] = square{Kind: humanCheckoutSquare}
 		} else if name == "EX" {
 			grid[y][x].Kind = endSquare
 		} else if name == "EN" {

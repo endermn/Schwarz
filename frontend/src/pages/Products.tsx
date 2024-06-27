@@ -40,7 +40,7 @@ export function Products() {
 			p.name
 				.toLocaleLowerCase()
 				.split(" ")
-				.some((word) => word.startsWith(search))
+				.some((word) => word.startsWith(search)),
 	);
 
 	return (

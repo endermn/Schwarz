@@ -14,5 +14,6 @@ COPY . .
 RUN go build
 
 EXPOSE 12345
+EXPOSE 3000
 
 CMD [ "./backend", "product_master_data.csv", "store.csv" ]
