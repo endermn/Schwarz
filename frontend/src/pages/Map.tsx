@@ -1,11 +1,23 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/stores/0/layout");
@@ -137,6 +149,65 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		</div>
 	));
 
+	const productLegend = [
+		{
+			kind: SquareType.PRODUCT,
+			name: "Продукт",
+		},
+		{
+			kind: SquareType.BLOCAKDE,
+			name: "Блокада",
+		},
+		{
+			kind: SquareType.CHECKOUT,
+			name: "Каса",
+		},
+		{
+			kind: SquareType.CHECKOUT_VISITED,
+			name: "Посетена каса",
+		},
+		{
+			kind: SquareType.EMPTY,
+			name: "Празен път",
+		},
+		{
+			kind: SquareType.EXIT,
+			name: "Изход",
+		},
+		{
+			kind: SquareType.EXIT_VISITED,
+			name: "Изход посетен",
+		},
+		{
+			kind: SquareType.PRODUCT_VISITED,
+			name: "Посетен продукт",
+		},
+		{
+			kind: SquareType.SELFCHECKOUT,
+			name: "Каса на самообслужване",
+		},
+		{
+			kind: SquareType.SELFCHECKOUT_VISITED,
+			name: "Посетена каса на самообслужване",
+		},
+		{
+			kind: SquareType.START,
+			name: "Вход",
+		},
+		{
+			kind: SquareType.VISITED,
+			name: "Посетено място",
+		},
+	];
+
+	const [legendOpen, setLegendOpen] = useState(false);
+	useEffect(() => {
+		const legendSeen = localStorage.getItem("legendSeen");
+
+		if (!legendSeen) setLegendOpen(true);
+		localStorage.setItem("legendSeen", "true");
+	}, []);
+
 	return (
 		<div className="m-5 flex h-full items-center justify-center">
 			<div className="grid w-full grid-cols-1 md:min-h-[80vh] lg:grid-cols-4">
@@ -169,19 +240,58 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					</div>
 
 					<div className="flex flex-col gap-y-5">
-						<fetcher.Form method="post">
-							<Button
-								disabled={user.cart.length === 0}
-								name="products"
-								value={JSON.stringify({ products: user.cart.map((p) => p.id) })}
-								className="bg-green-500 disabled:bg-slate-500"
-								onClick={() => {
-									setItemRemoved(false);
-								}}
-							>
-								Намери пътя към светлината!
-							</Button>
-						</fetcher.Form>
+						<div className="flex gap-4">
+							<AlertDialog open={legendOpen}>
+								<AlertDialogTrigger>
+									<Button
+										onClick={() => setLegendOpen(true)}
+										variant={"secondary"}
+									>
+										Помощ?
+									</Button>
+								</AlertDialogTrigger>
+								<AlertDialogContent>
+									<AlertDialogHeader>
+										<AlertDialogTitle>Легенда на картата</AlertDialogTitle>
+										<AlertDialogDescription>
+											<div className="grid grid-cols-2 items-center">
+												{productLegend.map((product) => {
+													return (
+														<div className="flex items-center gap-2">
+															<div
+																className={`h-4 w-4 border-2 border-black dark:border-white ${getColorFromKind(product.kind)}`}
+															></div>
+															{product.name}
+														</div>
+													);
+												})}
+											</div>
+										</AlertDialogDescription>
+									</AlertDialogHeader>
+									<AlertDialogFooter>
+										<AlertDialogCancel onClick={() => setLegendOpen(false)}>
+											Затвори
+										</AlertDialogCancel>
+									</AlertDialogFooter>
+								</AlertDialogContent>
+							</AlertDialog>
+							<fetcher.Form method="post">
+								<Button
+									disabled={user.cart.length === 0}
+									name="products"
+									value={JSON.stringify({
+										products: user.cart.map((p) => p.id),
+									})}
+									className="bg-green-500 disabled:bg-slate-500"
+									onClick={() => {
+										setItemRemoved(false);
+									}}
+								>
+									Намери пътя!
+								</Button>
+							</fetcher.Form>
+						</div>
+
 						<div className="flex w-full justify-around">
 							<ArrowLeft
 								onClick={() => {
