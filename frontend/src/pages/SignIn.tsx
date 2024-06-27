@@ -1,7 +1,6 @@
 import { fakeAuthProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePersistentStorageValue } from "@/lib/useLocalStorage";
 
 import {
 	Form,
@@ -57,7 +56,7 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
 	}
 
 	localStorage.setItem("user", JSON.stringify({ username }));
-	return null;
+	return redirect("/");
 }
 
 export function SignIn() {
@@ -65,16 +64,6 @@ export function SignIn() {
 	let isLoggingIn = navigation.formData?.get("username") != null;
 
 	let actionData = useActionData() as Errors;
-	if (
-		actionData &&
-		!actionData.password &&
-		!actionData.password &&
-		!actionData.username
-	) {
-		usePersistentStorageValue("user", {
-			username: navigation.formData?.get("username"),
-		});
-	}
 
 	return (
 		<div className="flex h-full items-center justify-center">

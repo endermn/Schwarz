@@ -44,7 +44,8 @@ const router = createBrowserRouter([
 						path: "signout/",
 						async loader() {
 							console.log("signing out");
-							return await fakeAuthProvider.signout();
+							localStorage.removeItem("user");
+							return redirect("/");
 						},
 					},
 					{ path: "products/", loader: productsLoader, element: <Products /> },
@@ -102,6 +103,7 @@ async function protectedLoader({}: LoaderFunctionArgs) {
 
 		if (res.status === 200) {
 			console.log("Session is valid");
+			return redirect("/");
 		} else if (res.status === 401) {
 			window.location.href = "/signin"; // Redirect to signin
 		} else {
