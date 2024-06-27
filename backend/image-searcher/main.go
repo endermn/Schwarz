@@ -32,6 +32,8 @@ func readProductsFromCSV(filePath string) [][]string {
 }
 
 func searchImage(query string, width, height int) string {
+	// searchURL := fmt.Sprintf("https://www.bing.com/images/search?q=%s&FORM=IRFLTR&first=1",
+	// 	url.QueryEscape(query))
 	searchURL := fmt.Sprintf("https://www.bing.com/images/search?q=%s&qpvt=%s&FORM=IRFLTR&first=1&tsc=ImageBasicHover&cw=%d&ch=%d",
 		url.QueryEscape(query), url.QueryEscape(query), width, height)
 
@@ -74,7 +76,18 @@ func main() {
 	wg.Add(len(records))
 	for i, record := range records {
 		go func() {
-			url := searchImage(record[2]+" ("+record[1]+")", 500, 500)
+			productName := record[2]
+			category := record[1]
+			query := productName
+			disambiguatedCategories := map[string]struct{}{
+				"Играчки": {},
+				"Бира":    {},
+			}
+			if _, d := disambiguatedCategories[category]; d {
+				query = fmt.Sprintf("%v (категория %v)", productName, category)
+			}
+
+			url := searchImage(query, 500, 500)
 			results[i] = record[2] + " : " + url + "\n"
 			wg.Done()
 		}()
