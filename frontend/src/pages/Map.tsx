@@ -67,7 +67,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		return [];
 	}, [fetcher, gridData, pathStops]);
 
-	const [prevPathSlice, setPrevPath] = useState<PointI[]>(pathSlice);
+	const [prevPath, setPrevPath] = useState<PointI[]>(pathSlice);
 
 	const gridMemo = useMemo<DataI[][]>(() => {
 		const gridCopy = JSON.parse(JSON.stringify(gridData));
@@ -104,7 +104,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 				let delay = 0;
 				if (pointIndex !== undefined && pointIndex !== -1) {
-					delay = (pointIndex % prevPathSlice.length) * 0.05;
+					delay = (pointIndex - prevPath.length) * 0.05;
 				}
 
 				return (
