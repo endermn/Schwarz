@@ -1,5 +1,5 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getContext } from "@/App";
@@ -221,21 +221,31 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							Продукти
 						</h2>
 						<ScrollArea className="my-6 ml-6 h-[25vh] md:h-[50vh]">
-							{user.cart.map((p) => {
-								return (
-									<div className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70">
-										{p.name}
-										<XIcon
-											className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
-											onClick={() => {
-												user.removeFromCart(p.id);
-												setItemRemoved(true);
-												setPathStops((prevPath) => prevPath - 1);
-											}}
-										/>
-									</div>
-								);
-							})}
+							<AnimatePresence mode="popLayout">
+								{user.cart.map((p) => {
+									return (
+										<motion.div
+											key={p.id}
+											layout
+											initial={{ opacity: 0, x: -400, scale: 0.5 }}
+											animate={{ opacity: 1, x: 0, scale: 1 }}
+											exit={{ opacity: 0, x: 200, scale: 1.2 }}
+											transition={{ duration: 0.6, type: "spring" }}
+											className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70"
+										>
+											{p.name}
+											<XIcon
+												className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
+												onClick={() => {
+													user.removeFromCart(p.id);
+													setItemRemoved(true);
+													setPathStops((prevPath) => prevPath - 1);
+												}}
+											/>
+										</motion.div>
+									);
+								})}
+							</AnimatePresence>
 						</ScrollArea>
 					</div>
 
