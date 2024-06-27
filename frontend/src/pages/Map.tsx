@@ -32,12 +32,14 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
 	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
 	const [gridD, setGridD] = useState(gridData);
+	const [itemRemoved, setItemRemoved] = useState(false);
 
 	const fetcher = useFetcher();
 
 	useEffect(() => {
 		const currentPath = fetcher.data?.dataPath.path as PointI[];
-		if (currentPath) {
+		const gridCopy = JSON.parse(JSON.stringify(gridData));
+		if (currentPath && !itemRemoved && fetcher.state === "idle") {
 			const stops = currentPath.filter((poit) =>
 				[
 					SquareType.PRODUCT,
@@ -60,8 +62,6 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y,
 						) + 1;
 
-			const gridCopy = JSON.parse(JSON.stringify(gridData));
-
 			for (let i = 0; i < currentPath.slice(0, upTo).length; i++) {
 				let el = gridCopy[currentPath[i].y][currentPath[i].x];
 				if (i === 0) el.kind = SquareType.START;
@@ -77,9 +77,9 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					el.kind = SquareType.VISITED;
 				}
 			}
-			setGridD(gridCopy);
 		}
-	}, [fetcher, pathStops, user.cart]);
+		setGridD(gridCopy);
+	}, [fetcher, pathStops, user.cart, itemRemoved]);
 
 	console.log(gridData);
 
@@ -115,7 +115,11 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 										{p.name}
 										<XIcon
 											className="inline size-4 cursor-pointer"
-											onClick={() => user.removeFromCart(p.id)}
+											onClick={() => {
+												user.removeFromCart(p.id);
+												setItemRemoved(true);
+												setPathStops((prevPath) => prevPath - 1);
+											}}
 										/>
 									</div>
 								);
@@ -129,6 +133,9 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 								name="products"
 								value={JSON.stringify({ products: user.cart.map((p) => p.id) })}
 								className="bg-green-500 disabled:bg-slate-500"
+								onClick={() => {
+									setItemRemoved(false);
+								}}
 							>
 								Намери пътя към светлината!
 							</Button>
