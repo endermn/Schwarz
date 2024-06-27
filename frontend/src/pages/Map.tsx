@@ -26,6 +26,19 @@ export async function action({ request }: any) {
 	return { dataPath };
 }
 
+function deduplicateArray(arr: PointI[]) {
+	const seen = new Set();
+	return arr.filter((item) => {
+		const key = `${item.x},${item.y}`;
+		if (seen.has(key)) {
+			return false;
+		} else {
+			seen.add(key);
+			return true;
+		}
+	});
+}
+
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
 	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
@@ -43,7 +56,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const pathSlice = useMemo(() => {
 		const currentPath = fetcher.data?.dataPath.path as PointI[];
 		if (currentPath) {
-			const stops = currentPath.filter((poit) =>
+			const dirtyStops = currentPath.filter((poit) =>
 				[
 					SquareType.PRODUCT,
 					SquareType.PRODUCT_VISITED,
@@ -54,6 +67,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 					SquareType.EXIT,
 				].includes(gridData[poit.y][poit.x].kind),
 			);
+
+			const stops = deduplicateArray(dirtyStops);
 
 			const upTo =
 				pathStops === -1

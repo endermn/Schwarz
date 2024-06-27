@@ -10,6 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserI } from "@/lib/types";
+import { Link } from "react-router-dom";
 
 export function UserNav({ user }: { user: UserI }) {
 	return (
@@ -29,9 +30,9 @@ export function UserNav({ user }: { user: UserI }) {
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuSeparator />
-				<a href="/signout">
+				<Link to={"/signout"}>
 					<DropdownMenuItem>Излез</DropdownMenuItem>
-				</a>
+				</Link>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
