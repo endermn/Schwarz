@@ -102,14 +102,7 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 				</Sheet>
 			</div>
 
-			<div className="flex items-center gap-2">
-				{user?.username ? (
-					<UserNav user={user} />
-				) : (
-					<a href="/signin">
-						<Button className="">Влез</Button>
-					</a>
-				)}
+			<div className="flex items-center gap-5">
 				<NavLink to={cart.length === 0 ? "/products" : "/map"}>
 					<div className="relative inline-block">
 						<ShoppingCart size={28} />
@@ -120,6 +113,13 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 						)}
 					</div>
 				</NavLink>
+				{user?.username ? (
+					<UserNav user={user} />
+				) : (
+					<a href="/signin">
+						<Button className="">Влез</Button>
+					</a>
+				)}
 			</div>
 		</div>
 	);

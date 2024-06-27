@@ -270,7 +270,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 													return (
 														<div
 															key={product.name}
-															className="flex h-full text-balance border-b-2 border-b-black/20 py-2"
+															className="flex h-full text-balance border-b-2 border-b-black/20 py-2 dark:border-b-white/50 dark:text-white"
 														>
 															<div
 																className={`mr-3 h-4 w-4 border-2 border-black dark:border-white ${getColorFromKind(product.kind)}`}
@@ -283,8 +283,11 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 										</AlertDialogDescription>
 									</AlertDialogHeader>
 									<AlertDialogFooter>
-										<AlertDialogCancel onClick={() => setLegendOpen(false)}>
-											Затвори
+										<AlertDialogCancel
+											className="bg-blue-500 text-white"
+											onClick={() => setLegendOpen(false)}
+										>
+											Разбрах!
 										</AlertDialogCancel>
 									</AlertDialogFooter>
 								</AlertDialogContent>
