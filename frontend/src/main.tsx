@@ -16,7 +16,7 @@ import { Products } from "@/pages/Products.tsx";
 import { Map, loader as mapLoader, action as mapAction } from "./pages/Map.tsx";
 import { loader as productsLoader } from "./pages/Products.tsx";
 import { MapEditor } from "./pages/MapEditor.tsx";
-import { fakeAuthProvider } from "./auth.ts";
+import { authProvider } from "./auth.ts";
 
 const router = createBrowserRouter([
 	{
@@ -92,7 +92,7 @@ const router = createBrowserRouter([
 						return "no password";
 					}
 
-					const loggedIn = await fakeAuthProvider.signin(username, password);
+					const loggedIn = await authProvider.signin(username, password);
 					if (!loggedIn) {
 						redirect("/signin");
 					}
