@@ -367,6 +367,7 @@ var product_ = struct {
 	ProductID *objectbox.PropertyInt
 	Category  *objectbox.PropertyString
 	Name      *objectbox.PropertyString
+	ImageURL  *objectbox.PropertyString
 }{
 	id: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -392,6 +393,12 @@ var product_ = struct {
 			Entity: &productBinding.Entity,
 		},
 	},
+	ImageURL: &objectbox.PropertyString{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     5,
+			Entity: &productBinding.Entity,
+		},
+	},
 }
 
 // GeneratorVersion is called by ObjectBox to verify the compatibility of the generator used to generate this code
@@ -407,7 +414,8 @@ func (product_EntityInfo) AddToModel(model *objectbox.Model) {
 	model.Property("ProductID", 6, 2, 2837665624995909300)
 	model.Property("Category", 9, 3, 5517858282805562198)
 	model.Property("Name", 9, 4, 1335036859670648677)
-	model.EntityLastPropertyId(4, 1335036859670648677)
+	model.Property("ImageURL", 9, 5, 5812541690724631292)
+	model.EntityLastPropertyId(5, 5812541690724631292)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -431,13 +439,15 @@ func (product_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, 
 	obj := object.(*product)
 	var offsetCategory = fbutils.CreateStringOffset(fbb, obj.Category)
 	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
+	var offsetImageURL = fbutils.CreateStringOffset(fbb, obj.ImageURL)
 
 	// build the FlatBuffers object
-	fbb.StartObject(4)
+	fbb.StartObject(5)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetInt64Slot(fbb, 1, int64(obj.ProductID))
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetCategory)
 	fbutils.SetUOffsetTSlot(fbb, 3, offsetName)
+	fbutils.SetUOffsetTSlot(fbb, 4, offsetImageURL)
 	return nil
 }
 
@@ -459,6 +469,7 @@ func (product_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface
 		ProductID: fbutils.GetIntSlot(table, 6),
 		Category:  fbutils.GetStringSlot(table, 8),
 		Name:      fbutils.GetStringSlot(table, 10),
+		ImageURL:  fbutils.GetStringSlot(table, 12),
 	}, nil
 }
 
@@ -719,6 +730,7 @@ var store_ = struct {
 	Width   *objectbox.PropertyInt
 	Start_X *objectbox.PropertyInt
 	Start_Y *objectbox.PropertyInt
+	Owner   *objectbox.PropertyUint64
 }{
 	ID: &objectbox.PropertyUint64{
 		BaseProperty: &objectbox.BaseProperty{
@@ -762,6 +774,12 @@ var store_ = struct {
 			Entity: &storeBinding.Entity,
 		},
 	},
+	Owner: &objectbox.PropertyUint64{
+		BaseProperty: &objectbox.BaseProperty{
+			Id:     8,
+			Entity: &storeBinding.Entity,
+		},
+	},
 }
 
 // GeneratorVersion is called by ObjectBox to verify the compatibility of the generator used to generate this code
@@ -780,7 +798,9 @@ func (store_EntityInfo) AddToModel(model *objectbox.Model) {
 	model.Property("Width", 6, 5, 4492379083027535731)
 	model.Property("Start_X", 6, 6, 4655222207200051383)
 	model.Property("Start_Y", 6, 7, 8094724709565254531)
-	model.EntityLastPropertyId(7, 8094724709565254531)
+	model.Property("Owner", 6, 8, 5751424598683235360)
+	model.PropertyFlags(8192)
+	model.EntityLastPropertyId(8, 5751424598683235360)
 }
 
 // GetId is called by ObjectBox during Put operations to check for existing ID on an object
@@ -807,7 +827,7 @@ func (store_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id
 	var offsetGrid = fbutils.CreateByteVectorOffset(fbb, obj.Grid)
 
 	// build the FlatBuffers object
-	fbb.StartObject(7)
+	fbb.StartObject(8)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetUOffsetTSlot(fbb, 1, offsetName)
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetAddress)
@@ -815,6 +835,7 @@ func (store_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id
 	fbutils.SetUOffsetTSlot(fbb, 3, offsetGrid)
 	fbutils.SetInt64Slot(fbb, 5, int64(obj.Start.X))
 	fbutils.SetInt64Slot(fbb, 6, int64(obj.Start.Y))
+	fbutils.SetUint64Slot(fbb, 7, obj.Owner)
 	return nil
 }
 
@@ -841,6 +862,7 @@ func (store_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface{}
 			X: fbutils.GetIntSlot(table, 14),
 			Y: fbutils.GetIntSlot(table, 16),
 		},
+		Owner: fbutils.GetUint64Slot(table, 18),
 	}, nil
 }
 

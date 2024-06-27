@@ -1,63 +1,21 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
-	"fmt"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"strconv"
-
-	"github.com/PuerkitoBio/goquery"
+	"strings"
 )
 
-func searchImage(query string) string {
-	searchURL := fmt.Sprintf("https://www.bing.com/images/search?q=%s", url.QueryEscape(query))
-
-	// Make a request to Bing
-	resp, err := http.Get(searchURL)
-	if err != nil {
-		log.Fatalf("Failed to get search results: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Parse the response
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		log.Fatalf("Failed to parse search results: %v", err)
-	}
-
-	// Find the first image result
-	var imageURL string
-	doc.Find(".mimg").EachWithBreak(func(i int, s *goquery.Selection) bool {
-		if src, exists := s.Attr("src"); exists {
-			imageURL = src
-			return false // Break the loop after finding the first image
-		}
-		return true
-	})
-
-	// Ensure the imageURL is not empty
-	if imageURL == "" {
-		log.Println("No images found.")
-	}
-	return imageURL
-}
-
-func readProductsFromCSV(filePath string, box *productBox) {
+func readRecordsFromCSV(filePath string) [][]string {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Printf("Failed to open data")
 		os.Exit(1)
 	}
 	defer file.Close()
-
-	err = box.RemoveAll()
-	if err != nil {
-		log.Printf("Failed to clear the products table: %v", err)
-		os.Exit(1)
-	}
 
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -66,22 +24,71 @@ func readProductsFromCSV(filePath string, box *productBox) {
 		os.Exit(1)
 	}
 
-	for _, record := range records {
+	return records
+
+}
+
+func readFile(filePath string) ([]string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	return lines, nil
+}
+
+func extractURL(line string) string {
+	startIndex := strings.Index(line, "http")
+	if startIndex == -1 {
+		return ""
+	}
+	endIndex := strings.Index(line[startIndex:], " ")
+	if endIndex == -1 {
+		return line[startIndex:]
+	}
+	return line[startIndex : startIndex+endIndex]
+}
+
+func loadProducts(records [][]string, box *productBox) {
+
+	err := box.RemoveAll()
+	if err != nil {
+		log.Printf("Failed to clear the products table: %v", err)
+		os.Exit(1)
+	}
+	lines, err := readFile("./cmd/urls.txt")
+	if err != nil {
+		log.Printf("Did not manage to read from file: %v", err)
+	}
+
+	for i, record := range records {
 		id, err := strconv.Atoi(record[0][1:])
 		if err != nil {
 			log.Printf("strconv.Atoi failed: %v", record[0][1:])
 			os.Exit(1)
 		}
-		// url := searchImage(record[2])
-		_, err = box.Insert(&product{
+		url := extractURL(lines[i])
+
+		activeProduct := &product{
 			ProductID: id,
 			Category:  record[1],
 			Name:      record[2],
-			// Image:     url,
-		})
+			ImageURL:  url,
+		}
+		_, err = box.Put(activeProduct)
 		if err != nil {
 			log.Printf("failed to insert product %v: %v", record, err)
 			os.Exit(1)
 		}
+
 	}
 }
