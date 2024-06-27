@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
+import { XIcon, ArrowRight, ArrowLeft, SquareActivity } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
@@ -91,10 +91,9 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const grid = gridD.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex w-full flex-1">
 			{row.map((cell, colIndex) => {
-				const isAnimated = [
-					SquareType.VISITED,
-					SquareType.PRODUCT_VISITED,
-				].includes(cell.kind);
+				const isAnimated = Object.values(SquareType)
+					.filter((t) => t != SquareType.EMPTY)
+					.includes(cell.kind);
 
 				const pointIndex = currentPath?.findIndex(
 					(square) => square.x === colIndex && square.y === rowIndex,
