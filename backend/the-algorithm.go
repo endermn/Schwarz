@@ -150,6 +150,7 @@ func tspWithOneCheckoutGreedy(distMatrix [][]float64, pathMatrix [][][]point, it
 		fullPath = append(fullPath, pathToNextPoint[:len(pathToNextPoint)-1]...)
 	}
 	fullPath = append(fullPath, pathMatrix[pathOrder[len(pathOrder)-1]][iEnd]...)
+	fullPath = append(fullPath, exit)
 
 	return fullPath
 }
