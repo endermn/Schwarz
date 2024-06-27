@@ -1,5 +1,5 @@
 import PartnersCarousel from "@/components/PartnersCarousel";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export function Home() {
 	return (
@@ -29,7 +29,7 @@ export function Home() {
 						</a>
 					</div>
 				</div>
-				<div id="partners-carousel" className="mt-10 hidden md:block">
+				<div id="partners-carousel" className="mt-[10vh]">
 					<h2 className="text-center text-3xl font-bold sm:text-4xl md:text-5xl">
 						Нашите партньори
 					</h2>

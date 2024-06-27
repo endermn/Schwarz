@@ -15,15 +15,6 @@ type Partner = {
 
 const partners: Partner[] = [
 	{
-		name: "",
-		image: "",
-	},
-	{
-		name: "",
-		image: "",
-	},
-
-	{
 		name: "Lidl",
 		image: "/partners/Lidl.png",
 	},
@@ -37,7 +28,7 @@ const partners: Partner[] = [
 	},
 	{
 		name: "Spge",
-		image: "partners/Spge.jpeg",
+		image: "partners/Spge.png",
 	},
 	{
 		name: "Gnu",
@@ -47,10 +38,10 @@ const partners: Partner[] = [
 
 export default function PartnersCarousel() {
 	return (
-		<div className="flex items-start justify-center">
+		<div className="flex justify-center">
 			<Carousel
 				opts={{
-					align: "start",
+					align: "center",
 					loop: false,
 				}}
 				plugins={[
@@ -58,16 +49,24 @@ export default function PartnersCarousel() {
 						delay: 3000,
 					}),
 				]}
-				className="w-[70%]"
+				className="w-3/4"
 			>
-				<CarouselContent className="flex items-center justify-center">
-					{partners.map((p, index) => (
-						<CarouselItem key={index} className="md:basis-1/3">
+				<CarouselContent>
+					{partners.map((partner) => (
+						<CarouselItem
+							key={partner.name}
+							className="select-none md:basis-1/3"
+						>
 							<AspectRatio
 								ratio={1 / 1}
 								className="flex items-center justify-center"
 							>
-								<img src={p.image} alt={p.name} width="200" height="200" />
+								<img
+									src={partner.image}
+									alt={partner.name}
+									width="75%"
+									height="75%"
+								/>
 							</AspectRatio>
 						</CarouselItem>
 					))}

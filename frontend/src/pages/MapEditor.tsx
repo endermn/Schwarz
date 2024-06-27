@@ -8,8 +8,8 @@ export function MapEditor() {
 	const [sliderX, setSliderX] = useState(10);
 	const [sliderY, setSliderY] = useState(10);
 
-	const [tool, setTool] = useState("product");
-	const [clickedSquare, setClickedSquare] = useState(null);
+	// const [tool, setTool] = useState("product");
+	// const [clickedSquare, setClickedSquare] = useState(null);
 
 	const controls = useAnimationControls();
 
@@ -35,9 +35,9 @@ export function MapEditor() {
 					)}] bg-slate-500`}
 					initial={{ scale: 0 }}
 					animate={controls}
-					onClick={(e) => {
-						console.log("Clicked");
-					}}
+					// onClick={(e) => {
+					// 	console.log("Clicked");
+					// }}
 					/*onHoverStart={() => {
 						if (cell.kind === 3) handleTap(cell.productId);
 					}}*/
