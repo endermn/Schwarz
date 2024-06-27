@@ -115,10 +115,10 @@ func main() {
 		}
 		defaultStoreID, err = storeBox.Insert(&store{
 			Name:  "default",
-			Width: getWidth(grid),
-			Grid:  encodeGrid(grid),
-			Start: start,
-			Owner: 0,
+			width: getWidth(grid),
+			grid:  encodeGrid(grid),
+			start: start,
+			owner: 0,
 		})
 		if err != nil {
 			log.Printf("Failed to insert store into database: %v", err)
@@ -229,7 +229,7 @@ func main() {
 			log.Printf("Failed to get store: %v", err)
 			return
 		}
-		json.NewEncoder(w).Encode(decodeGrid(store.Grid, store.Width))
+		json.NewEncoder(w).Encode(decodeGrid(store.grid, store.width))
 	})
 
 	mux.HandleFunc("POST /stores", func(w http.ResponseWriter, r *http.Request) {
@@ -258,10 +258,10 @@ func main() {
 		id, err := storeBox.Insert(&store{
 			Name:    params.Name,
 			Address: params.Address,
-			Width:   getWidth(grid),
-			Grid:    encodeGrid(grid),
-			Start:   start,
-			Owner:   user.id,
+			width:   getWidth(grid),
+			grid:    encodeGrid(grid),
+			start:   start,
+			owner:   user.id,
 		})
 		if err != nil {
 			log.Printf("Failed to insert store into database: %v", err)
@@ -288,7 +288,7 @@ func main() {
 			return
 		}
 
-		if user.id != activeStore.Owner {
+		if user.id != activeStore.owner {
 			log.Printf("User with id: %v is not the owner of this store", user.id)
 			http.Error(w, "Invalid user", http.StatusBadRequest)
 			return
@@ -315,9 +315,9 @@ func main() {
 			ID:      storeID,
 			Name:    params.Name,
 			Address: params.Address,
-			Width:   getWidth(grid),
-			Grid:    encodeGrid(grid),
-			Start:   start,
+			width:   getWidth(grid),
+			grid:    encodeGrid(grid),
+			start:   start,
 		})
 		if err != nil {
 			log.Printf("Failed to update store: %v", err)
@@ -350,7 +350,7 @@ func main() {
 			products[productID] = struct{}{}
 		}
 		begin := time.Now()
-		path := theAlgorithm(decodeGrid(store.Grid, store.Width), store.Start, products)
+		path := theAlgorithm(decodeGrid(store.grid, store.width), store.start, products)
 		log.Println("solving time:", time.Since(begin))
 		log.Println("length:", len(path))
 

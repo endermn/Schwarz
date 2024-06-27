@@ -877,18 +877,18 @@ func (store_EntityInfo) Flatten(object interface{}, fbb *flatbuffers.Builder, id
 	obj := object.(*store)
 	var offsetName = fbutils.CreateStringOffset(fbb, obj.Name)
 	var offsetAddress = fbutils.CreateStringOffset(fbb, obj.Address)
-	var offsetGrid = fbutils.CreateByteVectorOffset(fbb, obj.Grid)
+	var offsetGrid = fbutils.CreateByteVectorOffset(fbb, obj.grid)
 
 	// build the FlatBuffers object
 	fbb.StartObject(8)
 	fbutils.SetUint64Slot(fbb, 0, id)
 	fbutils.SetUOffsetTSlot(fbb, 1, offsetName)
 	fbutils.SetUOffsetTSlot(fbb, 2, offsetAddress)
-	fbutils.SetInt64Slot(fbb, 4, int64(obj.Width))
+	fbutils.SetInt64Slot(fbb, 4, int64(obj.width))
 	fbutils.SetUOffsetTSlot(fbb, 3, offsetGrid)
-	fbutils.SetInt64Slot(fbb, 5, int64(obj.Start.X))
-	fbutils.SetInt64Slot(fbb, 6, int64(obj.Start.Y))
-	fbutils.SetUint64Slot(fbb, 7, obj.Owner)
+	fbutils.SetInt64Slot(fbb, 5, int64(obj.start.X))
+	fbutils.SetInt64Slot(fbb, 6, int64(obj.start.Y))
+	fbutils.SetUint64Slot(fbb, 7, obj.owner)
 	return nil
 }
 
@@ -909,13 +909,13 @@ func (store_EntityInfo) Load(ob *objectbox.ObjectBox, bytes []byte) (interface{}
 		ID:      propID,
 		Name:    fbutils.GetStringSlot(table, 6),
 		Address: fbutils.GetStringSlot(table, 8),
-		Width:   fbutils.GetIntSlot(table, 12),
-		Grid:    fbutils.GetByteVectorSlot(table, 10),
-		Start: point{
+		width:   fbutils.GetIntSlot(table, 12),
+		grid:    fbutils.GetByteVectorSlot(table, 10),
+		start: point{
 			X: fbutils.GetIntSlot(table, 14),
 			Y: fbutils.GetIntSlot(table, 16),
 		},
-		Owner: fbutils.GetUint64Slot(table, 18),
+		owner: fbutils.GetUint64Slot(table, 18),
 	}, nil
 }
 

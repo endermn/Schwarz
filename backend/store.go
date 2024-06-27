@@ -26,8 +26,8 @@ func (k squareKind) isCheckout() bool {
 // 0001000000000000 end
 // 0010000000000000 wall
 // 0011pppppppppppp product p=productID
-// 0100nnnnnnnnnnnn human checkout k=kind n=number
-// 0101nnnnnnnnnnnn self checkout k=kind n=number
+// 0100nnnnnnnnnnnn human checkout n=number
+// 0101nnnnnnnnnnnn self checkout n=number
 
 type square struct {
 	Kind      squareKind `json:"kind"`

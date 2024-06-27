@@ -23,8 +23,8 @@ type store struct {
 	ID      uint64 `json:"id"`
 	Name    string `json:"name"`
 	Address string `json:"address"`
-	Width   int
-	Grid    []byte
-	Start   point
-	Owner   uint64
+	width   int
+	grid    []byte
+	start   point
+	owner   uint64
 }
