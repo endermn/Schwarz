@@ -79,7 +79,7 @@ function transpose(matrix: DataI[][]): DataI[][] {
 }
 
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
-	const [selectedProductId, setSelectedProductId] = useState(0);
+	const [selectedProductId, setSelectedProductId] = useState(-1);
 	const handleTap = (productId: number) => {
 		setSelectedProductId(productId);
 	};
@@ -99,6 +99,9 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		let el = gridData[currentPath[i].y][currentPath[i].x];
 		if (el.kind === 3) {
 			productCoords.push(currentPath[i]);
+			el.kind = 43;
+		} else {
+			el.kind = 42;
 		}
 	}
 
@@ -188,6 +191,7 @@ const getColorFromKind = (
 	y: number,
 	path: PointI[] | null
 ) => {
+	/*
 	const good = path?.find((point) => point.x === x && point.y === y);
 	if (good) {
 		if (kind === 0) return "bg-red-300";
@@ -203,7 +207,7 @@ const getColorFromKind = (
 			default:
 				return "bg-gray-300";
 		}
-	}
+	}*/
 	switch (kind) {
 		case 0:
 			return "dark:bg-white dark:opacity-30 bg-transparent";
@@ -215,6 +219,10 @@ const getColorFromKind = (
 			return "bg-yellow-500";
 		case 4:
 			return "bg-purple-500";
+		case 42:
+			return "bg-cyan-500";
+		case 43:
+			return "bg-cyan-200";
 		default:
 			return "bg-gray-300";
 	}
