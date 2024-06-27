@@ -387,21 +387,20 @@ func registerAuthHandlers(app *fiber.App, userBox *userBox) {
 }
 
 func requireUser(userBox *userBox, w http.ResponseWriter, r *http.Request) *user {
-	// Retrieve JWT token from cookie
-	cookie, _ := r.Cookie("jwt")
-
-	// Parse JWT token with claims
-	token, err := jwt.ParseWithClaims(cookie.Value, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(jwtSecret), nil
-	})
-
-	// Handle token parsing errors
+	cookie, err := r.Cookie("jwt")
 	if err != nil {
 		http.Error(w, "unauth", http.StatusUnauthorized)
 		return nil
 	}
 
-	// Extract claims from token
+	token, err := jwt.ParseWithClaims(cookie.Value, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if err != nil {
+		http.Error(w, "unauth", http.StatusUnauthorized)
+		return nil
+	}
+
 	claims, ok := token.Claims.(*jwt.MapClaims)
 	if !ok {
 		http.Error(w, "failed to parse claims", http.StatusUnauthorized)
@@ -410,7 +409,6 @@ func requireUser(userBox *userBox, w http.ResponseWriter, r *http.Request) *user
 
 	var idString = (*claims)["sub"].(string)
 
-	// Query user from database using ID
 	id, err := strconv.ParseUint(idString, 10, 64)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

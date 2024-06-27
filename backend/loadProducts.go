@@ -96,6 +96,5 @@ func loadProducts(records [][]string, box *productBox, defaultUser *user) {
 			log.Printf("failed to insert product %v: %v", record, err)
 			os.Exit(1)
 		}
-
 	}
 }
