@@ -20,7 +20,6 @@ import {
 
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Link } from "./Link";
 import { MenuIcon, ShoppingCart, XIcon } from "lucide-react";
 import { UserNav } from "./UserNav";
 import { ProductI, UserI } from "@/lib/types";
@@ -57,12 +56,15 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 			<NavigationMenu className="hidden md:block">
 				<NavigationMenuList>
 					{pages.map((page) => (
-						<NavigationMenuItem>
-							<Link href={page.href}>
-								<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-									{page.title}
-								</NavigationMenuLink>
-							</Link>{" "}
+						<NavigationMenuItem
+							key={page.title + Math.floor(Math.random() * 20)}
+						>
+							<NavigationMenuLink
+								href={page.href}
+								className={navigationMenuTriggerStyle()}
+							>
+								{page.title}
+							</NavigationMenuLink>
 						</NavigationMenuItem>
 					))}
 				</NavigationMenuList>
@@ -72,21 +74,19 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 			<div className="order-3 flex md:hidden">
 				<ModeToggle />
 				<Sheet open={open}>
-					<SheetTrigger onClick={() => setOpen(true)}>
-						<Button variant={"ghost"}>
-							<MenuIcon />
-						</Button>
+					<SheetTrigger className="p-1" onClick={() => setOpen(true)}>
+						<MenuIcon />
 					</SheetTrigger>
 					<SheetContent side={"right"} className="flex w-1/2 flex-col">
 						<SheetHeader>
-							<div className="flex items-center justify-around">
+							<div className="flex items-center justify-between">
 								<SheetTitle>Меню</SheetTitle>
 								<XIcon onClick={() => setOpen(false)} className="size-6" />
 							</div>
 							<Separator />
 							<SheetDescription className="flex flex-col">
 								{pages.map((page) => (
-									<NavLink to={page.href}>
+									<NavLink key={page.title} to={page.href}>
 										<Button
 											onClick={() => setOpen(false)}
 											variant="ghost"
@@ -106,9 +106,9 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 				{user?.username ? (
 					<UserNav user={user} />
 				) : (
-					<Link href="/signin">
+					<a href="/signin">
 						<Button className="">Влез</Button>
-					</Link>
+					</a>
 				)}
 				<NavLink to={cart.length === 0 ? "/products" : "/map"}>
 					<div className="relative inline-block">
