@@ -1,13 +1,12 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
 	const resMap = await fetch("http://localhost:12345/stores/0/layout");
 	const dataMap = await resMap.json();
@@ -26,6 +25,19 @@ export async function action({ request }: any) {
 	return { dataPath };
 }
 
+function deduplicateArray(arr: PointI[]) {
+	const seen = new Set();
+	return arr.filter((item) => {
+		const key = `${item.x},${item.y}`;
+		if (seen.has(key)) {
+			return false;
+		} else {
+			seen.add(key);
+			return true;
+		}
+	});
+}
+
 const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	const user = getContext();
 	const [pathStops, setPathStops] = useState(user.cart.length + 1 + 1); // 1 gold egg and 1 exit
@@ -40,10 +52,10 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 
 	const currentPath = fetcher.data?.dataPath.path as PointI[];
 
-	const gridMemo = useMemo<DataI[][]>(() => {
-		const gridCopy = JSON.parse(JSON.stringify(gridData));
+	const pathSlice = useMemo(() => {
+		const currentPath = fetcher.data?.dataPath.path as PointI[];
 		if (currentPath) {
-			const stops = currentPath.filter((poit) =>
+			const dirtyStops = currentPath.filter((poit) =>
 				[
 					SquareType.PRODUCT,
 					SquareType.PRODUCT_VISITED,
@@ -55,6 +67,8 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				].includes(gridData[poit.y][poit.x].kind),
 			);
 
+			const stops = deduplicateArray(dirtyStops);
+
 			const upTo =
 				pathStops === -1
 					? 0
@@ -62,9 +76,20 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 							(p) => p.x === stops[pathStops].x && p.y === stops[pathStops].y,
 						) + 1;
 
-			for (let i = 0; i < currentPath.slice(0, upTo).length; i++) {
+			return currentPath.slice(0, upTo);
+		}
+		return [];
+	}, [fetcher, gridData, pathStops]);
+
+	const [prevPath, setPrevPath] = useState<PointI[]>(pathSlice);
+
+	const gridMemo = useMemo<DataI[][]>(() => {
+		const gridCopy = JSON.parse(JSON.stringify(gridData));
+		if (currentPath && !itemRemoved && fetcher.state === "idle") {
+			for (let i = 0; i < pathSlice.length; i++) {
 				let el = gridCopy[currentPath[i].y][currentPath[i].x];
 				if (i === 0) el.kind = SquareType.START;
+				else if (el.kind == SquareType.PRODUCT_VISITED) continue;
 				else if (el.kind === SquareType.PRODUCT) {
 					el.kind = SquareType.PRODUCT_VISITED;
 				} else if (el.kind === SquareType.CHECKOUT) {
@@ -81,8 +106,6 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 		return gridCopy;
 	}, [fetcher, pathStops, user.cart, itemRemoved]);
 
-	console.log(gridData);
-
 	const grid = gridMemo.map((row, rowIndex) => (
 		<div key={rowIndex} className="flex w-full flex-1">
 			{row.map((cell, colIndex) => {
@@ -93,10 +116,10 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 				const pointIndex = currentPath?.findIndex(
 					(square) => square.x === colIndex && square.y === rowIndex,
 				);
-				console.log("STEPS:", pathStops);
+
 				let delay = 0;
-				if (pointIndex) {
-					delay = pointIndex * 0.05;
+				if (pointIndex !== undefined && pointIndex !== -1) {
+					delay = (pointIndex - prevPath.length) * 0.05;
 				}
 
 				return (
@@ -115,24 +138,24 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 	));
 
 	return (
-		<div className="flex h-full items-center justify-center">
+		<div className="m-5 flex h-full items-center justify-center">
 			<div className="grid w-full grid-cols-1 md:min-h-[80vh] lg:grid-cols-4">
 				<div className="col-span-3 flex h-[60vw] max-h-[80vh] flex-col items-center justify-center p-5">
 					{grid.reverse()}
 					<h1 className="hidden md:hidden">{0}</h1>
 				</div>
 				<div className="col-span-1 flex flex-col items-center justify-between">
-					<div>
-						<h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+					<div className="w-full">
+						<h2 className="scroll-m-20 border-b pb-2 text-center text-3xl font-semibold tracking-tight first:mt-0">
 							Продукти
 						</h2>
 						<ScrollArea className="my-6 ml-6 h-[25vh] md:h-[50vh]">
 							{user.cart.map((p) => {
 								return (
-									<div className="my-3">
+									<div className="mb-3 flex items-center justify-between rounded-lg border-2 border-black/10 px-4 py-2 dark:border-white/70">
 										{p.name}
 										<XIcon
-											className="inline size-4 cursor-pointer"
+											className="inline size-5 cursor-pointer rounded-xl bg-red-500 p-1 text-white"
 											onClick={() => {
 												user.removeFromCart(p.id);
 												setItemRemoved(true);
@@ -181,6 +204,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									if (pathStops < user.cart.length + 1 + 1) {
 										// 1 GOLDEN egg, 1 checkout
 										setPathStops((prevState) => prevState + 1);
+										setPrevPath(pathSlice);
 									}
 								}}
 								className="inline size-8 cursor-pointer font-bold"

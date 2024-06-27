@@ -1,7 +1,6 @@
 import { fakeAuthProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePersistentStorageValue } from "@/lib/useLocalStorage";
 
 import {
 	Form,
@@ -10,14 +9,6 @@ import {
 	useActionData,
 	useNavigation,
 } from "react-router-dom";
-
-export async function signUpLoader() {
-	if (fakeAuthProvider.isAuthenticated) {
-		return redirect("/dashboard");
-	}
-
-	return null;
-}
 
 type Errors = {
 	password?: string;
@@ -57,7 +48,7 @@ export async function signUpAction({ request }: LoaderFunctionArgs) {
 	}
 
 	localStorage.setItem("user", JSON.stringify({ username }));
-	return null;
+	return redirect("/");
 }
 
 export function SignUp() {
@@ -65,17 +56,6 @@ export function SignUp() {
 	let isSigningUp = navigation.formData?.get("username") != null;
 
 	let actionData = useActionData() as Errors;
-
-	if (
-		actionData &&
-		!actionData.password &&
-		!actionData.password &&
-		!actionData.username
-	) {
-		usePersistentStorageValue("user", {
-			username: navigation.formData?.get("username"),
-		});
-	}
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div className="w-full max-w-sm">
@@ -97,6 +77,7 @@ export function SignUp() {
 							Парола:
 							<Input
 								className="mb-1 dark:bg-white dark:text-black"
+								type="password"
 								name="password"
 							/>
 							{actionData && actionData.password ? (

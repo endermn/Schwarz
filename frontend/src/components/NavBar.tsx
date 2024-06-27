@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import {
 	NavigationMenu,
@@ -26,11 +24,14 @@ import { Link } from "./Link";
 import { MenuIcon } from "lucide-react";
 import { UserNav } from "./UserNav";
 import { UserI } from "@/lib/types";
+import { NavLink } from "react-router-dom";
+import { useState, forwardRef } from "react";
 
 export function NavBar({ user }: { user: UserI }) {
 	console.log(user);
+	const [open, setOpen] = useState(false);
 	return (
-		<div className="m-3 flex justify-between">
+		<div className="m-2 flex justify-between p-2">
 			<div className="hidden md:block">
 				<ModeToggle />
 			</div>
@@ -66,8 +67,8 @@ export function NavBar({ user }: { user: UserI }) {
 			{/* Mobile Haburger */}
 			<div className="order-3 md:hidden">
 				<ModeToggle />
-				<Sheet>
-					<SheetTrigger>
+				<Sheet open={open}>
+					<SheetTrigger onClick={() => setOpen(true)}>
 						<Button variant={"ghost"}>
 							<MenuIcon />
 						</Button>
@@ -79,26 +80,42 @@ export function NavBar({ user }: { user: UserI }) {
 							</div>
 							<Separator />
 							<SheetDescription className="flex flex-col">
-								<a href="/">
-									<Button variant="ghost" className="m-1 w-full">
+								<NavLink to="/">
+									<Button
+										onClick={() => setOpen(false)}
+										variant="ghost"
+										className="m-1 w-full"
+									>
 										Начало
 									</Button>
-								</a>
-								<a href="/products">
-									<Button variant="ghost" className="m-1 w-full">
+								</NavLink>
+								<NavLink to="/products">
+									<Button
+										onClick={() => setOpen(false)}
+										variant="ghost"
+										className="m-1 w-full"
+									>
 										Продукти
 									</Button>
-								</a>
-								<a href="/map">
-									<Button variant="ghost" className="m-1 w-full">
+								</NavLink>
+								<NavLink to="/map">
+									<Button
+										onClick={() => setOpen(false)}
+										variant="ghost"
+										className="m-1 w-full"
+									>
 										Карта
 									</Button>
-								</a>
-								<a href="/map/editor">
-									<Button variant="ghost" className="m-1 w-full">
+								</NavLink>
+								<NavLink to="/map/editor">
+									<Button
+										onClick={() => setOpen(false)}
+										variant="ghost"
+										className="m-1 w-full"
+									>
 										Редактор
 									</Button>
-								</a>
+								</NavLink>
 							</SheetDescription>
 						</SheetHeader>
 					</SheetContent>
@@ -106,18 +123,18 @@ export function NavBar({ user }: { user: UserI }) {
 			</div>
 
 			{/* Account or Sign in */}
-			<a href="/signin">
-				{user?.username ? (
-					<UserNav user={user} />
-				) : (
+			{user?.username ? (
+				<UserNav user={user} />
+			) : (
+				<a href="/signin">
 					<Button className="">Влез</Button>
-				)}
-			</a>
+				</a>
+			)}
 		</div>
 	);
 }
 
-const ListItem = React.forwardRef<
+const ListItem = forwardRef<
 	React.ElementRef<"a">,
 	React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, ...props }, ref) => {

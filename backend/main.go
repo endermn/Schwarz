@@ -30,8 +30,13 @@ func main() {
 	productBox := BoxForproduct(box)
 	storeBox := BoxForstore(box)
 
+<<<<<<< HEAD
 	defaultUser := makeDefaultUser(userBox)
 	loadProducts(productBox, productsCSVPath, defaultUser)
+=======
+	makeDefaultUser(userBox)
+	loadProducts(productBox, productsCSVPath)
+>>>>>>> main
 	defaultStoreID := loadDefaultStore(storeBox, storeCSVPath)
 
 	mux := http.NewServeMux()

@@ -10,8 +10,8 @@ import {
 } from "react-router-dom";
 import ErrorPage from "./pages/Error.tsx";
 import { Home } from "./pages/Home.tsx";
-import { SignIn, loginAction, loginLoader } from "./pages/SignIn.tsx";
-import { SignUp, signUpAction, signUpLoader } from "./pages/SignUp.tsx";
+import { SignIn, loginAction } from "./pages/SignIn.tsx";
+import { SignUp, signUpAction } from "./pages/SignUp.tsx";
 import { Products } from "@/pages/Products.tsx";
 import { Map, loader as mapLoader, action as mapAction } from "./pages/Map.tsx";
 import { loader as productsLoader } from "./pages/Products.tsx";
@@ -22,6 +22,12 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
+		loader: () => {
+			let data = localStorage.getItem("user");
+			if (data !== null) return JSON.parse(data);
+			return { username: "" };
+		},
+
 		errorElement: <ErrorPage />,
 		children: [
 			{
@@ -31,20 +37,25 @@ const router = createBrowserRouter([
 					{
 						path: "signin/",
 						element: <SignIn />,
-						loader: loginLoader,
+						loader(data, stuff) {
+							console.log(data, stuff);
+							return localStorage.getItem("user") ? redirect("/") : null;
+						},
 						action: loginAction,
 					},
 					{
 						path: "signup/",
 						element: <SignUp />,
-						loader: signUpLoader,
+						loader() {
+							return localStorage.getItem("user") ? redirect("/") : null;
+						},
 						action: signUpAction,
 					},
 					{
 						path: "signout/",
 						async loader() {
-							console.log("signing out");
-							return await fakeAuthProvider.signout();
+							localStorage.removeItem("user");
+							return redirect("/");
 						},
 					},
 					{ path: "products/", loader: productsLoader, element: <Products /> },
@@ -102,6 +113,7 @@ async function protectedLoader({}: LoaderFunctionArgs) {
 
 		if (res.status === 200) {
 			console.log("Session is valid");
+			return redirect("/");
 		} else if (res.status === 401) {
 			window.location.href = "/signin"; // Redirect to signin
 		} else {
