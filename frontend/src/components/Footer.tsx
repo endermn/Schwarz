@@ -1,7 +1,14 @@
+import { Separator } from "@/components/ui/separator";
+import { GithubIcon } from "lucide-react";
+
 export function Footer() {
 	return (
-		<div className="w-full flex justify-center items-center p-5 bg-slate-700">
-			<h1>hello</h1>
-		</div>
+		<footer className="w-full py-4 m-0 flex flex-col items-center justify-between">
+			<div className="flex justify-between">
+				<p className="text-sm text-muted-foreground">
+					© 2024 Jonkata, All rights reserved
+				</p>
+			</div>
+		</footer>
 	);
 }
