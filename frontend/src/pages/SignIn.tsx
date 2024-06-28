@@ -82,17 +82,18 @@ export function SignIn() {
 					<div>
 						<Label>
 							Парола:{" "}
-							<div className="flex">
+							<div className="relative flex items-center">
 								<Input
 									className="mb-1 dark:bg-white dark:text-black"
 									type={showPassword ? "text" : "password"}
 									name="password"
 								/>
+
 								<Button
 									type="button"
 									variant="ghost"
 									onClick={() => setShowPassword(!showPassword)}
-									className="ml-1"
+									className="absolute right-0 ml-1 hover:bg-transparent dark:bg-transparent dark:text-black"
 								>
 									{showPassword ? <Eye /> : <EyeOff />}
 								</Button>
