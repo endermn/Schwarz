@@ -1,6 +1,7 @@
 import { authProvider } from "@/auth";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 import {
 	Form,
@@ -9,6 +10,9 @@ import {
 	useActionData,
 	useNavigation,
 } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 type Errors = {
 	password?: string;
@@ -57,6 +61,8 @@ export function SignIn() {
 
 	let actionData = useActionData() as Errors;
 
+	let [showPassword, setShowPassword] = useState(true);
+
 	return (
 		<div className="flex h-full items-center justify-center">
 			<div className="w-full max-w-sm">
@@ -76,24 +82,34 @@ export function SignIn() {
 					<div>
 						<Label>
 							Парола:{" "}
-							<Input
-								className="mb-1 dark:bg-white dark:text-black"
-								type="password"
-								name="password"
-							/>
+							<div className="flex">
+								<Input
+									className="mb-1 dark:bg-white dark:text-black"
+									type={showPassword ? "text" : "password"}
+									name="password"
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									onClick={() => setShowPassword(!showPassword)}
+									className="ml-1"
+								>
+									{showPassword ? <Eye /> : <EyeOff />}
+								</Button>
+							</div>
 							{actionData && actionData.password ? (
 								<p style={{ color: "red" }}>{actionData.password}</p>
 							) : null}
 						</Label>{" "}
 					</div>
 					<div className="flex flex-col justify-center rounded-lg">
-						<button
+						<Button
 							className="mb-1 w-full rounded bg-blue-500 py-2 text-white"
 							type="submit"
 							disabled={isLoggingIn}
 						>
 							{isLoggingIn ? "Влизане..." : "Влез"}
-						</button>
+						</Button>
 						<Label>
 							{actionData && actionData.signingIn ? (
 								<p style={{ color: "red" }}>{actionData.signingIn}</p>
