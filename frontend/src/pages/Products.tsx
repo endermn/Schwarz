@@ -13,6 +13,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { getContext } from "@/App";
 
 export async function loader() {
 	const resProducts = await fetch("http://localhost:12345/products");
@@ -51,6 +53,8 @@ export function Products() {
 			}
 		});
 
+	const { clearCart } = getContext();
+
 	return (
 		<>
 			<div className="container">
@@ -86,6 +90,10 @@ export function Products() {
 								))}
 							</SelectContent>
 						</Select>
+
+						<Button onClick={() => clearCart()} variant={"destructive"}>
+							The Great Purge!
+						</Button>
 					</div>
 				</div>
 			</div>

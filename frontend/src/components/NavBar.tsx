@@ -59,12 +59,9 @@ export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {
 						<NavigationMenuItem
 							key={page.title + Math.floor(Math.random() * 20)}
 						>
-							<NavigationMenuLink
-								href={page.href}
-								className={navigationMenuTriggerStyle()}
-							>
+							<NavLink to={page.href} className={navigationMenuTriggerStyle()}>
 								{page.title}
-							</NavigationMenuLink>
+							</NavLink>
 						</NavigationMenuItem>
 					))}
 				</NavigationMenuList>

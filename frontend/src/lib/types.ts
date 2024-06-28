@@ -46,4 +46,5 @@ export interface ContextI {
 	user: UserI;
 	addToCart: (product: ProductI) => void;
 	removeFromCart: (productId: number) => void;
+	clearCart: () => void;
 }

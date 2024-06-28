@@ -14,7 +14,7 @@ function App() {
 
 	const addToCart = (product: ProductI) => {
 		const data = localStorage.getItem("products") as any;
-		let cart = [] as ProductI[];
+		let cart: ProductI[] = [];
 		if (data != null) {
 			cart = JSON.parse(data) as ProductI[];
 		}
@@ -25,7 +25,7 @@ function App() {
 	};
 
 	const removeFromCart = (id: number) => {
-		let cardData = [] as ProductI[];
+		let cardData: ProductI[] = [];
 		const localStorageCart = localStorage.getItem("products");
 		if (localStorageCart) cardData = JSON.parse(localStorageCart);
 
@@ -33,6 +33,12 @@ function App() {
 		localStorage.setItem("products", JSON.stringify(cleanData));
 
 		setCart(cleanData);
+	};
+
+	const clearCart = () => {
+		const newCart: ProductI[] = [];
+		localStorage.setItem("products", JSON.stringify(newCart));
+		setCart(newCart);
 	};
 
 	console.log(cart);
@@ -47,6 +53,7 @@ function App() {
 							cart,
 							addToCart,
 							removeFromCart,
+							clearCart,
 							user,
 						}}
 					/>
