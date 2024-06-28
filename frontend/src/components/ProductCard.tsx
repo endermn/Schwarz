@@ -22,7 +22,7 @@ export function ProductCard(props: ProductI) {
 			<CardHeader className="text-center">
 				<CardTitle>{name}</CardTitle>
 				{/* Uncomment for images */}
-				{/* <img src={imageURL} alt="image" /> */}
+				<img src={imageURL} alt="image" />
 			</CardHeader>
 			<CardContent>
 				<CardDescription>{category}</CardDescription>

@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getContext } from "@/App";
 import { Trash2 } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 export async function loader() {
 	const resProducts = await fetch("http://localhost:12345/products");
