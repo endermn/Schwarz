@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import { XIcon, ArrowRight, ArrowLeft } from "lucide-react";
+import { XIcon, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
 import { getContext } from "@/App";
 import { Button } from "@/components/ui/button";
 import { PointI, DataI, SquareType } from "@/lib/types";
@@ -292,6 +292,17 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									</AlertDialogFooter>
 								</AlertDialogContent>
 							</AlertDialog>
+							<Button
+								disabled={!user.cart.length}
+								onClick={() => {
+									setItemRemoved(false);
+									setPathStops(-1);
+									user.clearCart();
+								}}
+								variant={"destructive"}
+							>
+								<Trash2 size={24} />
+							</Button>
 							<fetcher.Form method="post">
 								<Button
 									disabled={user.cart.length === 0}

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { getContext } from "@/App";
+import { Trash2 } from "lucide-react";
 
 export async function loader() {
 	const resProducts = await fetch("http://localhost:12345/products");
@@ -53,7 +54,7 @@ export function Products() {
 			}
 		});
 
-	const { clearCart } = getContext();
+	const { clearCart, cart } = getContext();
 
 	return (
 		<>
@@ -91,8 +92,12 @@ export function Products() {
 							</SelectContent>
 						</Select>
 
-						<Button onClick={() => clearCart()} variant={"destructive"}>
-							The Great Purge!
+						<Button
+							disabled={!cart.length}
+							onClick={() => clearCart()}
+							variant={"destructive"}
+						>
+							<Trash2 size={24} />
 						</Button>
 					</div>
 				</div>
