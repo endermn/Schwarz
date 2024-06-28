@@ -39,10 +39,6 @@ const pages = [
 		title: "Карта",
 		href: "/map",
 	},
-	{
-		title: "Редактор",
-		href: "/map/editor",
-	},
 ];
 
 export function NavBar({ user, cart }: { user: UserI; cart: ProductI[] }) {

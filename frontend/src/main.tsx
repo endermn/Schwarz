@@ -15,7 +15,6 @@ import { SignUp, signUpAction } from "./pages/SignUp.tsx";
 import { Products } from "@/pages/Products.tsx";
 import { Map, loader as mapLoader, action as mapAction } from "./pages/Map.tsx";
 import { loader as productsLoader } from "./pages/Products.tsx";
-import { MapEditor } from "./pages/MapEditor.tsx";
 import { authProvider } from "./auth.ts";
 
 const router = createBrowserRouter([
@@ -65,7 +64,6 @@ const router = createBrowserRouter([
 						action: mapAction,
 						element: <Map />,
 					},
-					{ path: "map/editor", loader: mapLoader, element: <MapEditor /> },
 				],
 			},
 		],
