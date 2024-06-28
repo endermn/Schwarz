@@ -27,7 +27,6 @@ export async function loader() {
 export async function action({ request }: any) {
 	const formData = await request.formData();
 	let products = formData.get("products");
-	console.log(products);
 	const resPath = await fetch("http://localhost:12345/stores/0/find-route", {
 		method: "POST",
 		body: products,

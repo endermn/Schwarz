@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { getContext } from "@/App";
 import { Trash2 } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
 
 export async function loader() {
 	const resProducts = await fetch("http://localhost:12345/products");
@@ -24,7 +23,6 @@ export async function loader() {
 
 	const resCategories = await fetch("http://localhost:12345/categories");
 	const categories = await resCategories.json();
-	console.log(products);
 
 	return { products, categories };
 }

@@ -41,7 +41,6 @@ export function ProductCard(props: ProductI) {
 				) : (
 					<Button
 						onClick={() => {
-							console.log("test");
 							user.addToCart({ category, id, name, imageURL });
 						}}
 						variant="default"

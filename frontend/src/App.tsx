@@ -41,8 +41,6 @@ function App() {
 		setCart(newCart);
 	};
 
-	console.log(cart);
-
 	return (
 		<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 			<div className="flex h-screen flex-col">

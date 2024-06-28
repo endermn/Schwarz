@@ -36,8 +36,7 @@ const router = createBrowserRouter([
 					{
 						path: "signin/",
 						element: <SignIn />,
-						loader(data, stuff) {
-							console.log(data, stuff);
+						loader() {
 							return localStorage.getItem("user") ? redirect("/") : null;
 						},
 						action: loginAction,
@@ -110,16 +109,12 @@ async function protectedLoader({}: LoaderFunctionArgs) {
 		});
 
 		if (res.status === 200) {
-			console.log("Session is valid");
 			return redirect("/");
 		} else if (res.status === 401) {
 			window.location.href = "/signin"; // Redirect to signin
 		} else {
-			console.error("Unexpected response:", res);
 		}
-	} catch (error) {
-		console.error("Fetch error:", error);
-	}
+	} catch (error) {}
 
 	return null;
 }
