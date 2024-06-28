@@ -4,12 +4,14 @@ import (
 	"maps"
 	"math"
 	"slices"
+
+	. "github.com/stoyan-kukev/team-project/backend/util"
 )
 
-func extractPoints(grid [][]square, products set[int]) (items []point, checkouts []point, end point) {
+func extractPoints(grid [][]square, products Set[int]) (items []point, checkouts []point, end point) {
 	for y, row := range grid {
 		for x, cell := range row {
-			if cell.Kind == productSquare && products.contains(cell.ProductID) { // Required products to be visited
+			if cell.Kind == productSquare && products.Contains(cell.ProductID) { // Required products to be visited
 				items = append(items, point{x, y})
 			} else if cell.Kind.isCheckout() {
 				checkouts = append(checkouts, point{x, y})
@@ -21,7 +23,7 @@ func extractPoints(grid [][]square, products set[int]) (items []point, checkouts
 	return
 }
 
-func bfs(grid [][]square, start point, targetPoints set[point]) ([][]float64, [][]point) {
+func bfs(grid [][]square, start point, targetPoints Set[point]) ([][]float64, [][]point) {
 	startingFromCheckout := grid[start.Y][start.X].Kind.isCheckout()
 	directions := []point{{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}}
 	width := getWidth(grid)
@@ -46,8 +48,8 @@ func bfs(grid [][]square, start point, targetPoints set[point]) ([][]float64, []
 			if !(0 <= nextPos.X && nextPos.X < width && 0 <= nextPos.Y && nextPos.Y < height) {
 				continue
 			}
-			if !(grid[nextPos.Y][nextPos.X].Kind == wallSquare || grid[nextPos.Y][nextPos.X].Kind == productSquare && !targetPoints.contains(nextPos) || grid[nextPos.Y][nextPos.X].Kind.isCheckout() && startingFromCheckout) && distFromStart[nextPos.Y][nextPos.X] == math.Inf(1) {
-				if targetPoints.contains(pos) && targetPoints.contains(nextPos) {
+			if !(grid[nextPos.Y][nextPos.X].Kind == wallSquare || grid[nextPos.Y][nextPos.X].Kind == productSquare && !targetPoints.Contains(nextPos) || grid[nextPos.Y][nextPos.X].Kind.isCheckout() && startingFromCheckout) && distFromStart[nextPos.Y][nextPos.X] == math.Inf(1) {
+				if targetPoints.Contains(pos) && targetPoints.Contains(nextPos) {
 					continue // skip direct paths between items
 				}
 				distFromStart[nextPos.Y][nextPos.X] = distFromStart[pos.Y][pos.X] + 1
@@ -80,9 +82,9 @@ func createDistanceAndPathMatrix(grid [][]square, points []point) (distMatrix []
 	pathMatrix = makeGrid[[]point](len(points), len(points))
 
 	for i, p := range points {
-		pset := set[point]{}
+		pset := Set[point]{}
 		for _, q := range points {
-			pset.insert(q)
+			pset.Insert(q)
 		}
 		dist, prev := bfs(grid, p, pset)
 		for j, q := range points {
@@ -155,7 +157,7 @@ func tspWithOneCheckoutGreedy(distMatrix [][]float64, pathMatrix [][][]point, it
 	return fullPath
 }
 
-func solve(grid [][]square, start point, products set[int]) []point {
+func solve(grid [][]square, start point, products Set[int]) []point {
 	items, checkouts, end := extractPoints(grid, products)
 	points := slices.Concat([]point{start}, items, checkouts, []point{end})
 	distMatrix, pathMatrix := createDistanceAndPathMatrix(grid, points)
@@ -163,12 +165,12 @@ func solve(grid [][]square, start point, products set[int]) []point {
 	return path
 }
 
-func theAlgorithm(grid [][]square, start point, products set[int]) []point {
+func theAlgorithm(grid [][]square, start point, products Set[int]) []point {
 	bestPath := []point{}
 	// best_egg := -1
 	for _, egg := range eggs {
 		newRequired := maps.Clone(products)
-		newRequired.insert(egg)
+		newRequired.Insert(egg)
 		// grid = generate_grid(data_dict, new_required)
 		path := solve(grid, start, newRequired)
 		if len(path) < len(bestPath) || len(bestPath) == 0 {

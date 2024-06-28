@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	. "github.com/stoyan-kukev/team-project/backend/util"
 )
 
 type routeFindingParams struct {
@@ -53,17 +55,17 @@ func getStoreID(w http.ResponseWriter, storeIDString string, defaultStoreID uint
 
 func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *productBox, storeBox *storeBox, defaultStoreID uint64) {
 	mux.HandleFunc("GET /categories", func(w http.ResponseWriter, r *http.Request) {
-		categories := set[string]{}
+		categories := Set[string]{}
 		products, err := productBox.GetAll()
 		if err != nil {
 			log.Printf("Failed to get products: %v", err)
 		}
 
 		for _, product := range products {
-			categories.insert(product.Category)
+			categories.Insert(product.Category)
 		}
 
-		json.NewEncoder(w).Encode(categories.toArray())
+		json.NewEncoder(w).Encode(categories.ToArray())
 	})
 
 	mux.HandleFunc("GET /products", func(w http.ResponseWriter, r *http.Request) {
@@ -214,7 +216,7 @@ func registerMainEndpoints(mux *http.ServeMux, userBox *userBox, productBox *pro
 			return
 		}
 
-		products := set[int]{}
+		products := Set[int]{}
 		for _, productID := range params.Products {
 			products[productID] = struct{}{}
 		}
