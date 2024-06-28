@@ -79,6 +79,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 			);
 
 			const stops = deduplicateArray(dirtyStops);
+			if (pathStops >= stops.length || pathStops < 0) return [];
 
 			const upTo =
 				pathStops === -1
@@ -301,6 +302,7 @@ const Grid = ({ gridData }: { gridData: DataI[][] }) => {
 									className="bg-green-500 disabled:bg-slate-500"
 									onClick={() => {
 										setItemRemoved(false);
+										setPathStops(user.cart.length + 2);
 									}}
 								>
 									Намери пътя!
