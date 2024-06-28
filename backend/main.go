@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/objectbox/objectbox-go/objectbox"
+	"github.com/stoyan-kukev/team-project/backend/middleware"
 )
 
 func main() {
@@ -37,7 +38,7 @@ func main() {
 	mux := http.NewServeMux()
 	registerMainEndpoints(mux, userBox, productBox, storeBox, defaultStoreID)
 
-	handler := enableCORS(mux)
+	handler := middleware.EnableCORS(mux)
 	server := &http.Server{
 		Addr:    ":12345",
 		Handler: handler,
