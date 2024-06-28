@@ -27,8 +27,16 @@ const partners: Partner[] = [
 		image: "/partners/Schwarz.png",
 	},
 	{
+		name: "Schwarz Production",
+		image: "/partners/SchwarzProduktion.jpg",
+	},
+	{
+		name: "Pre Zero",
+		image: "/partners/PreZero.png",
+	},
+	{
 		name: "Spge",
-		image: "partners/Spge.png",
+		image: "partners/Spge.jpeg",
 	},
 	{
 		name: "Gnu",
@@ -46,7 +54,7 @@ export default function PartnersCarousel() {
 				}}
 				plugins={[
 					Autoplay({
-						delay: 3000,
+						delay: 4000,
 					}),
 				]}
 				className="w-3/4"
